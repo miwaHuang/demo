@@ -220,15 +220,9 @@ const EmergencyPatientReportPage = {
                                             </div>
                                             <div class="row search-btns">
                                                 <div class="col-md-12">
-                                                    <button type="button" class="btn btn-success" id="btnSearch">
-                                                        <i class="fa fa-search"></i> 查詢
-                                                    </button>
-                                                    <button type="button" class="btn btn-gray" id="btnClear">
-                                                        <i class="fa fa-eraser"></i> 清除
-                                                    </button>
-                                                    <button type="button" class="btn btn-success" id="btnExport">
-                                                        <i class="fa fa-file-excel-o"></i> 資料匯出
-                                                    </button>
+                                                    ${ButtonComponent.search()}
+                                                    ${ButtonComponent.clear()}
+                                                    ${ButtonComponent.export()}
                                                 </div>
                                             </div>
                                         </form>
@@ -246,21 +240,10 @@ const EmergencyPatientReportPage = {
                                     
                                     <!-- 功能按鈕群組 -->
                                     <div class="btn-group" style="margin-bottom: 10px;">
-                                        <button type="button" class="btn btn-primary" id="btnAdd">
-                                            <i class="fa fa-plus"></i> 新增傷患通報
-                                        </button>
-                                        <button type="button" class="btn btn-primary" id="btnEdit" disabled>
-                                            <i class="fa fa-edit"></i> 修改傷患通報
-                                        </button>
-                                        <button type="button" class="btn btn-primary" id="btnView" disabled>
-                                            <i class="fa fa-eye"></i> 檢視傷患通報
-                                        </button>
-                                    </div>
-                                    
-                                    <div class="btn-group" style="margin-bottom: 10px;">
-                                        <button type="button" class="btn btn-danger" id="btnDelete" disabled>
-                                            <i class="fa fa-trash"></i> 刪除傷患通報
-                                        </button>
+                                        ${ButtonComponent.add('btnAdd', '新增傷患通報')}
+                                        ${ButtonComponent.edit('btnEdit', '修改傷患通報')}
+                                        ${ButtonComponent.view('btnView', '檢視傷患通報')}
+                                        ${ButtonComponent.delete('btnDelete', '刪除傷患通報')}
                                     </div>
                                     
                                     <!-- EasyUI DataGrid -->
