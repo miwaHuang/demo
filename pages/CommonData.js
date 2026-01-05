@@ -1,0 +1,352 @@
+// CommonData.js - 共用靜態資料清單
+// 此檔案包含系統中多個頁面共用的基礎資料，如開案單位、縣市、災害類別等
+
+// ==================== 開案單位資料 ====================
+const DepartmentData = {
+  // 開案單位類別
+  deptTypes: [
+    { code: "", name: "請選擇" },
+    { code: "01", name: "消防機關" },
+    { code: "02", name: "衛生機關" },
+    { code: "03", name: "醫療機構" },
+    { code: "04", name: "民間救護團體" },
+  ],
+
+  // 開案單位（依類別分類）
+  departments: {
+    "01": [
+      // 消防機關
+      { code: "", name: "請選擇" },
+      { code: "0101", name: "台北市消防局" },
+      { code: "0102", name: "新北市消防局" },
+      { code: "0103", name: "桃園市消防局" },
+      { code: "0104", name: "台中市消防局" },
+      { code: "0105", name: "台南市消防局" },
+      { code: "0106", name: "高雄市消防局" },
+      { code: "0107", name: "基隆市消防局" },
+      { code: "0108", name: "新竹市消防局" },
+      { code: "0109", name: "嘉義市消防局" },
+      { code: "0110", name: "新竹縣消防局" },
+      { code: "0111", name: "苗栗縣消防局" },
+      { code: "0112", name: "彰化縣消防局" },
+      { code: "0113", name: "南投縣消防局" },
+      { code: "0114", name: "雲林縣消防局" },
+      { code: "0115", name: "嘉義縣消防局" },
+      { code: "0116", name: "屏東縣消防局" },
+      { code: "0117", name: "宜蘭縣消防局" },
+      { code: "0118", name: "花蓮縣消防局" },
+      { code: "0119", name: "台東縣消防局" },
+      { code: "0120", name: "澎湖縣消防局" },
+      { code: "0121", name: "金門縣消防局" },
+      { code: "0122", name: "連江縣消防局" },
+    ],
+    "02": [
+      // 衛生機關
+      { code: "", name: "請選擇" },
+      { code: "0201", name: "台北市衛生局" },
+      { code: "0202", name: "新北市衛生局" },
+      { code: "0203", name: "桃園市衛生局" },
+      { code: "0204", name: "台中市衛生局" },
+      { code: "0205", name: "台南市衛生局" },
+      { code: "0206", name: "高雄市衛生局" },
+      { code: "0207", name: "基隆市衛生局" },
+      { code: "0208", name: "新竹市衛生局" },
+      { code: "0209", name: "嘉義市衛生局" },
+      { code: "0210", name: "新竹縣衛生局" },
+      { code: "0211", name: "苗栗縣衛生局" },
+      { code: "0212", name: "彰化縣衛生局" },
+      { code: "0213", name: "南投縣衛生局" },
+      { code: "0214", name: "雲林縣衛生局" },
+      { code: "0215", name: "嘉義縣衛生局" },
+      { code: "0216", name: "屏東縣衛生局" },
+      { code: "0217", name: "宜蘭縣衛生局" },
+      { code: "0218", name: "花蓮縣衛生局" },
+      { code: "0219", name: "台東縣衛生局" },
+      { code: "0220", name: "澎湖縣衛生局" },
+      { code: "0221", name: "金門縣衛生局" },
+      { code: "0222", name: "連江縣衛生局" },
+    ],
+    "03": [
+      // 醫療機構
+      { code: "", name: "請選擇" },
+      { code: "0301", name: "台大醫院" },
+      { code: "0302", name: "台北榮民總醫院" },
+      { code: "0303", name: "三軍總醫院" },
+      { code: "0304", name: "台北長庚醫院" },
+      { code: "0305", name: "馬偕醫院" },
+      { code: "0306", name: "新光醫院" },
+      { code: "0307", name: "亞東醫院" },
+      { code: "0308", name: "中國醫藥大學附設醫院" },
+      { code: "0309", name: "台中榮民總醫院" },
+      { code: "0310", name: "彰化基督教醫院" },
+      { code: "0311", name: "成大醫院" },
+      { code: "0312", name: "台南奇美醫院" },
+      { code: "0313", name: "高雄長庚醫院" },
+      { code: "0314", name: "高雄榮民總醫院" },
+      { code: "0315", name: "高雄醫學大學附設醫院" },
+    ],
+    "04": [
+      // 民間救護團體
+      { code: "", name: "請選擇" },
+      { code: "0401", name: "中華民國紅十字會總會" },
+      { code: "0402", name: "慈濟基金會" },
+      { code: "0403", name: "中華民國消防協會" },
+      { code: "0404", name: "台灣緊急救護發展協會" },
+    ],
+  },
+};
+
+// ==================== 縣市資料 ====================
+const CountyData = {
+  counties: [
+    { code: "", name: "請選擇" },
+    { code: "01", name: "台北市" },
+    { code: "02", name: "新北市" },
+    { code: "03", name: "桃園市" },
+    { code: "04", name: "台中市" },
+    { code: "05", name: "台南市" },
+    { code: "06", name: "高雄市" },
+    { code: "07", name: "基隆市" },
+    { code: "08", name: "新竹市" },
+    { code: "09", name: "嘉義市" },
+    { code: "10", name: "新竹縣" },
+    { code: "11", name: "苗栗縣" },
+    { code: "12", name: "彰化縣" },
+    { code: "13", name: "南投縣" },
+    { code: "14", name: "雲林縣" },
+    { code: "15", name: "嘉義縣" },
+    { code: "16", name: "屏東縣" },
+    { code: "17", name: "宜蘭縣" },
+    { code: "18", name: "花蓮縣" },
+    { code: "19", name: "台東縣" },
+    { code: "20", name: "澎湖縣" },
+    { code: "21", name: "金門縣" },
+    { code: "22", name: "連江縣" },
+  ],
+};
+
+// ==================== 災害資料 ====================
+const DisasterData = {
+  // 災害屬性
+  disasterTypeAttr: [
+    { code: "", name: "請選擇" },
+    { code: "A", name: "天然災害" },
+    { code: "B", name: "人為災害" },
+  ],
+
+  // 災害種類（依屬性分類）
+  disasterType: {
+    A: [
+      // 天然災害
+      { code: "", name: "請選擇" },
+      { code: "E", name: "地震" },
+      { code: "R", name: "寒害" },
+      { code: "W", name: "風災" },
+      { code: "F", name: "水災" },
+      { code: "L", name: "土石流" },
+      { code: "H", name: "旱災" },
+      { code: "S", name: "海嘯" },
+    ],
+    B: [
+      // 人為災害
+      { code: "", name: "請選擇" },
+      { code: "F", name: "火災" },
+      { code: "C", name: "車禍" },
+      { code: "D", name: "化學災害" },
+      { code: "G", name: "公共活動" },
+      { code: "K", name: "其他" },
+      { code: "U", name: "爆炸" },
+      { code: "P", name: "公害" },
+      { code: "T", name: "恐怖攻擊" },
+    ],
+  },
+};
+
+// ==================== 事件類別資料 ====================
+const EventData = {
+  // 開案類別
+  typeFlag: [
+    { code: "", name: "請選擇" },
+    { code: "N", name: "一般" },
+    { code: "E", name: "演習" },
+    { code: "T", name: "測試" },
+  ],
+
+  // 是否結案
+  lockFlag: [
+    { code: "", name: "請選擇" },
+    { code: "Y", name: "已結案" },
+    { code: "N", name: "未結案" },
+  ],
+};
+
+// ==================== 醫療機構資料 ====================
+const MedicalData = {
+  // 收治單位（依縣市分類）
+  aidDepartments: {
+    "01": [
+      // 台北市
+      { code: "", name: "請選擇" },
+      { code: "0101", name: "台大醫院" },
+      { code: "0102", name: "台北榮民總醫院" },
+      { code: "0103", name: "三軍總醫院" },
+      { code: "0104", name: "台北長庚醫院" },
+      { code: "0105", name: "馬偕醫院" },
+      { code: "0106", name: "新光醫院" },
+      { code: "0107", name: "國泰醫院" },
+      { code: "0108", name: "和信醫院" },
+    ],
+    "02": [
+      // 新北市
+      { code: "", name: "請選擇" },
+      { code: "0201", name: "新光醫院" },
+      { code: "0202", name: "亞東醫院" },
+      { code: "0203", name: "雙和醫院" },
+      { code: "0204", name: "恩主公醫院" },
+      { code: "0205", name: "淡水馬偕醫院" },
+    ],
+    "03": [
+      // 桃園市
+      { code: "", name: "請選擇" },
+      { code: "0301", name: "長庚醫院" },
+      { code: "0302", name: "敏盛醫院" },
+      { code: "0303", name: "聖保祿醫院" },
+    ],
+    "04": [
+      // 台中市
+      { code: "", name: "請選擇" },
+      { code: "0401", name: "中國醫藥大學附設醫院" },
+      { code: "0402", name: "台中榮民總醫院" },
+      { code: "0403", name: "澄清醫院" },
+      { code: "0404", name: "林新醫院" },
+    ],
+    "05": [
+      // 台南市
+      { code: "", name: "請選擇" },
+      { code: "0501", name: "成大醫院" },
+      { code: "0502", name: "奇美醫院" },
+      { code: "0503", name: "台南新樓醫院" },
+      { code: "0504", name: "台南市立醫院" },
+    ],
+    "06": [
+      // 高雄市
+      { code: "", name: "請選擇" },
+      { code: "0601", name: "高雄長庚醫院" },
+      { code: "0602", name: "高雄榮民總醫院" },
+      { code: "0603", name: "高雄醫學大學附設醫院" },
+      { code: "0604", name: "義大醫院" },
+      { code: "0605", name: "阮綜合醫院" },
+    ],
+    "07": [
+      // 基隆市
+      { code: "", name: "請選擇" },
+      { code: "0701", name: "基隆長庚醫院" },
+      { code: "0702", name: "基隆市立醫院" },
+    ],
+    "08": [
+      // 新竹市
+      { code: "", name: "請選擇" },
+      { code: "0801", name: "新竹馬偕醫院" },
+      { code: "0802", name: "新竹國泰醫院" },
+    ],
+    "09": [
+      // 嘉義市
+      { code: "", name: "請選擇" },
+      { code: "0901", name: "嘉義基督教醫院" },
+      { code: "0902", name: "嘉義聖馬爾定醫院" },
+    ],
+  },
+
+  // 傷勢等級
+  injuryLevel: [
+    { code: "", name: "請選擇" },
+    { code: "1", name: "第一級（輕傷）" },
+    { code: "2", name: "第二級（中傷）" },
+    { code: "3", name: "第三級（重傷）" },
+    { code: "4", name: "第四級（極重傷）" },
+    { code: "5", name: "第五級（危急）" },
+    { code: "D", name: "死亡" },
+  ],
+};
+
+// ==================== 工具函式 ====================
+const CommonDataUtils = {
+  // 生成下拉選項 HTML
+  generateOptions: function (dataArray) {
+    if (!dataArray || !Array.isArray(dataArray)) {
+      return '<option value="">無資料</option>';
+    }
+    return dataArray
+      .map((item) => `<option value="${item.code}">${item.name}</option>`)
+      .join("");
+  },
+
+  // 根據 code 取得名稱
+  getNameByCode: function (dataArray, code) {
+    if (!dataArray || !Array.isArray(dataArray) || !code) {
+      return "";
+    }
+    const item = dataArray.find((d) => d.code === code);
+    return item ? item.name : code;
+  },
+
+  // 重新載入級聯下拉選單
+  reloadCascadingDropdown: function (parentValue, childSelectId, dataSource) {
+    const $childSelect = $(`#${childSelectId}`);
+    if (!$childSelect.length) {
+      console.warn(`找不到下拉選單: ${childSelectId}`);
+      return;
+    }
+
+    $childSelect.empty();
+
+    if (parentValue && dataSource[parentValue]) {
+      const options = this.generateOptions(dataSource[parentValue]);
+      $childSelect.html(options);
+    } else {
+      $childSelect.html('<option value="">請先選擇上層選項</option>');
+    }
+  },
+
+  // 初始化縣市下拉選單
+  initCountySelect: function (selectId) {
+    const $select = $(`#${selectId}`);
+    if ($select.length) {
+      $select.html(this.generateOptions(CountyData.counties));
+    }
+  },
+
+  // 初始化開案單位類別下拉選單
+  initDeptTypeSelect: function (selectId) {
+    const $select = $(`#${selectId}`);
+    if ($select.length) {
+      $select.html(this.generateOptions(DepartmentData.deptTypes));
+    }
+  },
+
+  // 初始化災害屬性下拉選單
+  initDisasterAttrSelect: function (selectId) {
+    const $select = $(`#${selectId}`);
+    if ($select.length) {
+      $select.html(this.generateOptions(DisasterData.disasterTypeAttr));
+    }
+  },
+
+  // 初始化開案類別下拉選單
+  initTypeFlagSelect: function (selectId) {
+    const $select = $(`#${selectId}`);
+    if ($select.length) {
+      $select.html(this.generateOptions(EventData.typeFlag));
+    }
+  },
+};
+
+// 將資料物件註冊到 window 供全域使用
+if (typeof window !== "undefined") {
+  window.DepartmentData = DepartmentData;
+  window.CountyData = CountyData;
+  window.DisasterData = DisasterData;
+  window.EventData = EventData;
+  window.MedicalData = MedicalData;
+  window.CommonDataUtils = CommonDataUtils;
+}

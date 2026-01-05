@@ -36,6 +36,12 @@
     <script src="js/EMSJs.js"></script>
     <script src="js/nprogress.js"></script>
 
+    <!-- Common Data -->
+    <script src="pages/CommonData.js"></script>
+
+    <!-- Page Components -->
+    <script src="pages/EmergencyPatientReport.js"></script>
+
     <script type="text/javascript">
       $(document).ready(function () {
         WindowInit();
@@ -129,6 +135,31 @@
         PageContent += "</div>";
 
         PageContainer.html(PageContent);
+        document.title = "緊急醫療管理系統 - " + title;
+      }
+
+      function LoadPageComponent(componentName, title, breadcrumb) {
+        var PageContainer = $("#PageContent");
+
+        $(".Wrapper").removeClass("mobile-unfold");
+
+        // 根据组件名称加载对应的页面组件
+        var component = window[componentName + "Page"];
+
+        if (component && typeof component.getContent === "function") {
+          PageContainer.html(component.getContent());
+
+          // 初始化组件
+          if (typeof component.init === "function") {
+            setTimeout(function () {
+              component.init();
+            }, 100);
+          }
+        } else {
+          // 如果组件不存在，显示默认内容
+          WebPageToggle(title, breadcrumb);
+        }
+
         document.title = "緊急醫療管理系統 - " + title;
       }
     </script>
@@ -329,7 +360,7 @@
                         href="javascript:void(0)"
                         id="MEDA100"
                         data-level="3"
-                        onclick="WebPageToggle('緊急醫療救護傷患通報維護', '事件通報管理 > 緊急醫療救護通報 > 緊急醫療救護傷患通報維護')"
+                        onclick="LoadPageComponent('EmergencyPatientReport', '緊急醫療救護傷患通報維護', '事件通報管理 > 緊急醫療救護通報 > 緊急醫療救護傷患通報維護')"
                         ><svg
                           xmlns="http://www.w3.org/2000/svg"
                           xmlns:xlink="http://www.w3.org/1999/xlink"
