@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="zh-tw">
+  <head>
+    <meta charset="UTF-8" />
+    <title>緊急醫療管理系統</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <meta http-equiv="PRAGMA" content="no-cache" />
+    <meta http-equiv="Expires" content="-1" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta http-equiv="Cache-Control" content="no-cache" />
+
+    <!-- CSS Files -->
+    <link href="css/bootstrap.min.css" rel="stylesheet" />
+    <link href="css/font-awesome.min.css" rel="stylesheet" />
+    <link href="css/Common.css" rel="stylesheet" />
+    <link href="css/Style.css" rel="stylesheet" />
+    <link href="css/material-design-iconic-font.min.css" rel="stylesheet" />
+    <link href="css/simple-line-icons.css" rel="stylesheet" />
+    <link href="css/jquery.multiselect.css" rel="stylesheet" />
+    <link href="css/easyui.css" rel="stylesheet" />
+    <link href="css/nprogress.css" rel="stylesheet" />
+    <link href="css/Messager.css" rel="stylesheet" />
+    <link rel="shortcut icon" href="images/favicon.ico" />
+
+    <!-- JavaScript Files -->
+    <script src="js/jquery-3.5.1.min.js"></script>
+    <script src="js/jquery-ui.js"></script>
+    <script src="js/dropdown-bootstrap-extended.js"></script>
+    <script src="js/bootstrap.itts.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/jquery.multiselect.js"></script>
+    <script src="js/jquery.form.js"></script>
+    <script src="js/jquery.easyui.min.js"></script>
+    <script src="js/jquery.easyui-lang-zh_TW.js"></script>
+    <script src="js/jquery.blockUI.js"></script>
+    <script src="js/EMSJs.js"></script>
+    <script src="js/nprogress.js"></script>
+
+    <script type="text/javascript">
+      $(document).ready(function () {
+        WindowInit();
+        LeftNavEvent();
+      });
+
+      $(window).resize(function () {
+        WindowInit();
+      });
+
+      function WindowInit() {
+        var WindowHeight = $(window).outerHeight();
+        var HeadHeight = $(".Navbar").outerHeight();
+        var ContHeight = WindowHeight - HeadHeight;
+        var PageContHeight = ContHeight;
+        $(".page-wrapper").css({ height: ContHeight });
+        $(".page-content").css({ height: PageContHeight });
+      }
+
+      function LeftNavEvent() {
+        var sidebarNavCollapse = $(".nav-left-bar li .collapse");
+        var sidebatNav = ".nav-left-bar";
+        var sidebarNavAnchor = ".nav-left-bar li a[data-level!=3]";
+
+        $(document).on("click", sidebarNavAnchor, function (e) {
+          if ($(this).attr("aria-expanded") === "false") $(this).blur();
+          $(sidebarNavCollapse).not($(this).parent().parent()).collapse("hide");
+        });
+
+        $(document).on("mouseenter", sidebatNav, function () {
+          $(".Wrapper").addClass("mobile-unfold");
+        });
+      }
+
+      function ToggleLeftNav() {
+        var sidebatNav = ".nav-left-bar";
+        var WindowWidth = $(window).outerWidth();
+
+        if (WindowWidth >= 800) {
+          $(".Wrapper").removeClass("mobile-unfold").toggleClass("shrink");
+          $(".nav-left-bar li .collapse").collapse("hide");
+          if ($(".Wrapper").hasClass("shrink")) {
+            $(document).on("mouseleave", sidebatNav, function () {
+              $(".Wrapper").removeClass("mobile-unfold");
+              $(".nav-left-bar li .collapse").collapse("hide");
+            });
+          } else {
+            $(document).off("mouseleave", sidebatNav);
+          }
+        } else {
+          $(".Wrapper").removeClass("shrink").toggleClass("mobile-unfold");
+          $(".nav-left-bar li .collapse").collapse("hide");
+        }
+      }
+
+      function ToggleMobileTool() {
+        $(".Wrapper").toggleClass("nav-right-shrink");
+      }
+
+      function WebPageToggle(title, breadcrumb) {
+        var PageContainer = $("#PageContent");
+        var PageContent = "";
+
+        $(".Wrapper").removeClass("mobile-unfold");
+
+        PageContent =
+          "<div class='PageSubCont FocusPage' style='padding: 30px;'>";
+        PageContent += "<nav aria-label='breadcrumb'>";
+        PageContent += "<ol class='breadcrumb'>";
+
+        var breadcrumbParts = breadcrumb.split(" > ");
+        for (var i = 0; i < breadcrumbParts.length; i++) {
+          if (i === breadcrumbParts.length - 1) {
+            PageContent +=
+              "<li class='breadcrumb-item active' aria-current='page'>" +
+              breadcrumbParts[i] +
+              "</li>";
+          } else {
+            PageContent +=
+              "<li class='breadcrumb-item'>" + breadcrumbParts[i] + "</li>";
+          }
+        }
+
+        PageContent += "</ol>";
+        PageContent += "</nav>";
+        PageContent += "<div style='margin-top: 20px;'>";
+        PageContent += "<h2>" + title + "</h2>";
+        PageContent +=
+          "<p style='margin-top: 20px; color: #666;'>此功能頁面尚未建立</p>";
+        PageContent += "</div>";
+        PageContent += "</div>";
+
+        PageContainer.html(PageContent);
+        document.title = "緊急醫療管理系統 - " + title;
+      }
+    </script>
+
+    <style>
+      .Wrapper.shrink .page-wrapper .nav-left .shrink-hidden {
+        display: none !important;
+      }
+      .Wrapper.mobile-unfold .page-wrapper .nav-left .shrink-hidden {
+        display: inherit !important;
+      }
+      .Wrapper .nav-left {
+        scrollbar-width: thin;
+      }
+      .PageSubCont {
+        background-color: #fff;
+        min-height: 100%;
+      }
+      .breadcrumb {
+        background-color: #f5f5f5;
+        padding: 15px;
+        border-radius: 4px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="Wrapper WrapperMax">
+      <!-- Nav Header -->
+      <nav class="Navbar nav-shadow">
+        <div class="pull-left">
+          <div class="nav-header">
+            <div class="logo-wrap inline-block">
+              <a href="javascript:void(0)" id="web-index">
+                <div class="nav-logo">
+                  <img
+                    class="brand-img"
+                    src="images/mohw.png"
+                    width="50"
+                    height="50"
+                  />
+                </div>
+                <div class="nav-title nav-title-pcmode">
+                  <span class="brand-text">衛生福利部 緊急醫療管理系統</span>
+                  <br />
+                  <span class="brand-sub-text"
+                    >Ministry Of Health And Welfare</span
+                  >
+                </div>
+              </a>
+            </div>
+          </div>
+          <a
+            href="javascript:void(0)"
+            class="inline-block"
+            onclick="ToggleLeftNav()"
+          >
+            <svg
+              class="a-s-fa-Ha-pa"
+              x="0px"
+              y="0px"
+              width="60px"
+              height="50px"
+              viewBox="0 0 20 20"
+              fill="#fff"
+            >
+              <rect x="3" y="9" width="6" height="0.7"></rect>
+              <rect x="3" y="11" width="6" height="0.7"></rect>
+              <rect x="3" y="13" width="6" height="0.7"></rect>
+            </svg>
+          </a>
+          <div class="clearfix"></div>
+        </div>
+        <div class="pull-mid">
+          <div class="nav-title-mid">
+            <span class="brand-sub-text"
+              >《客服資訊》上班時間(9時~18時)：(02)2655-1188分機319、739</span
+            ><br />
+            <span class="brand-sub-text">客服Mail：emsc.cs885@gmail.com</span>
+          </div>
+        </div>
+        <div class="pull-right">
+          <div class="btn-mobile-wrap">
+            <a href="javascript:void(0)" onclick="ToggleMobileTool()">
+              <svg
+                class="a-s-fa-Ha-pa"
+                x="0px"
+                y="0px"
+                width="30px"
+                height="52px"
+                viewBox="0 0 20 20"
+                fill="#fff"
+              >
+                <circle cx="10" cy="8" r="0.9"></circle>
+                <circle cx="10" cy="11" r="0.9"></circle>
+                <circle cx="10" cy="14" r="0.9"></circle>
+              </svg>
+            </a>
+          </div>
+          <div id="nav-btn-right" class="btn-wrap2 inline-block">
+            <ul class="nav navbar-right top-nav pull-right">
+              <li class="dropdown">
+                <a
+                  href="javascript:void(0)"
+                  class="dropdown-toggle"
+                  id="AccountInform"
+                  data-toggle="dropdown"
+                  aria-expanded="true"
+                >
+                  <i class="zmdi zmdi-account top-nav-icon"></i>
+                </a>
+                <ul
+                  class="dropdown-menu user-auth-dropdown"
+                  aria-labelledby="AccountInform"
+                >
+                  <li class="user-auth-inform">
+                    <a
+                      ><i class="fa fa-institution"></i
+                      ><span>單位：系統管理者</span></a
+                    >
+                    <a><i class="fa fa-lock"></i><span>帳號：DEMO</span></a>
+                    <a><i class="fa fa-user"></i><span>姓名：示範用戶</span></a>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+            <div class="clearfix"></div>
+          </div>
+        </div>
+      </nav>
+
+      <!-- Page Wrapper -->
+      <div class="page-wrapper">
+        <!-- Left Navigation -->
+        <div class="nav-left">
+          <ul class="nav nav-left-bar">
+            <li class="navigation-header">
+              <i class="zmdi zmdi-more"></i>
+            </li>
+
+            <!-- 戰情中心入口 -->
+            <li class="shrink-hidden">
+              <a
+                href="javascript:void(0)"
+                title="戰情中心入口"
+                onclick="location.reload()"
+              >
+                <div style="line-height: 20px">
+                  <span
+                    class="right-nav-text"
+                    style="font-size: 30px; font-weight: bold; color: #ffeb3b"
+                    >戰情中心入口</span
+                  >
+                </div>
+                <div class="clearfix"></div>
+              </a>
+            </li>
+
+            <!-- 事件通報管理 -->
+            <li>
+              <a
+                href="javascript:void(0);"
+                data-toggle="collapse"
+                data-target="#A"
+                data-level="1"
+                class="collapsed"
+                aria-expanded="false"
+              >
+                <div class="pull-left">
+                  <i class="zmdi zmdi-notifications-active mr-20"></i
+                  ><span class="right-nav-text">事件通報管理</span>
+                </div>
+                <div class="pull-right">
+                  <i class="zmdi zmdi-caret-down"></i>
+                </div>
+                <div class="clearfix"></div>
+              </a>
+              <ul id="A" class="collapse">
+                <!-- 緊急醫療救護通報 -->
+                <li>
+                  <a
+                    href="javascript:void(0);"
+                    data-toggle="collapse"
+                    data-target="#MEDA000"
+                    data-level="2"
+                    class="collapsed"
+                    aria-expanded="false"
+                  >
+                    - 緊急醫療救護通報
+                    <div class="pull-right">
+                      <i class="zmdi zmdi-caret-down"></i>
+                    </div>
+                    <div class="clearfix"></div>
+                  </a>
+                  <ul id="MEDA000" class="collapse collapse-level-2">
+                    <li>
+                      <span title="加入我的最愛">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="17px"
+                          height="17px"
+                          viewBox="0 0 836.908 836.908"
+                        >
+                          <g>
+                            <path
+                              d="M83.039,414.25l169.9,169.8l169.8,169.801c7.4,7.399,19.4,6.899,26.2-1c41.7-48.4,62.6-108.5,62.7-168.601l179.2-179.2l-129.5-129.499l-129.4-129.4l-179.2,179.2c-60.1,0-120.3,20.899-168.6,62.699C76.239,394.851,75.739,406.851,83.039,414.25z"
+                              fill="#5da12d"
+                            ></path>
+                            <path
+                              d="M22.039,835.95c25.3-7.9,67.6-21.1,100.9-32.3c11.3-3.8,21.5-10.101,29.9-18.5l116.9-116.9l-50.5-50.5l-50.5-50.5l-117,116.9c-8.4,8.399-14.7,18.6-18.5,29.899c-11.2,33.4-24.4,75.601-32.3,100.9C-3.361,828.95,8.039,840.351,22.039,835.95z"
+                              fill="#5da12d"
+                            ></path>
+                            <path
+                              d="M521.039,5.25c-7-7-18.3-7-25.3,0l-56,56c-7,7-7,18.301,0,25.301l155.3,155.3l155.301,155.3c7,7,18.3,7,25.3,0l56-56c7-7,7-18.3,0-25.3l-155.3-155.3L521.039,5.25z"
+                              fill="#5da12d"
+                            ></path>
+                          </g>
+                        </svg>
+                      </span>
+                      <a
+                        href="javascript:void(0)"
+                        id="MEDA100"
+                        data-level="3"
+                        onclick="WebPageToggle('緊急醫療救護傷患通報維護', '事件通報管理 > 緊急醫療救護通報 > 緊急醫療救護傷患通報維護')"
+                        >緊急醫療救護傷患通報維護</a
+                      >
+                    </li>
+                    <li>
+                      <span title="加入我的最愛">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="17px"
+                          height="17px"
+                          viewBox="0 0 836.908 836.908"
+                        >
+                          <g>
+                            <path
+                              d="M83.039,414.25l169.9,169.8l169.8,169.801c7.4,7.399,19.4,6.899,26.2-1c41.7-48.4,62.6-108.5,62.7-168.601l179.2-179.2l-129.5-129.499l-129.4-129.4l-179.2,179.2c-60.1,0-120.3,20.899-168.6,62.699C76.239,394.851,75.739,406.851,83.039,414.25z"
+                              fill="#5da12d"
+                            ></path>
+                            <path
+                              d="M22.039,835.95c25.3-7.9,67.6-21.1,100.9-32.3c11.3-3.8,21.5-10.101,29.9-18.5l116.9-116.9l-50.5-50.5l-50.5-50.5l-117,116.9c-8.4,8.399-14.7,18.6-18.5,29.899c-11.2,33.4-24.4,75.601-32.3,100.9C-3.361,828.95,8.039,840.351,22.039,835.95z"
+                              fill="#5da12d"
+                            ></path>
+                            <path
+                              d="M521.039,5.25c-7-7-18.3-7-25.3,0l-56,56c-7,7-7,18.301,0,25.301l155.3,155.3l155.301,155.3c7,7,18.3,7,25.3,0l56-56c7-7,7-18.3,0-25.3l-155.3-155.3L521.039,5.25z"
+                              fill="#5da12d"
+                            ></path>
+                          </g>
+                        </svg>
+                      </span>
+                      <a
+                        href="javascript:void(0)"
+                        id="MEDA300"
+                        data-level="3"
+                        onclick="WebPageToggle('重大災害事件傷病患查詢統計表', '事件通報管理 > 緊急醫療救護通報 > 重大災害事件傷病患查詢統計表')"
+                        >重大災害事件傷病患查詢統計表</a
+                      >
+                    </li>
+                  </ul>
+                </li>
+
+                <!-- 事件通報統計分析報表 -->
+                <li>
+                  <a
+                    href="javascript:void(0);"
+                    data-toggle="collapse"
+                    data-target="#MEDF000"
+                    data-level="2"
+                    class="collapsed"
+                    aria-expanded="false"
+                  >
+                    - 事件通報統計分析報表
+                    <div class="pull-right">
+                      <i class="zmdi zmdi-caret-down"></i>
+                    </div>
+                    <div class="clearfix"></div>
+                  </a>
+                  <ul id="MEDF000" class="collapse collapse-level-2">
+                    <li>
+                      <span title="加入我的最愛">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="17px"
+                          height="17px"
+                          viewBox="0 0 836.908 836.908"
+                        >
+                          <g>
+                            <path
+                              d="M83.039,414.25l169.9,169.8l169.8,169.801c7.4,7.399,19.4,6.899,26.2-1c41.7-48.4,62.6-108.5,62.7-168.601l179.2-179.2l-129.5-129.499l-129.4-129.4l-179.2,179.2c-60.1,0-120.3,20.899-168.6,62.699C76.239,394.851,75.739,406.851,83.039,414.25z"
+                              fill="#5da12d"
+                            ></path>
+                            <path
+                              d="M22.039,835.95c25.3-7.9,67.6-21.1,100.9-32.3c11.3-3.8,21.5-10.101,29.9-18.5l116.9-116.9l-50.5-50.5l-50.5-50.5l-117,116.9c-8.4,8.399-14.7,18.6-18.5,29.899c-11.2,33.4-24.4,75.601-32.3,100.9C-3.361,828.95,8.039,840.351,22.039,835.95z"
+                              fill="#5da12d"
+                            ></path>
+                            <path
+                              d="M521.039,5.25c-7-7-18.3-7-25.3,0l-56,56c-7,7-7,18.301,0,25.301l155.3,155.3l155.301,155.3c7,7,18.3,7,25.3,0l56-56c7-7,7-18.3,0-25.3l-155.3-155.3L521.039,5.25z"
+                              fill="#5da12d"
+                            ></path>
+                          </g>
+                        </svg>
+                      </span>
+                      <a
+                        href="javascript:void(0)"
+                        id="MEDA2100"
+                        data-level="3"
+                        onclick="WebPageToggle('災害事件分析表', '事件通報管理 > 事件通報統計分析報表 > 災害事件分析表')"
+                        >災害事件分析表</a
+                      >
+                    </li>
+                  </ul>
+                </li>
+              </ul>
+            </li>
+
+            <!-- REMOC管理 -->
+            <li>
+              <a
+                href="javascript:void(0);"
+                data-toggle="collapse"
+                data-target="#REMOC"
+                data-level="1"
+                class="collapsed"
+                aria-expanded="false"
+              >
+                <div class="pull-left">
+                  <i class="fa fa-medkit mr-20"></i
+                  ><span class="right-nav-text">REMOC管理</span>
+                </div>
+                <div class="pull-right">
+                  <i class="zmdi zmdi-caret-down"></i>
+                </div>
+                <div class="clearfix"></div>
+              </a>
+              <ul id="REMOC" class="collapse">
+                <!-- 事件通報與管理 -->
+                <li>
+                  <a
+                    href="javascript:void(0);"
+                    data-toggle="collapse"
+                    data-target="#REMOC1000"
+                    data-level="2"
+                    class="collapsed"
+                    aria-expanded="false"
+                  >
+                    - 事件通報與管理
+                    <div class="pull-right">
+                      <i class="zmdi zmdi-caret-down"></i>
+                    </div>
+                    <div class="clearfix"></div>
+                  </a>
+                  <ul id="REMOC1000" class="collapse collapse-level-2">
+                    <li>
+                      <span title="加入我的最愛">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="17px"
+                          height="17px"
+                          viewBox="0 0 836.908 836.908"
+                        >
+                          <g>
+                            <path
+                              d="M83.039,414.25l169.9,169.8l169.8,169.801c7.4,7.399,19.4,6.899,26.2-1c41.7-48.4,62.6-108.5,62.7-168.601l179.2-179.2l-129.5-129.499l-129.4-129.4l-179.2,179.2c-60.1,0-120.3,20.899-168.6,62.699C76.239,394.851,75.739,406.851,83.039,414.25z"
+                              fill="#5da12d"
+                            ></path>
+                            <path
+                              d="M22.039,835.95c25.3-7.9,67.6-21.1,100.9-32.3c11.3-3.8,21.5-10.101,29.9-18.5l116.9-116.9l-50.5-50.5l-50.5-50.5l-117,116.9c-8.4,8.399-14.7,18.6-18.5,29.899c-11.2,33.4-24.4,75.601-32.3,100.9C-3.361,828.95,8.039,840.351,22.039,835.95z"
+                              fill="#5da12d"
+                            ></path>
+                            <path
+                              d="M521.039,5.25c-7-7-18.3-7-25.3,0l-56,56c-7,7-7,18.301,0,25.301l155.3,155.3l155.301,155.3c7,7,18.3,7,25.3,0l56-56c7-7,7-18.3,0-25.3l-155.3-155.3L521.039,5.25z"
+                              fill="#5da12d"
+                            ></path>
+                          </g>
+                        </svg>
+                      </span>
+                      <a
+                        href="javascript:void(0)"
+                        id="REMOC1100"
+                        data-level="3"
+                        onclick="WebPageToggle('事件監看紀錄登錄', 'REMOC管理 > 事件通報與管理 > 事件監看紀錄登錄')"
+                        >事件監看紀錄登錄</a
+                      >
+                    </li>
+                    <li>
+                      <span title="加入我的最愛">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="17px"
+                          height="17px"
+                          viewBox="0 0 836.908 836.908"
+                        >
+                          <g>
+                            <path
+                              d="M83.039,414.25l169.9,169.8l169.8,169.801c7.4,7.399,19.4,6.899,26.2-1c41.7-48.4,62.6-108.5,62.7-168.601l179.2-179.2l-129.5-129.499l-129.4-129.4l-179.2,179.2c-60.1,0-120.3,20.899-168.6,62.699C76.239,394.851,75.739,406.851,83.039,414.25z"
+                              fill="#5da12d"
+                            ></path>
+                            <path
+                              d="M22.039,835.95c25.3-7.9,67.6-21.1,100.9-32.3c11.3-3.8,21.5-10.101,29.9-18.5l116.9-116.9l-50.5-50.5l-50.5-50.5l-117,116.9c-8.4,8.399-14.7,18.6-18.5,29.899c-11.2,33.4-24.4,75.601-32.3,100.9C-3.361,828.95,8.039,840.351,22.039,835.95z"
+                              fill="#5da12d"
+                            ></path>
+                            <path
+                              d="M521.039,5.25c-7-7-18.3-7-25.3,0l-56,56c-7,7-7,18.301,0,25.301l155.3,155.3l155.301,155.3c7,7,18.3,7,25.3,0l56-56c7-7,7-18.3,0-25.3l-155.3-155.3L521.039,5.25z"
+                              fill="#5da12d"
+                            ></path>
+                          </g>
+                        </svg>
+                      </span>
+                      <a
+                        href="javascript:void(0)"
+                        id="REMOC1200"
+                        data-level="3"
+                        onclick="WebPageToggle('活動預定規劃', 'REMOC管理 > 事件通報與管理 > 活動預定規劃')"
+                        >活動預定規劃</a
+                      >
+                    </li>
+                    <li>
+                      <span title="加入我的最愛">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="17px"
+                          height="17px"
+                          viewBox="0 0 836.908 836.908"
+                        >
+                          <g>
+                            <path
+                              d="M83.039,414.25l169.9,169.8l169.8,169.801c7.4,7.399,19.4,6.899,26.2-1c41.7-48.4,62.6-108.5,62.7-168.601l179.2-179.2l-129.5-129.499l-129.4-129.4l-179.2,179.2c-60.1,0-120.3,20.899-168.6,62.699C76.239,394.851,75.739,406.851,83.039,414.25z"
+                              fill="#5da12d"
+                            ></path>
+                            <path
+                              d="M22.039,835.95c25.3-7.9,67.6-21.1,100.9-32.3c11.3-3.8,21.5-10.101,29.9-18.5l116.9-116.9l-50.5-50.5l-50.5-50.5l-117,116.9c-8.4,8.399-14.7,18.6-18.5,29.899c-11.2,33.4-24.4,75.601-32.3,100.9C-3.361,828.95,8.039,840.351,22.039,835.95z"
+                              fill="#5da12d"
+                            ></path>
+                            <path
+                              d="M521.039,5.25c-7-7-18.3-7-25.3,0l-56,56c-7,7-7,18.301,0,25.301l155.3,155.3l155.301,155.3c7,7,18.3,7,25.3,0l56-56c7-7,7-18.3,0-25.3l-155.3-155.3L521.039,5.25z"
+                              fill="#5da12d"
+                            ></path>
+                          </g>
+                        </svg>
+                      </span>
+                      <a
+                        href="javascript:void(0)"
+                        id="REMOC1300"
+                        data-level="3"
+                        onclick="WebPageToggle('統計分析報表', 'REMOC管理 > 事件通報與管理 > 統計分析報表')"
+                        >統計分析報表</a
+                      >
+                    </li>
+                  </ul>
+                </li>
+
+                <!-- 資產管理 -->
+                <li>
+                  <a
+                    href="javascript:void(0);"
+                    data-toggle="collapse"
+                    data-target="#REMOC2000"
+                    data-level="2"
+                    class="collapsed"
+                    aria-expanded="false"
+                  >
+                    - 資產管理
+                    <div class="pull-right">
+                      <i class="zmdi zmdi-caret-down"></i>
+                    </div>
+                    <div class="clearfix"></div>
+                  </a>
+                  <ul id="REMOC2000" class="collapse collapse-level-2">
+                    <li>
+                      <span title="加入我的最愛">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="17px"
+                          height="17px"
+                          viewBox="0 0 836.908 836.908"
+                        >
+                          <g>
+                            <path
+                              d="M83.039,414.25l169.9,169.8l169.8,169.801c7.4,7.399,19.4,6.899,26.2-1c41.7-48.4,62.6-108.5,62.7-168.601l179.2-179.2l-129.5-129.499l-129.4-129.4l-179.2,179.2c-60.1,0-120.3,20.899-168.6,62.699C76.239,394.851,75.739,406.851,83.039,414.25z"
+                              fill="#5da12d"
+                            ></path>
+                            <path
+                              d="M22.039,835.95c25.3-7.9,67.6-21.1,100.9-32.3c11.3-3.8,21.5-10.101,29.9-18.5l116.9-116.9l-50.5-50.5l-50.5-50.5l-117,116.9c-8.4,8.399-14.7,18.6-18.5,29.899c-11.2,33.4-24.4,75.601-32.3,100.9C-3.361,828.95,8.039,840.351,22.039,835.95z"
+                              fill="#5da12d"
+                            ></path>
+                            <path
+                              d="M521.039,5.25c-7-7-18.3-7-25.3,0l-56,56c-7,7-7,18.301,0,25.301l155.3,155.3l155.301,155.3c7,7,18.3,7,25.3,0l56-56c7-7,7-18.3,0-25.3l-155.3-155.3L521.039,5.25z"
+                              fill="#5da12d"
+                            ></path>
+                          </g>
+                        </svg>
+                      </span>
+                      <a
+                        href="javascript:void(0)"
+                        id="REMOC2100"
+                        data-level="3"
+                        onclick="WebPageToggle('REMOC資產維護', 'REMOC管理 > 資產管理 > REMOC資產維護')"
+                        >REMOC資產維護</a
+                      >
+                    </li>
+                  </ul>
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Main Content -->
+        <div class="wrapper-content">
+          <div class="page-content" id="PageContent">
+            <div
+              class="PageSubCont FocusPage"
+              style="padding: 50px; text-align: center"
+            >
+              <h1 style="color: #004ca8; margin-bottom: 30px">
+                <i
+                  class="zmdi zmdi-hospital"
+                  style="font-size: 48px; display: block; margin-bottom: 20px"
+                ></i>
+                歡迎使用緊急醫療管理系統
+              </h1>
+              <p style="font-size: 18px; color: #666; margin-bottom: 20px">
+                Ministry Of Health And Welfare - Emergency Medical System
+              </p>
+              <hr
+                style="
+                  width: 50%;
+                  margin: 30px auto;
+                  border-top: 2px solid #004ca8;
+                "
+              />
+              <div
+                style="
+                  margin-top: 40px;
+                  text-align: left;
+                  max-width: 600px;
+                  margin-left: auto;
+                  margin-right: auto;
+                "
+              >
+                <h3 style="color: #004ca8; margin-bottom: 20px">
+                  <i class="fa fa-info-circle"></i> 系統說明
+                </h3>
+                <ul style="line-height: 2; color: #555">
+                  <li>請從左側選單選擇您要使用的功能</li>
+                  <li>點擊選單項目即可開啟對應的功能頁面</li>
+                  <li>使用漢堡選單按鈕可以收合/展開側邊選單</li>
+                </ul>
+              </div>
+              <div
+                style="
+                  margin-top: 50px;
+                  padding: 20px;
+                  background-color: #f5f5f5;
+                  border-radius: 8px;
+                  max-width: 600px;
+                  margin-left: auto;
+                  margin-right: auto;
+                "
+              >
+                <h4 style="color: #004ca8; margin-bottom: 15px">
+                  <i class="fa fa-phone"></i> 客服資訊
+                </h4>
+                <p style="color: #555; margin-bottom: 5px">
+                  上班時間：9時~18時
+                </p>
+                <p style="color: #555; margin-bottom: 5px">
+                  電話：(02)2655-1188 分機319、739
+                </p>
+                <p style="color: #555">Email：emsc.cs885@gmail.com</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

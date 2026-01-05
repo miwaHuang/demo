@@ -1,0 +1,89 @@
+﻿svg:not(:root) {
+    overflow: hidden;
+}
+#FAQForm .qa_area {
+    width: 100%;
+    margin-top: -1px;
+}
+#FAQForm .qa_area .q_box {
+    width: 100%;
+    padding: 10px 0;
+    /*border-bottom: 1px solid #b4b4b4;*/
+    border-top: 1px solid #b4b4b4;
+    overflow: hidden;
+    color: #333;
+    cursor: pointer;
+}
+#FAQForm .qa_area .q_box .q_box_center {
+    width: calc(100% - 20px);
+    margin: 0 auto;
+    overflow: hidden;
+}
+#FAQForm .qa_area .a_box {
+    width: 100%;
+    overflow: hidden;
+    max-height: 0;
+    overflow: hidden;
+    color: #888;
+    background: #f8f8f8;
+    transition: .5s;
+    /*color: #fff;
+    background: #1d4361;*/
+}
+#FAQForm .qa_area .a_box .a_box_center {
+    width: calc(100% - 20px);
+    padding: 10px 0;
+    margin: 0 auto;
+    overflow: hidden;
+}
+#FAQForm .qa_area .left_icon {
+    width: 35px;
+    height: 35px;
+    float: left;
+}
+#FAQForm .qa_area .right_arrow {
+    width: 35px;
+    height: 35px;
+    float: right;
+    transform: rotate(0deg);
+    transition: .5s;
+}
+#FAQForm .qa_area .right_word {
+    width: calc(100% - 100px);
+    margin: 0 0 0 20px;
+    float: left;
+}
+#FAQForm .qa_area .right_word p {
+    margin: 8px 0;
+    line-height: 170%;
+    font-size: 15px;
+    letter-spacing: 1px;
+    /*font-weight: 700;*/
+}
+
+#FAQForm .qa_area.open .right_arrow {
+    transform: rotate(180deg);
+    transition: .5s;
+}
+#FAQForm .qa_area.close .right_arrow {
+    transform: rotate(0deg);
+    transition: .5s;
+}
+#FAQForm .qa_area.open .a_box {
+    max-height: 1000px;
+    transition: 1s;
+}
+#FAQForm .qa_area.close .a_box {
+    max-height: 0;
+    transition: 1s;
+}
+
+#FAQForm .close {
+    float: right;
+    font-size: 21px;
+    font-weight:700;
+    line-height: 1;
+    color: #000;
+    text-shadow: 0 1px 0 #fff;
+    opacity: 1; 
+}

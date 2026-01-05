@@ -1,0 +1,145 @@
+﻿.EMSTalkContainer {
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+    .EMSTalkContainer .EMSTalkContent {
+        width: 100%;
+        height: 100%;
+        padding: 0 0px;
+        margin: 0 auto;
+    }
+
+        .EMSTalkContainer .EMSTalkContent .EMSTalkTitle {
+            width: 100%;
+            height: 35px;
+            line-height: 35px;
+            border-bottom: 1px solid #ccc;
+            position: relative;
+            color: #999;
+            letter-spacing: 1px;
+            font-weight: bold;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            border-bottom: 1px solid #dedede;
+            background: #093959;
+            color: wheat;
+            padding: 0 10px;
+            border-radius: 5px;
+        }
+
+        .EMSTalkContainer .EMSTalkContent .EMSTalkScrollCont {
+            width: 100%;
+            height: 280px;
+            position: relative;
+            overflow: auto;
+        }
+
+        .EMSTalkContainer .EMSTalkContent .EMTTalkSendBox {
+            width: 100%;
+            margin: 0px auto 0 auto;
+            border-top: 1px solid #ccc;
+            overflow: hidden;
+            position: relative;
+            bottom: 0;
+            right: -1px;
+            background: #fff;
+        }
+
+            .EMSTalkContainer .EMSTalkContent .EMTTalkSendBox .TalkInput {
+                float: left;
+                /*width: calc(100% - 100px - 40px - 20px);*/
+                width: calc(100% - 80px);
+                min-width: 125px;
+                /*margin: 15px 0 15px 0;*/
+            }
+
+                .EMSTalkContainer .EMSTalkContent .EMTTalkSendBox .TalkInput textarea {
+                    width: 100%;
+                    border: none;
+                    height: 70px;
+                    resize: none;
+                }
+
+            .EMSTalkContainer .EMSTalkContent .EMTTalkSendBox .TalkTool {
+                float: right;
+                width: 80px;
+                margin: 15px 0 15px 0;
+            }
+
+        .EMSTalkContainer .EMSTalkContent .EMSTalkScrollCont .EMSTalkMessages {
+            width: 100%;
+            height: auto;
+            position: absolute;
+            top: 0;
+            left: 0;
+            padding-top: 8px;
+        }
+
+            .EMSTalkContainer .EMSTalkContent .EMSTalkScrollCont .EMSTalkMessages .EMSTalkMessageBoxCont {
+                width: 100%;
+                overflow: hidden;
+            }
+
+
+                .EMSTalkContainer .EMSTalkContent .EMSTalkScrollCont .EMSTalkMessages .EMSTalkMessageBoxCont .EMSTalkMessageBox {
+                    width: 60%;
+                    min-width: 175px;
+                    border: 1px solid #ccc;
+                    border-radius: 5px;
+                    padding: 8px;
+                    position: relative;
+                    background: white;
+                }
+
+                    .EMSTalkContainer .EMSTalkContent .EMSTalkScrollCont .EMSTalkMessages .EMSTalkMessageBoxCont .EMSTalkMessageBox .TalkSvg {
+                        width: 40px;
+                        height: 40px;
+                        position: absolute;
+                        bottom: -39px;
+                    }
+
+                    .EMSTalkContainer .EMSTalkContent .EMSTalkScrollCont .EMSTalkMessages .EMSTalkMessageBoxCont .EMSTalkMessageBox.TalkLeft .TalkSvg {
+                        left: 10px;
+                    }
+
+                    .EMSTalkContainer .EMSTalkContent .EMSTalkScrollCont .EMSTalkMessages .EMSTalkMessageBoxCont .EMSTalkMessageBox.TalkRight .TalkSvg {
+                        right: 10px;
+                        transform: scaleX(-1);
+                    }
+
+                    .EMSTalkContainer .EMSTalkContent .EMSTalkScrollCont .EMSTalkMessages .EMSTalkMessageBoxCont .EMSTalkMessageBox.TalkRight {
+                        margin: 0 15px 30px 0;
+                        float: right;
+                    }
+
+                    .EMSTalkContainer .EMSTalkContent .EMSTalkScrollCont .EMSTalkMessages .EMSTalkMessageBoxCont .EMSTalkMessageBox.TalkLeft {
+                        margin: 0 0 35px 30px;
+                        float: left;
+                    }
+
+                    .EMSTalkContainer .EMSTalkContent .EMSTalkScrollCont .EMSTalkMessages .EMSTalkMessageBoxCont .EMSTalkMessageBox .MessageWords {
+                        letter-spacing: 1px;
+                        color: #999;
+                        font-size: 14px;
+                    }
+
+                        .EMSTalkContainer .EMSTalkContent .EMSTalkScrollCont .EMSTalkMessages .EMSTalkMessageBoxCont .EMSTalkMessageBox .MessageWords .TimeWord {
+                            color: #000;
+                        }
+
+                            .EMSTalkContainer .EMSTalkContent .EMSTalkScrollCont .EMSTalkMessages .EMSTalkMessageBoxCont .EMSTalkMessageBox .MessageWords .TimeWord .TimeWordName {
+                                font-size: 12px;
+                            }
+
+                            .EMSTalkContainer .EMSTalkContent .EMSTalkScrollCont .EMSTalkMessages .EMSTalkMessageBoxCont .EMSTalkMessageBox .MessageWords .TimeWord .TimeWordTime {
+                                font-size: 10px;
+                            }
+
+                        .EMSTalkContainer .EMSTalkContent .EMSTalkScrollCont .EMSTalkMessages .EMSTalkMessageBoxCont .EMSTalkMessageBox .MessageWords .Words {
+                            white-space: pre-line;
+                            word-break: break-all;
+                            font-size: 12px;
+                        }
