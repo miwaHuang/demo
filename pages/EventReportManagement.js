@@ -3,6 +3,23 @@
 const EventReportManagementPage = {
   // 生成 HTML 內容
   getContent: function () {
+    // 檢查依賴項是否存在
+    if (typeof CommonDataUtils === 'undefined') {
+      return '<div class="alert alert-danger">錯誤：CommonDataUtils 未定義</div>';
+    }
+    if (typeof DisasterData === 'undefined') {
+      return '<div class="alert alert-danger">錯誤：DisasterData 未定義</div>';
+    }
+    if (typeof CountyData === 'undefined') {
+      return '<div class="alert alert-danger">錯誤：CountyData 未定義</div>';
+    }
+    if (typeof REMOCData === 'undefined') {
+      return '<div class="alert alert-danger">錯誤：REMOCData 未定義</div>';
+    }
+    if (typeof ButtonComponent === 'undefined') {
+      return '<div class="alert alert-danger">錯誤：ButtonComponent 未定義</div>';
+    }
+
     const timestamp = Date.now();
     const formId = `FormSearch`;
     const tableId = `EventReportTable${timestamp}`;
@@ -1307,39 +1324,60 @@ const EventReportManagementPage = {
     $("#Q_HAPPEN_TIME_E").val(formatDate(today));
   },
 
+  // 動態載入 EventReportForm
+  loadEventReportForm: function(callback) {
+    if (typeof EventReportForm !== 'undefined') {
+      // 已載入，直接執行回調
+      if (callback) callback();
+      return;
+    }
+    
+    // 動態載入 EventReportForm.js
+    const script = document.createElement('script');
+    script.src = 'pages/EventReportForm.js';
+    script.onload = function() {
+      if (callback) callback();
+    };
+    script.onerror = function() {
+      $.messager.alert('錯誤', '無法載入事件表單元件', 'error');
+    };
+    document.head.appendChild(script);
+  },
+
   // CRUD 操作
   addRecord: function () {
-    alert(
-      "新增傷患通報功能（待實作）\n\n此功能將開啟新增視窗，輸入傷患詳細資料。"
-    );
+    // 載入 EventReportForm.js 並顯示新增表單
+    this.loadEventReportForm(() => {
+      EventReportForm.show('add');
+    });
   },
 
   editRecord: function () {
     const $table = $(`#${this.tableId}`);
     const selected = $table.datagrid("getSelected");
-    if (selected) {
-      alert(
-        "修改傷患通報\n\n災害名稱：" +
-          selected.DISASTER_NAME +
-          "\n災害編號：" +
-          selected.DISASTER_NO_LABEL
-      );
+    if (!selected) {
+      $.messager.alert('提示', '請先選擇要編輯的記錄！', 'warning');
+      return;
     }
+    
+    // 載入 EventReportForm.js 並顯示編輯表單
+    this.loadEventReportForm(() => {
+      EventReportForm.show('edit', selected);
+    });
   },
 
   viewRecord: function () {
     const $table = $(`#${this.tableId}`);
     const selected = $table.datagrid("getSelected");
-    if (selected) {
-      alert(
-        "檢視傷患通報\n\n災害名稱：" +
-          selected.DISASTER_NAME +
-          "\n災害編號：" +
-          selected.DISASTER_NO_LABEL +
-          "\n傷患人數：" +
-          selected.PATIENT_COUNT
-      );
+    if (!selected) {
+      $.messager.alert('提示', '請先選擇要檢視的記錄！', 'warning');
+      return;
     }
+    
+    // 載入 EventReportForm.js 並顯示檢視表單
+    this.loadEventReportForm(() => {
+      EventReportForm.show('view', selected);
+    });
   },
 
   deleteRecord: function () {
