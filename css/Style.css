@@ -1869,3 +1869,16 @@
 .home_fieldsetContent {
   padding: 5px 10px 5px 10px;
 }
+
+/* DataGrid 行號列寬度設置 */
+.datagrid-header .datagrid-header-rownumber,
+.datagrid-body .datagrid-td-rownumber {
+  width: 40px !important;
+  min-width: 40px !important;
+}
+
+.datagrid-header .datagrid-header-rownumber .datagrid-cell,
+.datagrid-body .datagrid-cell-rownumber {
+  width: 40px !important;
+  text-align: center !important;
+}

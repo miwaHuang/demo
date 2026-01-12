@@ -59,7 +59,7 @@ const EventReportManagementPage = {
                           <select class="form-control" id="Q_REGION" name="Q_REGION">
                             <option value="">全部</option>
                             ${CommonDataUtils.generateOptions(
-                              CountyData.counties,
+                              REMOCData.remocInfo,
                               false
                             )}
                           </select>
@@ -250,7 +250,6 @@ const EventReportManagementPage = {
     const $content = $("#EventReportManagementContent");
     const $form = $content.find("form");
     const $table = $(`#${this.tableId}`);
-    console.log("表格ID:", this.tableId, "找到表格元素:", $table.length > 0);
 
     // 收集查詢條件
     const formData = {};
@@ -284,8 +283,6 @@ const EventReportManagementPage = {
 
     // 模擬查詢資料（實際應該是 AJAX 呼叫）
     const sampleData = this.generateSampleData();
-    console.log("生成範例資料:", sampleData.length, "筆");
-    console.log("範例資料內容:", sampleData);
 
     // 儲存資料到實例變數中
     this.allData = sampleData;
@@ -307,7 +304,6 @@ const EventReportManagementPage = {
     // 初始化或重新載入 DataGrid
     if ($table.data("datagrid")) {
       // 已存在，重新載入資料
-      console.log("重新載入資料到現有DataGrid");
       $table.datagrid("loadData", {
         total: sampleData.length,
         rows: sampleData.slice(0, 20),
@@ -322,7 +318,6 @@ const EventReportManagementPage = {
       });
     } else {
       // 首次初始化
-      console.log("初始化新的DataGrid");
       $table.datagrid({
         data: {
           total: sampleData.length,
@@ -340,21 +335,21 @@ const EventReportManagementPage = {
             {
               field: "REGION",
               title: "區域",
-              width: 80,
+              width: 50,
               align: "center",
               rowspan: 2,
             },
             {
               field: "COUNTY_LABEL",
               title: "發生地",
-              width: 80,
+              width: 60,
               align: "center",
               rowspan: 2,
             },
             {
               field: "HAPPEN_TIME_LABEL",
               title: "發生日期",
-              width: 140,
+              width: 100,
               align: "center",
               rowspan: 2,
             },
@@ -464,18 +459,26 @@ const EventReportManagementPage = {
           $("#btnEdit, #btnView, #btnDelete").prop("disabled", true);
         },
         onLoadSuccess: function (data) {
-          const opts = $table.datagrid("options");
-          const totalRows = data.total || 0;
-          const currentPage = opts.pageNumber || 1;
-          const pageSize = opts.pageSize || 20;
-          const actualRows = data.rows ? data.rows.length : 0;
-
-          console.log(
-            `DataGrid 載入成功 - 第${currentPage}頁，每頁${pageSize}筆，實際載入${actualRows}筆，總共${totalRows}筆`
-          );
-
           // 停用編輯相關按鈕
           $("#btnEdit, #btnView, #btnDelete").prop("disabled", true);
+
+          // 設置行號列標題為"項次"
+          setTimeout(() => {
+            const $panel = $table.datagrid("getPanel");
+            const $headerRownumber = $panel
+              .find(".datagrid-header .datagrid-header-rownumber")
+              .first();
+
+            if ($headerRownumber.length > 0) {
+              const $cell = $headerRownumber.find(".datagrid-cell").first();
+              const $target = $cell.length > 0 ? $cell : $headerRownumber;
+
+              $target.empty().text("項次").css({
+                "text-align": "center",
+                "font-weight": "normal",
+              });
+            }
+          }, 50);
         },
         onBeforeLoad: function (param) {
           console.log("準備載入分頁資料，參數:", param);
