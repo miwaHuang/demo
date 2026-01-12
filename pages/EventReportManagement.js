@@ -307,11 +307,27 @@ const EventReportManagementPage = {
     // 初始化或重新載入 DataGrid
     if ($table.data("datagrid")) {
       // 已存在，重新載入資料
-      $table.datagrid("loadData", sampleData);
+      console.log("重新載入資料到現有DataGrid");
+      $table.datagrid("loadData", {
+        total: sampleData.length,
+        rows: sampleData.slice(0, 20),
+      });
+
+      // 更新分頁器
+      const pager = $table.datagrid("getPager");
+      pager.pagination({
+        total: sampleData.length,
+        pageNumber: 1,
+        pageSize: 20,
+      });
     } else {
       // 首次初始化
+      console.log("初始化新的DataGrid");
       $table.datagrid({
-        data: sampleData,
+        data: {
+          total: sampleData.length,
+          rows: sampleData.slice(0, 20),
+        },
         fit: true,
         fitColumns: false,
         singleSelect: true,
@@ -321,24 +337,6 @@ const EventReportManagementPage = {
         pageList: [10, 20, 30, 50],
         columns: [
           [
-            {
-              field: "rowNumber",
-              title: "項次",
-              width: 60,
-              align: "center",
-              rowspan: 2,
-              formatter: function (value, row, index) {
-                var panel = $table.datagrid("getPanel");
-                var pager = panel.find("div.datagrid-pager");
-                var pageNumber = 1;
-                var pageSize = 20;
-                if (pager.length) {
-                  pageNumber = pager.pagination("options").pageNumber || 1;
-                  pageSize = pager.pagination("options").pageSize || 20;
-                }
-                return (pageNumber - 1) * pageSize + index + 1;
-              },
-            },
             {
               field: "REGION",
               title: "區域",
@@ -466,10 +464,125 @@ const EventReportManagementPage = {
           $("#btnEdit, #btnView, #btnDelete").prop("disabled", true);
         },
         onLoadSuccess: function (data) {
-          console.log("DataGrid 載入成功，共 " + data.length + " 筆資料");
+          const opts = $table.datagrid("options");
+          const totalRows = data.total || 0;
+          const currentPage = opts.pageNumber || 1;
+          const pageSize = opts.pageSize || 20;
+          const actualRows = data.rows ? data.rows.length : 0;
+
+          console.log(
+            `DataGrid 載入成功 - 第${currentPage}頁，每頁${pageSize}筆，實際載入${actualRows}筆，總共${totalRows}筆`
+          );
+
+          // 停用編輯相關按鈕
+          $("#btnEdit, #btnView, #btnDelete").prop("disabled", true);
+        },
+        onBeforeLoad: function (param) {
+          console.log("準備載入分頁資料，參數:", param);
+
+          // 攔截分頁參數並手動處理資料載入
+          if (EventReportManagementPage.allData && param.page && param.rows) {
+            const allData = EventReportManagementPage.allData;
+            const pageNumber = param.page;
+            const pageSize = param.rows;
+
+            // 計算分頁資料
+            const start = (pageNumber - 1) * pageSize;
+            const end = start + pageSize;
+            const pageData = allData.slice(start, end);
+
+            console.log(
+              `onBeforeLoad處理 - 第${pageNumber}頁，每頁${pageSize}筆，從第${
+                start + 1
+              }筆到第${Math.min(end, allData.length)}筆，實際載入${
+                pageData.length
+              }筆`
+            );
+
+            // 阻止預設的載入行為並載入我們的資料
+            setTimeout(() => {
+              $table.datagrid("loadData", {
+                total: allData.length,
+                rows: pageData,
+              });
+            }, 0);
+
+            return false; // 阻止預設載入
+          }
+        },
+        onChangePageSize: function (pageSize) {
+          console.log(`更改每頁筆數為: ${pageSize}`);
+          const table = $(this);
+          const allData = EventReportManagementPage.allData || [];
+
+          // 計算新的資料
+          const newData = {
+            total: allData.length,
+            rows: allData.slice(0, pageSize),
+          };
+
+          console.log(
+            `載入資料 - 總共${allData.length}筆，顯示前${pageSize}筆，實際載入${newData.rows.length}筆`
+          );
+
+          // 載入新資料
+          table.datagrid("loadData", newData);
+
+          // 手動重置分頁器到第一頁
+          setTimeout(() => {
+            const pager = table.datagrid("getPager");
+            pager.pagination({
+              total: allData.length,
+              pageNumber: 1,
+              pageSize: pageSize,
+            });
+          }, 100);
+        },
+        onSelectPage: function (pageNumber, pageSize) {
+          console.log(`切換到第 ${pageNumber} 頁，每頁 ${pageSize} 筆`);
+          const table = $(this);
+          const allData = EventReportManagementPage.allData || [];
+
+          // 計算起始和結束位置
+          const start = (pageNumber - 1) * pageSize;
+          const end = start + pageSize;
+          const pageData = allData.slice(start, end);
+
+          const newData = {
+            total: allData.length,
+            rows: pageData,
+          };
+
+          console.log(
+            `載入第${pageNumber}頁資料 - 從第${start + 1}筆到第${Math.min(
+              end,
+              allData.length
+            )}筆，實際載入${pageData.length}筆`
+          );
+
+          // 載入分頁資料
+          table.datagrid("loadData", newData);
         },
       });
     }
+  },
+
+  // 手動處理分頁資料
+  getPagedData: function (allData, pageNumber, pageSize) {
+    const start = (pageNumber - 1) * pageSize;
+    const end = start + pageSize;
+    const pagedData = allData.slice(start, end);
+
+    console.log(
+      `getPagedData: 第${pageNumber}頁, 每頁${pageSize}筆, 取第${
+        start + 1
+      }-${Math.min(end, allData.length)}筆, 實際傳回${pagedData.length}筆`
+    );
+
+    return {
+      total: allData.length,
+      rows: pagedData,
+    };
   },
 
   // 生成範例資料
