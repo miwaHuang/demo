@@ -5,7 +5,6 @@
 const DepartmentData = {
   // 開案單位類別
   deptTypes: [
-    { code: "", name: "請選擇" },
     { code: "01", name: "消防機關" },
     { code: "02", name: "衛生機關" },
     { code: "03", name: "醫療機構" },
@@ -16,7 +15,6 @@ const DepartmentData = {
   departments: {
     "01": [
       // 消防機關
-      { code: "", name: "請選擇" },
       { code: "0101", name: "台北市消防局" },
       { code: "0102", name: "新北市消防局" },
       { code: "0103", name: "桃園市消防局" },
@@ -42,7 +40,6 @@ const DepartmentData = {
     ],
     "02": [
       // 衛生機關
-      { code: "", name: "請選擇" },
       { code: "0201", name: "台北市衛生局" },
       { code: "0202", name: "新北市衛生局" },
       { code: "0203", name: "桃園市衛生局" },
@@ -68,7 +65,6 @@ const DepartmentData = {
     ],
     "03": [
       // 醫療機構
-      { code: "", name: "請選擇" },
       { code: "0301", name: "台大醫院" },
       { code: "0302", name: "台北榮民總醫院" },
       { code: "0303", name: "三軍總醫院" },
@@ -87,7 +83,6 @@ const DepartmentData = {
     ],
     "04": [
       // 民間救護團體
-      { code: "", name: "請選擇" },
       { code: "0401", name: "中華民國紅十字會總會" },
       { code: "0402", name: "慈濟基金會" },
       { code: "0403", name: "中華民國消防協會" },
@@ -99,37 +94,92 @@ const DepartmentData = {
 // ==================== 縣市資料 ====================
 const CountyData = {
   counties: [
-    { code: "", name: "請選擇" },
+    { code: "11", name: "基隆市" },
+    { code: "31", name: "新北市" },
     { code: "01", name: "台北市" },
-    { code: "02", name: "新北市" },
-    { code: "03", name: "桃園市" },
-    { code: "04", name: "台中市" },
+    { code: "32", name: "桃園市" },
+    { code: "33", name: "新竹縣" },
+    { code: "12", name: "新竹市" },
+    { code: "35", name: "苗栗縣" },
+    { code: "03", name: "台中市" },
+    { code: "37", name: "彰化縣" },
+    { code: "38", name: "南投縣" },
+    { code: "39", name: "雲林縣" },
+    { code: "40", name: "嘉義縣" },
+    { code: "22", name: "嘉義市" },
     { code: "05", name: "台南市" },
-    { code: "06", name: "高雄市" },
-    { code: "07", name: "基隆市" },
-    { code: "08", name: "新竹市" },
-    { code: "09", name: "嘉義市" },
-    { code: "10", name: "新竹縣" },
-    { code: "11", name: "苗栗縣" },
-    { code: "12", name: "彰化縣" },
-    { code: "13", name: "南投縣" },
-    { code: "14", name: "雲林縣" },
-    { code: "15", name: "嘉義縣" },
-    { code: "16", name: "屏東縣" },
-    { code: "17", name: "宜蘭縣" },
-    { code: "18", name: "花蓮縣" },
-    { code: "19", name: "台東縣" },
-    { code: "20", name: "澎湖縣" },
-    { code: "21", name: "金門縣" },
-    { code: "22", name: "連江縣" },
+    { code: "07", name: "高雄市" },
+    { code: "43", name: "屏東縣" },
+    { code: "34", name: "宜蘭縣" },
+    { code: "45", name: "花蓮縣" },
+    { code: "46", name: "台東縣" },
+    { code: "44", name: "澎湖縣" },
+    { code: "91", name: "連江縣" },
+    { code: "90", name: "金門縣" },
   ],
+};
+
+// ==================== 區域資料 ====================
+const RegionalData = {
+  // 區域列表
+  regions: [
+    { code: "01", name: "台北區" },
+    { code: "02", name: "北區" },
+    { code: "03", name: "中區" },
+    { code: "04", name: "南區" },
+    { code: "05", name: "高屏區" },
+    { code: "06", name: "東區" },
+  ],
+
+  // 區域縣市對應
+  countyByRegion: {
+    "01": [
+      // 台北區
+      { code: "11", name: "基隆市" },
+      { code: "31", name: "新北市" },
+      { code: "01", name: "台北市" },
+      { code: "34", name: "宜蘭縣" },
+      { code: "91", name: "連江縣" },
+      { code: "90", name: "金門縣" },
+    ],
+    "02": [
+      // 北區
+      { code: "32", name: "桃園市" },
+      { code: "33", name: "新竹縣" },
+      { code: "12", name: "新竹市" },
+      { code: "35", name: "苗栗縣" },
+    ],
+    "03": [
+      // 中區
+      { code: "03", name: "台中市" },
+      { code: "37", name: "彰化縣" },
+      { code: "38", name: "南投縣" },
+    ],
+    "04": [
+      // 南區
+      { code: "39", name: "雲林縣" },
+      { code: "40", name: "嘉義縣" },
+      { code: "22", name: "嘉義市" },
+      { code: "05", name: "台南市" },
+    ],
+    "05": [
+      // 高屏區
+      { code: "07", name: "高雄市" },
+      { code: "43", name: "屏東縣" },
+      { code: "44", name: "澎湖縣" },
+    ],
+    "06": [
+      // 東區
+      { code: "45", name: "花蓮縣" },
+      { code: "46", name: "台東縣" },
+    ],
+  },
 };
 
 // ==================== 災害資料 ====================
 const DisasterData = {
   // 災害屬性
   disasterTypeAttr: [
-    { code: "", name: "請選擇" },
     { code: "A", name: "天然災害" },
     { code: "B", name: "人為災害" },
   ],
@@ -138,7 +188,6 @@ const DisasterData = {
   disasterType: {
     A: [
       // 天然災害
-      { code: "", name: "請選擇" },
       { code: "E", name: "地震" },
       { code: "R", name: "寒害" },
       { code: "W", name: "風災" },
@@ -149,7 +198,6 @@ const DisasterData = {
     ],
     B: [
       // 人為災害
-      { code: "", name: "請選擇" },
       { code: "F", name: "火災" },
       { code: "C", name: "車禍" },
       { code: "D", name: "化學災害" },
@@ -166,7 +214,6 @@ const DisasterData = {
 const EventData = {
   // 開案類別
   typeFlag: [
-    { code: "", name: "請選擇" },
     { code: "N", name: "一般" },
     { code: "E", name: "演習" },
     { code: "T", name: "測試" },
@@ -174,7 +221,6 @@ const EventData = {
 
   // 是否結案
   lockFlag: [
-    { code: "", name: "請選擇" },
     { code: "Y", name: "已結案" },
     { code: "N", name: "未結案" },
   ],
@@ -186,7 +232,6 @@ const MedicalData = {
   aidDepartments: {
     "01": [
       // 台北市
-      { code: "", name: "請選擇" },
       { code: "0101", name: "台大醫院" },
       { code: "0102", name: "台北榮民總醫院" },
       { code: "0103", name: "三軍總醫院" },
@@ -196,76 +241,104 @@ const MedicalData = {
       { code: "0107", name: "國泰醫院" },
       { code: "0108", name: "和信醫院" },
     ],
-    "02": [
+    31: [
       // 新北市
-      { code: "", name: "請選擇" },
-      { code: "0201", name: "新光醫院" },
-      { code: "0202", name: "亞東醫院" },
-      { code: "0203", name: "雙和醫院" },
-      { code: "0204", name: "恩主公醫院" },
-      { code: "0205", name: "淡水馬偕醫院" },
+      { code: "3101", name: "新光醫院" },
+      { code: "3102", name: "亞東醫院" },
+      { code: "3103", name: "雙和醫院" },
+      { code: "3104", name: "恩主公醫院" },
+      { code: "3105", name: "淡水馬偕醫院" },
+    ],
+    32: [
+      // 桃園市
+      { code: "3201", name: "長庚醫院" },
+      { code: "3202", name: "敏盛醫院" },
+      { code: "3203", name: "聖保祿醫院" },
     ],
     "03": [
-      // 桃園市
-      { code: "", name: "請選擇" },
-      { code: "0301", name: "長庚醫院" },
-      { code: "0302", name: "敏盛醫院" },
-      { code: "0303", name: "聖保祿醫院" },
-    ],
-    "04": [
       // 台中市
-      { code: "", name: "請選擇" },
-      { code: "0401", name: "中國醫藥大學附設醫院" },
-      { code: "0402", name: "台中榮民總醫院" },
-      { code: "0403", name: "澄清醫院" },
-      { code: "0404", name: "林新醫院" },
+      { code: "0301", name: "中國醫藥大學附設醫院" },
+      { code: "0302", name: "台中榮民總醫院" },
+      { code: "0303", name: "澄清醫院" },
+      { code: "0304", name: "林新醫院" },
     ],
     "05": [
       // 台南市
-      { code: "", name: "請選擇" },
       { code: "0501", name: "成大醫院" },
       { code: "0502", name: "奇美醫院" },
       { code: "0503", name: "台南新樓醫院" },
       { code: "0504", name: "台南市立醫院" },
     ],
-    "06": [
-      // 高雄市
-      { code: "", name: "請選擇" },
-      { code: "0601", name: "高雄長庚醫院" },
-      { code: "0602", name: "高雄榮民總醫院" },
-      { code: "0603", name: "高雄醫學大學附設醫院" },
-      { code: "0604", name: "義大醫院" },
-      { code: "0605", name: "阮綜合醫院" },
-    ],
     "07": [
+      // 高雄市
+      { code: "0701", name: "高雄長庚醫院" },
+      { code: "0702", name: "高雄榮民總醫院" },
+      { code: "0703", name: "高雄醫學大學附設醫院" },
+      { code: "0704", name: "義大醫院" },
+      { code: "0705", name: "阮綜合醫院" },
+    ],
+    11: [
       // 基隆市
-      { code: "", name: "請選擇" },
-      { code: "0701", name: "基隆長庚醫院" },
-      { code: "0702", name: "基隆市立醫院" },
+      { code: "1101", name: "基隆長庚醫院" },
+      { code: "1102", name: "基隆市立醫院" },
     ],
-    "08": [
+    12: [
       // 新竹市
-      { code: "", name: "請選擇" },
-      { code: "0801", name: "新竹馬偕醫院" },
-      { code: "0802", name: "新竹國泰醫院" },
+      { code: "1201", name: "新竹馬偕醫院" },
+      { code: "1202", name: "新竹國泰醫院" },
     ],
-    "09": [
+    22: [
       // 嘉義市
-      { code: "", name: "請選擇" },
-      { code: "0901", name: "嘉義基督教醫院" },
-      { code: "0902", name: "嘉義聖馬爾定醫院" },
+      { code: "2201", name: "嘉義基督教醫院" },
+      { code: "2202", name: "嘉義聖馬爾定醫院" },
     ],
   },
 
   // 傷勢等級
   injuryLevel: [
-    { code: "", name: "請選擇" },
     { code: "1", name: "第一級（輕傷）" },
     { code: "2", name: "第二級（中傷）" },
     { code: "3", name: "第三級（重傷）" },
     { code: "4", name: "第四級（極重傷）" },
     { code: "5", name: "第五級（危急）" },
     { code: "D", name: "死亡" },
+  ],
+};
+
+// ==================== REMOC 資料 ====================
+const REMOCData = {
+  // REMOC 資訊
+  remocInfo: [
+    {
+      code: "01",
+      name: "台北REMOC",
+      counties: ["01", "11", "31", "34", "91", "90"], // 台北市、基隆市、新北市、宜蘭縣、連江縣、金門縣
+    },
+    {
+      code: "02",
+      name: "北區REMOC",
+      counties: ["32", "33", "12", "35"], // 桃園市、新竹縣、新竹市、苗栗縣
+    },
+    {
+      code: "03",
+      name: "中區REMOC",
+      counties: ["03", "37", "38"], // 台中市、彰化縣、南投縣
+    },
+    {
+      code: "04",
+      name: "南區REMOC",
+      counties: ["39", "40", "22", "05"], // 雲林縣、嘉義縣、嘉義市、台南市
+    },
+    {
+      code: "05",
+      name: "高屏REMOC",
+      counties: ["07", "43", "44"], // 高雄市、屏東縣、澎湖縣
+    },
+    {
+      code: "06",
+      name: "東區REMOC",
+      counties: ["45", "46"], // 花蓮縣、台東縣
+    },
   ],
 };
 
@@ -339,12 +412,44 @@ const CommonDataUtils = {
       $select.html(this.generateOptions(EventData.typeFlag));
     }
   },
+
+  // 初始化區域下拉選單
+  initRegionSelect: function (selectId) {
+    const $select = $(`#${selectId}`);
+    if ($select.length) {
+      $select.html(this.generateOptions(RegionalData.regions));
+    }
+  },
+
+  // 根據縣市代碼取得所屬區域
+  getRegionByCounty: function (countyCode) {
+    if (!countyCode) return "";
+    for (const regionCode in RegionalData.countyByRegion) {
+      const counties = RegionalData.countyByRegion[regionCode];
+      const found = counties.find((c) => c.code === countyCode);
+      if (found) {
+        const region = RegionalData.regions.find((r) => r.code === regionCode);
+        return region ? region.name : "";
+      }
+    }
+    return "";
+  },
+
+  // 根據縣市代碼取得 REMOC 資訊
+  getREMOCByCounty: function (countyCode) {
+    if (!countyCode) return null;
+    return REMOCData.remocInfo.find((remoc) =>
+      remoc.counties.includes(countyCode)
+    );
+  },
 };
 
 // 將資料物件註冊到 window 供全域使用
 if (typeof window !== "undefined") {
   window.DepartmentData = DepartmentData;
   window.CountyData = CountyData;
+  window.RegionalData = RegionalData;
+  window.REMOCData = REMOCData;
   window.DisasterData = DisasterData;
   window.EventData = EventData;
   window.MedicalData = MedicalData;

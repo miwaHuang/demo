@@ -12,250 +12,322 @@ const EmergencyPatientReportPage = {
     this.formId = formId;
     this.tableId = tableId;
 
-    return `
-            <div id="EmergencyPatientReportContent" class="content">
-                <!-- 麵包屑導航 -->
-                <ol class="breadcrumb">
-                    <li><a href="#"><i class="fa fa-home"></i> 首頁</a></li>
-                    <li><a href="#">事件通報管理</a></li>
-                    <li><a href="#">緊急醫療救護通報</a></li>
-                    <li class="active">緊急醫療救護傷患通報維護</li>
-                </ol>
-
-                <div class="body">
-                    <div class="panel">
-                        <div class="panel-body" ">
-                            
-                            <!-- ========== 查詢列表 ========== -->
-                            <div class="subpage-box">
-                                <div class="tab-struct form-abs-left tab-shrink" data-toggle="tab-container">
-                                    <div class="form-abs-arrow">
-                                        <i class="fa fa-angle-double-left"></i>
-                                        <i class="fa fa-angle-double-right"></i>
-                                        <span>查詢列表</span>
-                                    </div>
-                                    <ul class="nav nav-tabs">
-                                        <li class="active">
-                                            <a aria-expanded="true" data-toggle="tab" role="tab" id="Form_Search" href="#FormSearch">
-                                                <span class="text">查詢列表</span>
-                                            </a>
-                                        </li>
-                                    </ul>
-                                    <div class="tab-content" style="padding: 15px 5px !important;">
-                                        <form id="FormSearch" class="tab-pane active">
-                                            <div class="row search-content">
-                                                <div class="col-md-12">
-                                                    <div class="form-horizontal">
-                                                        <!-- 災害編號 -->
-                                                        <div class="form-group">
-                                                            <label class="col-sm-5 control-label">災害編號</label>
-                                                            <div class="col-sm-7">
-                                                                <input type="text" class="form-control" id="Q_DISASTER_NO" name="Q_DISASTER_NO" placeholder="災害編號" autocomplete="off">
-                                                            </div>
-                                                        </div>
-                                                        
-                                                        <!-- 災害名稱 -->
-                                                        <div class="form-group">
-                                                            <label class="col-sm-5 control-label">災害名稱</label>
-                                                            <div class="col-sm-7">
-                                                                <input type="text" class="form-control" id="Q_DISASTER_NAME" name="Q_DISASTER_NAME" placeholder="災害名稱(可打關鍵字)" autocomplete="off">
-                                                            </div>
-                                                        </div>
-                                                        
-                                                        <!-- 災害屬性 -->
-                                                        <div class="form-group">
-                                                            <label class="col-sm-5 control-label">災害屬性</label>
-                                                            <div class="col-sm-7">
-                                                                <select class="form-control" id="Q_DISASTER_TYPE_ATTR" name="Q_DISASTER_TYPE_ATTR">
-                                                                    ${CommonDataUtils.generateOptions(
-                                                                      DisasterData.disasterTypeAttr
-                                                                    )}
-                                                                </select>
-                                                            </div>
-                                                        </div>
-                                                        
-                                                        <!-- 災害種類 -->
-                                                        <div class="form-group">
-                                                            <label class="col-sm-5 control-label">災害種類</label>
-                                                            <div class="col-sm-7">
-                                                                <select class="form-control" id="Q_DISASTER_TYPE" name="Q_DISASTER_TYPE">
-                                                                    <option value="">請先選擇災害屬性</option>
-                                                                </select>
-                                                            </div>
-                                                        </div>
-                                                        
-                                                        <!-- 發生日期(起) -->
-                                                        <div class="form-group">
-                                                            <label class="col-sm-5 control-label">發生日期(起)</label>
-                                                            <div class="col-sm-7">
-                                                                <div class="input-group padding-none">
-                                                                    <div class="input-group-addon">
-                                                                        <i class="zmdi zmdi-calendar-note"></i>
-                                                                    </div>
-                                                                    <input type="text" class="form-control" id="Q_HAPPEN_TIME_S" name="Q_HAPPEN_TIME_S" data-type="date" autocomplete="off">
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        
-                                                        <!-- 發生日期(迄) -->
-                                                        <div class="form-group">
-                                                            <label class="col-sm-5 control-label">發生日期(迄)</label>
-                                                            <div class="col-sm-7">
-                                                                <div class="input-group padding-none">
-                                                                    <div class="input-group-addon">
-                                                                        <i class="zmdi zmdi-calendar-note"></i>
-                                                                    </div>
-                                                                    <input type="text" class="form-control" id="Q_HAPPEN_TIME_E" name="Q_HAPPEN_TIME_E" data-type="date" autocomplete="off">
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        
-                                                        <!-- 開案單位類別 -->
-                                                        <div class="form-group">
-                                                            <label class="col-sm-5 control-label">開案單位類別</label>
-                                                            <div class="col-sm-7">
-                                                                <select class="form-control" id="Q_DEPT_CODE" name="Q_DEPT_CODE">
-                                                                    ${CommonDataUtils.generateOptions(
-                                                                      DepartmentData.deptTypes
-                                                                    )}
-                                                                </select>
-                                                            </div>
-                                                        </div>
-                                                        
-                                                        <!-- 開案單位 -->
-                                                        <div class="form-group">
-                                                            <label class="col-sm-5 control-label">開案單位</label>
-                                                            <div class="col-sm-7">
-                                                                <select class="form-control" id="Q_DEPT_NO" name="Q_DEPT_NO">
-                                                                    <option value="">請先選擇開案單位類別</option>
-                                                                </select>
-                                                            </div>
-                                                        </div>
-                                                        
-                                                        <!-- 開案類別 -->
-                                                        <div class="form-group">
-                                                            <label class="col-sm-5 control-label">開案類別</label>
-                                                            <div class="col-sm-7">
-                                                                <select class="form-control" id="Q_TYPE_FLAG" name="Q_TYPE_FLAG">
-                                                                    ${CommonDataUtils.generateOptions(
-                                                                      EventData.typeFlag
-                                                                    )}
-                                                                </select>
-                                                            </div>
-                                                        </div>
-                                                        
-                                                        <!-- 發生地 -->
-                                                        <div class="form-group">
-                                                            <label class="col-sm-5 control-label">發生地</label>
-                                                            <div class="col-sm-7">
-                                                                <select class="form-control" id="Q_COUNTY_CODE" name="Q_COUNTY_CODE">
-                                                                    ${CommonDataUtils.generateOptions(
-                                                                      CountyData.counties
-                                                                    )}
-                                                                </select>
-                                                            </div>
-                                                        </div>
-                                                        
-                                                        <!-- 是否結案 -->
-                                                        <div class="form-group">
-                                                            <label class="col-sm-5 control-label">是否結案</label>
-                                                            <div class="col-sm-7">
-                                                                <select class="form-control" id="Q_LOCK_FLAG" name="Q_LOCK_FLAG">
-                                                                    ${CommonDataUtils.generateOptions(
-                                                                      EventData.lockFlag
-                                                                    )}
-                                                                </select>
-                                                            </div>
-                                                        </div>
-                                                        
-                                                        <!-- 入院日期(起) -->
-                                                        <div class="form-group">
-                                                            <label class="col-sm-5 control-label">入院日期(起)</label>
-                                                            <div class="col-sm-7">
-                                                                <div class="input-group padding-none">
-                                                                    <div class="input-group-addon">
-                                                                        <i class="zmdi zmdi-calendar-note"></i>
-                                                                    </div>
-                                                                    <input type="text" class="form-control" id="Q_AID_IN_TIME_S" name="Q_AID_IN_TIME_S" data-type="date" autocomplete="off">
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        
-                                                        <!-- 入院日期(迄) -->
-                                                        <div class="form-group">
-                                                            <label class="col-sm-5 control-label">入院日期(迄)</label>
-                                                            <div class="col-sm-7">
-                                                                <div class="input-group padding-none">
-                                                                    <div class="input-group-addon">
-                                                                        <i class="zmdi zmdi-calendar-note"></i>
-                                                                    </div>
-                                                                    <input type="text" class="form-control" id="Q_AID_IN_TIME_E" name="Q_AID_IN_TIME_E" data-type="date" autocomplete="off">
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        
-                                                        <!-- 收治單位縣市 -->
-                                                        <div class="form-group">
-                                                            <label class="col-sm-5 control-label">收治單位縣市</label>
-                                                            <div class="col-sm-7">
-                                                                <select class="form-control" id="Q_AID_DEPT_COUNTY" name="Q_AID_DEPT_COUNTY">
-                                                                    ${CommonDataUtils.generateOptions(
-                                                                      CountyData.counties
-                                                                    )}
-                                                                </select>
-                                                            </div>
-                                                        </div>
-                                                        
-                                                        <!-- 收治單位 -->
-                                                        <div class="form-group">
-                                                            <label class="col-sm-5 control-label">收治單位</label>
-                                                            <div class="col-sm-7">
-                                                                <select class="form-control" id="Q_AID_DEPT_NO" name="Q_AID_DEPT_NO">
-                                                                    <option value="">請先選擇收治單位縣市</option>
-                                                                </select>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="row search-btns">
-                                                <div class="col-md-12">
-                                                    ${ButtonComponent.search()}
-                                                    ${ButtonComponent.clear()}
-                                                    ${ButtonComponent.export()}
-                                                </div>
-                                            </div>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <!-- ========== 結果顯示區 ========== -->
-                            <div class="panel-body" style="height: 100%; padding: 15px;">
-                                <div class="col-sm-12">
-                                    <!-- 查詢摘要 -->
-                                    <div>查詢條件：<span id="QueryText" style="color: #337ab7;"></span></div>
-                                    <div>查詢結果：<span id="ResultText" style="color: #5cb85c; font-weight: bold;"></span></div>
-                                    <div style="margin-bottom: 15px;">查詢時間：<span id="ResultTime" style="color: #666;"></span></div>
-                                    
-                                    <!-- 功能按鈕群組 -->
-                                    <div class="btn-group" style="margin-bottom: 10px;">
-                                        ${ButtonComponent.add('btnAdd', '新增傷患通報')}
-                                        ${ButtonComponent.edit('btnEdit', '修改傷患通報')}
-                                        ${ButtonComponent.view('btnView', '檢視傷患通報')}
-                                        ${ButtonComponent.delete('btnDelete', '刪除傷患通報')}
-                                    </div>
-                                    
-                                    <!-- EasyUI DataGrid -->
-                                    <table id="${tableId}" class="EMSDataGrid"></table>
-                                </div>
-                            </div>
-                            
-                        </div>
+    return /*html*/ `
+   <div id="EmergencyPatientReportContent" class="content">
+  <div>
+    <!-- 麵包屑導航 -->
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item">事件通報管理</li>
+        <li class="breadcrumb-item">緊急醫療救護通報</li>
+        <li class="breadcrumb-item active" aria-current="page">
+          緊急醫療救護傷患通報查詢維護
+        </li>
+      </ol>
+    </nav>
+    <div class="subpage-box">
+      <div
+        class="tab-struct form-abs-left tab-shrink"
+        data-toggle="tab-container"
+      >
+        <div class="form-abs-arrow">
+          <i class="fa fa-angle-double-left"></i>
+          <i class="fa fa-angle-double-right"></i>
+          <span>查詢列表</span>
+        </div>
+        <ul class="nav nav-tabs">
+          <li class="active">
+            <a
+              aria-expanded="true"
+              data-toggle="tab"
+              role="tab"
+              id="Form_Search"
+              href="#FormSearch"
+            >
+              <span class="text">查詢列表</span>
+            </a>
+          </li>
+        </ul>
+        <div class="tab-content" style="padding: 15px 5px !important">
+          <form id="FormSearch" class="tab-pane active">
+            <div class="row search-content">
+              <div class="col-md-12">
+                <div class="form-horizontal">
+                  <!-- 災害編號 -->
+                  <div class="form-group">
+                    <label class="col-sm-5 control-label">災害編號</label>
+                    <div class="col-sm-7">
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="Q_DISASTER_NO"
+                        name="Q_DISASTER_NO"
+                        placeholder="災害編號"
+                        autocomplete="off"
+                      />
                     </div>
+                  </div>
+                  <!-- 災害名稱 -->
+                  <div class="form-group">
+                    <label class="col-sm-5 control-label">災害名稱</label>
+                    <div class="col-sm-7">
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="Q_DISASTER_NAME"
+                        name="Q_DISASTER_NAME"
+                        placeholder="災害名稱(可打關鍵字)"
+                        autocomplete="off"
+                      />
+                    </div>
+                  </div>
+                  <!-- 災害屬性 -->
+                  <div class="form-group">
+                    <label class="col-sm-5 control-label">災害屬性</label>
+                    <div class="col-sm-7">
+                      <select
+                        class="form-control"
+                        id="Q_DISASTER_TYPE_ATTR"
+                        name="Q_DISASTER_TYPE_ATTR"
+                      >
+                        ${CommonDataUtils.generateOptions(
+                          DisasterData.disasterTypeAttr
+                        )}
+                      </select>
+                    </div>
+                  </div>
+                  <!-- 災害種類 -->
+                  <div class="form-group">
+                    <label class="col-sm-5 control-label">災害種類</label>
+                    <div class="col-sm-7">
+                      <select
+                        class="form-control"
+                        id="Q_DISASTER_TYPE"
+                        name="Q_DISASTER_TYPE"
+                      >
+                        <option value="">請先選擇災害屬性</option>
+                      </select>
+                    </div>
+                  </div>
+                  <!-- 發生日期(起) -->
+                  <div class="form-group">
+                    <label class="col-sm-5 control-label">發生日期(起)</label>
+                    <div class="col-sm-7">
+                      <div class="input-group padding-none">
+                        <div class="input-group-addon">
+                          <i class="zmdi zmdi-calendar-note"></i>
+                        </div>
+                        <input
+                          type="text"
+                          class="form-control"
+                          id="Q_HAPPEN_TIME_S"
+                          name="Q_HAPPEN_TIME_S"
+                          data-type="date"
+                          autocomplete="off"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <!-- 發生日期(迄) -->
+                  <div class="form-group">
+                    <label class="col-sm-5 control-label">發生日期(迄)</label>
+                    <div class="col-sm-7">
+                      <div class="input-group padding-none">
+                        <div class="input-group-addon">
+                          <i class="zmdi zmdi-calendar-note"></i>
+                        </div>
+                        <input
+                          type="text"
+                          class="form-control"
+                          id="Q_HAPPEN_TIME_E"
+                          name="Q_HAPPEN_TIME_E"
+                          data-type="date"
+                          autocomplete="off"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <!-- 開案單位類別 -->
+                  <div class="form-group">
+                    <label class="col-sm-5 control-label">開案單位類別</label>
+                    <div class="col-sm-7">
+                      <select
+                        class="form-control"
+                        id="Q_DEPT_CODE"
+                        name="Q_DEPT_CODE"
+                      >
+                        ${CommonDataUtils.generateOptions(
+                          DepartmentData.deptTypes
+                        )}
+                      </select>
+                    </div>
+                  </div>
+                  <!-- 開案單位 -->
+                  <div class="form-group">
+                    <label class="col-sm-5 control-label">開案單位</label>
+                    <div class="col-sm-7">
+                      <select
+                        class="form-control"
+                        id="Q_DEPT_NO"
+                        name="Q_DEPT_NO"
+                      >
+                        <option value="">請先選擇開案單位類別</option>
+                      </select>
+                    </div>
+                  </div>
+                  <!-- 開案類別 -->
+                  <div class="form-group">
+                    <label class="col-sm-5 control-label">開案類別</label>
+                    <div class="col-sm-7">
+                      <select
+                        class="form-control"
+                        id="Q_TYPE_FLAG"
+                        name="Q_TYPE_FLAG"
+                      >
+                        ${CommonDataUtils.generateOptions(EventData.typeFlag)}
+                      </select>
+                    </div>
+                  </div>
+                  <!-- 發生地 -->
+                  <div class="form-group">
+                    <label class="col-sm-5 control-label">發生地</label>
+                    <div class="col-sm-7">
+                      <select
+                        class="form-control"
+                        id="Q_COUNTY_CODE"
+                        name="Q_COUNTY_CODE"
+                      >
+                        ${CommonDataUtils.generateOptions(CountyData.counties)}
+                      </select>
+                    </div>
+                  </div>
+                  <!-- 是否結案 -->
+                  <div class="form-group">
+                    <label class="col-sm-5 control-label">是否結案</label>
+                    <div class="col-sm-7">
+                      <select
+                        class="form-control"
+                        id="Q_LOCK_FLAG"
+                        name="Q_LOCK_FLAG"
+                      >
+                        ${CommonDataUtils.generateOptions(EventData.lockFlag)}
+                      </select>
+                    </div>
+                  </div>
+                  <!-- 入院日期(起) -->
+                  <div class="form-group">
+                    <label class="col-sm-5 control-label">入院日期(起)</label>
+                    <div class="col-sm-7">
+                      <div class="input-group padding-none">
+                        <div class="input-group-addon">
+                          <i class="zmdi zmdi-calendar-note"></i>
+                        </div>
+                        <input
+                          type="text"
+                          class="form-control"
+                          id="Q_AID_IN_TIME_S"
+                          name="Q_AID_IN_TIME_S"
+                          data-type="date"
+                          autocomplete="off"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <!-- 入院日期(迄) -->
+                  <div class="form-group">
+                    <label class="col-sm-5 control-label">入院日期(迄)</label>
+                    <div class="col-sm-7">
+                      <div class="input-group padding-none">
+                        <div class="input-group-addon">
+                          <i class="zmdi zmdi-calendar-note"></i>
+                        </div>
+                        <input
+                          type="text"
+                          class="form-control"
+                          id="Q_AID_IN_TIME_E"
+                          name="Q_AID_IN_TIME_E"
+                          data-type="date"
+                          autocomplete="off"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <!-- 收治單位縣市 -->
+                  <div class="form-group">
+                    <label class="col-sm-5 control-label">收治單位縣市</label>
+                    <div class="col-sm-7">
+                      <select
+                        class="form-control"
+                        id="Q_AID_DEPT_COUNTY"
+                        name="Q_AID_DEPT_COUNTY"
+                      >
+                        ${CommonDataUtils.generateOptions(CountyData.counties)}
+                      </select>
+                    </div>
+                  </div>
+                  <!-- 收治單位 -->
+                  <div class="form-group">
+                    <label class="col-sm-5 control-label">收治單位</label>
+                    <div class="col-sm-7">
+                      <select
+                        class="form-control"
+                        id="Q_AID_DEPT_NO"
+                        name="Q_AID_DEPT_NO"
+                      >
+                        <option value="">請先選擇收治單位縣市</option>
+                      </select>
+                    </div>
+                  </div>
                 </div>
+              </div>
             </div>
-        `;
+            <div class="row search-btns">
+              <div class="col-md-12">
+                ${ButtonComponent.search()} ${ButtonComponent.clear()}
+                ${ButtonComponent.export()}
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="body">
+      <div class="col-sm-12 panel panel-none padding-left-35" style="height:100%;">
+        <div class="panel-body" style="height:100%">
+          <div class="form-horizontal" style="height:100%">
+            <div id="SearchAreaDefault" class="tab-struct aid-case-tab" data-toggle="tab-container" style="height: 100%;">
+              <div id="MEDA300RemindCont" class="tab-content" style="display:flex;flex-direction:column;width:100%;height:100%">
+                <div class="col-sm-12">
+                  <div>
+                    查詢條件：
+                    <span id="QueryText" style="color: #337ab7"></span>
+                  </div>
+                  <div>
+                    查詢結果：
+                    <span id="ResultText" style="color: #5cb85c; font-weight: bold"></span>
+                  </div>
+                  <div style="margin-bottom: 15px">
+                    查詢時間：
+                    <span id="ResultTime" style="color: #666"></span>
+                  </div>
+                  <div class="btn-group" role="group" style="margin-bottom: 10px">
+                    ${ButtonComponent.add("btnAdd", "新增")}
+                    ${ButtonComponent.edit("btnEdit", "修改")}
+                    ${ButtonComponent.view("btnView", "檢視")}
+                    ${ButtonComponent.delete("btnDelete", "刪除")}
+                  </div>
+                  <!-- EasyUI DataGrid -->
+                  <table id="${tableId}" class="EMSDataGrid"></table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
   },
 
   // 初始化日期選擇器
@@ -368,7 +440,7 @@ const EmergencyPatientReportPage = {
       $table.datagrid({
         data: sampleData,
         fit: true,
-        fitColumns: false,
+        fitColumns: true,
         singleSelect: true,
         rownumbers: true,
         pagination: true,
