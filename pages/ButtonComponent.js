@@ -53,8 +53,8 @@ const ButtonComponent = {
   export: function (id = "btnExport") {
     return this.create({
       id: id,
-      text: "資料匯出",
-      color: "info",
+      text: "匯出",
+      color: "default",
     });
   },
 

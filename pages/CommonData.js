@@ -311,32 +311,32 @@ const REMOCData = {
   remocInfo: [
     {
       code: "01",
-      name: "台北區",
+      name: "台北區REMOC",
       counties: ["01", "11", "31", "34", "91", "90"], // 台北市、基隆市、新北市、宜蘭縣、連江縣、金門縣
     },
     {
       code: "02",
-      name: "北區",
+      name: "北區REMOC",
       counties: ["32", "33", "12", "35"], // 桃園市、新竹縣、新竹市、苗栗縣
     },
     {
       code: "03",
-      name: "中區",
+      name: "中區REMOC",
       counties: ["03", "37", "38"], // 台中市、彰化縣、南投縣
     },
     {
       code: "04",
-      name: "南區",
+      name: "南區REMOC",
       counties: ["39", "40", "22", "05"], // 雲林縣、嘉義縣、嘉義市、台南市
     },
     {
       code: "05",
-      name: "高屏區",
+      name: "高屏區REMOC  ",
       counties: ["07", "43", "44"], // 高雄市、屏東縣、澎湖縣
     },
     {
       code: "06",
-      name: "東區",
+      name: "東區REMOC",
       counties: ["45", "46"], // 花蓮縣、台東縣
     },
   ],

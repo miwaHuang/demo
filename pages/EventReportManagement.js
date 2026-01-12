@@ -12,6 +12,19 @@ const EventReportManagementPage = {
     this.tableId = tableId;
 
     return /*html*/ `
+   <style>
+     /* 凍結窗格分隔線加粗 */
+     .datagrid-frozen .datagrid-btable {
+       border-right: 3px solid #ccc !important;
+     }
+     .datagrid-frozen-panel {
+       border-right: 3px solid #ccc !important;
+     }
+     .datagrid-view2 .datagrid-header,
+     .datagrid-view2 .datagrid-body {
+       border-left: 3px solid #ccc !important;
+     }
+   </style>
    <div id="EventReportManagementContent" class="content">
   <div>
     <!-- 麵包屑導航 -->
@@ -52,20 +65,6 @@ const EventReportManagementPage = {
             <div class="row search-content">
               <div class="col-md-12">
                 <div class="form-horizontal">
-                 <!-- 區域 -->
-                      <div class="form-group">
-                        <label class="col-sm-5 control-label">區域</label>
-                        <div class="col-sm-7">
-                          <select class="form-control" id="Q_REGION" name="Q_REGION">
-                            <option value="">全部</option>
-                            ${CommonDataUtils.generateOptions(
-                              REMOCData.remocInfo,
-                              false
-                            )}
-                          </select>
-                        </div>
-                      </div>
-
                       <!-- 編號 -->
                       <div class="form-group">
                         <label class="col-sm-5 control-label">編號</label>
@@ -105,12 +104,54 @@ const EventReportManagementPage = {
                         </div>
                       </div>
 
+                      
+
+                      <!-- 發生日期 -->
+                      <div class="form-group">
+                        <label class="col-sm-5 control-label">發生日期(起)</label>
+                        <div class="col-sm-7">
+                          <div class="input-group padding-none">
+                            <div class="input-group-addon">
+                              <i class="zmdi zmdi-calendar-note"></i>
+                            </div>
+                            <input
+                              type="text"
+                              class="form-control"
+                              id="Q_HAPPEN_TIME_S"
+                              name="Q_HAPPEN_TIME_S"
+                              data-type="date"
+                              autocomplete="off"
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="form-group">
+                        <label class="col-sm-5 control-label">發生日期(訖)</label>
+                        <div class="col-sm-7">
+                          <div class="input-group padding-none">
+                            <div class="input-group-addon">
+                              <i class="zmdi zmdi-calendar-note"></i>
+                            </div>
+                            <input
+                              type="text"
+                              class="form-control"
+                              id="Q_HAPPEN_TIME_E"
+                              name="Q_HAPPEN_TIME_E"
+                              data-type="date"
+                              autocomplete="off"
+                            />
+                          </div>
+                        </div>
+                      </div>
+
                       <!-- 發生地 -->
                       <div class="form-group">
                         <label class="col-sm-5 control-label">發生地</label>
                         <div class="col-sm-7">
                           <select class="form-control" id="Q_LOCATION" name="Q_LOCATION">
                             <option value="">全部</option>
+                            <option value="TW">台灣</option>
                             ${CommonDataUtils.generateOptions(
                               CountyData.counties
                             )}
@@ -125,7 +166,9 @@ const EventReportManagementPage = {
                           <select class="form-control" id="Q_SOURCE" name="Q_SOURCE">
                             <option value="">全部</option>
                             <option value="ems">EMS</option>
-                            <option value="remoc">REMOC</option>
+                            ${CommonDataUtils.generateOptions(
+                              REMOCData.remocInfo
+                            )}
                           </select>
                         </div>
                       </div>
@@ -288,7 +331,20 @@ const EventReportManagementPage = {
     this.allData = sampleData;
 
     // 更新查詢結果
-    $("#ResultText").text(`共 ${sampleData.length} 筆資料`);
+    // 統計災害種類
+    const disasterStats = {};
+    sampleData.forEach((item) => {
+      const disasterType = item.DISASTER_TYPE || "未分類";
+      disasterStats[disasterType] = (disasterStats[disasterType] || 0) + 1;
+    });
+
+    // 建立災害種類統計文字
+    const statsText = Object.entries(disasterStats)
+      .map(([type, count]) => `${type}${count}筆`)
+      .join("、");
+
+    const resultText = `共 ${sampleData.length} 筆資料 (${statsText})`;
+    $("#ResultText").text(resultText);
 
     // 更新查詢時間
     const now = new Date();
@@ -330,48 +386,62 @@ const EventReportManagementPage = {
         pagination: true,
         pageSize: 20,
         pageList: [10, 20, 30, 50],
-        columns: [
+        frozenColumns: [
           [
-            {
-              field: "REGION",
-              title: "區域",
-              width: 50,
-              align: "center",
-              rowspan: 2,
-            },
-            {
-              field: "COUNTY_LABEL",
-              title: "發生地",
-              width: 60,
-              align: "center",
-              rowspan: 2,
-            },
             {
               field: "HAPPEN_TIME_LABEL",
               title: "發生日期",
-              width: 100,
+              width: 90,
+              align: "center",
+              rowspan: 2,
+              formatter: function (value, row, index) {
+                if (!value) return "";
+                // 只顯示日期部分 (yyyy-MM-dd)
+                const dateOnly = value.split(" ")[0];
+                return '<span title="' + value + '">' + dateOnly + "</span>";
+              },
+            },
+            {
+              field: "DISASTER_NO_LABEL",
+              title: "災害編號",
+              width: 90,
               align: "center",
               rowspan: 2,
             },
             {
               field: "DISASTER_TYPE",
               title: "災害種類",
-              width: 100,
-              align: "center",
-              rowspan: 2,
-            },
-            {
-              field: "DISASTER_NO_LABEL",
-              title: "災害編號",
-              width: 130,
+              width: 60,
               align: "center",
               rowspan: 2,
             },
             {
               field: "DISASTER_NAME",
               title: "災害名稱",
-              width: 250,
-              align: "left",
+              width: 200,
+              align: "center", // 表頭置中
+              rowspan: 2,
+              formatter: function (value, row, index) {
+                if (!value) return "";
+                // 內容靠左顯示，超出寬度顯示省略號，tooltip顯示完整內容
+                return (
+                  '<div style="text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="' +
+                  value +
+                  '">' +
+                  value +
+                  "</div>"
+                );
+              },
+            },
+          ],
+        ],
+        columns: [
+          [
+            {
+              field: "COUNTY_LABEL",
+              title: "發生地",
+              width: 50,
+              align: "center",
               rowspan: 2,
             },
             {
@@ -385,68 +455,128 @@ const EventReportManagementPage = {
             {
               field: "DEATH_COUNT",
               title: "死亡",
-              width: 60,
+              width: 40,
               align: "center",
               rowspan: 2,
+            },
+            {
+              title: "事件傷亡統計",
+              colspan: 3,
+            },
+            {
+              title: "衛生署(部)通報",
+              colspan: 2,
+            },
+            {
+              title: "衛生局/醫院/119通報",
+              colspan: 2,
             },
           ],
           [
             {
               field: "MSG_SOURCE",
               title: "來源",
-              width: 80,
+              width: 50,
               align: "center",
             },
             {
               field: "MSG_CREATE_TIME",
-              title: "建立時間",
-              width: 140,
+              title: "建立日期",
+              width: 90,
               align: "center",
+              formatter: function (value, row, index) {
+                if (!value) return "";
+                // 只顯示日期部分 (yyyy-MM-dd)
+                const dateOnly = value.split(" ")[0];
+                return '<span title="' + value + '">' + dateOnly + "</span>";
+              },
             },
             {
               field: "TRIAGE_LEVEL_1",
               title: "一",
-              width: 50,
+              width: 30,
               align: "center",
             },
             {
               field: "TRIAGE_LEVEL_2",
               title: "二",
-              width: 50,
+              width: 30,
               align: "center",
             },
             {
               field: "TRIAGE_LEVEL_3",
               title: "三",
-              width: 50,
+              width: 30,
               align: "center",
             },
             {
               field: "TRIAGE_LEVEL_4",
               title: "四",
-              width: 50,
+              width: 30,
               align: "center",
             },
             {
               field: "TRIAGE_LEVEL_5",
               title: "五",
-              width: 50,
+              width: 30,
               align: "center",
             },
             {
               field: "TRIAGE_LEVEL_UNKNOWN",
               title: "未",
-              width: 50,
+              width: 30,
               align: "center",
             },
             {
               field: "TRIAGE_TOTAL",
               title: "總",
-              width: 60,
+              width: 30,
               align: "center",
               styler: function (value, row, index) {
                 return "font-weight: bold;";
               },
+            },
+            {
+              field: "CASUALTY_DEATH",
+              title: "死亡",
+              width: 30,
+              align: "center",
+            },
+            {
+              field: "CASUALTY_INJURED",
+              title: "傷病",
+              width: 30,
+              align: "center",
+            },
+            {
+              field: "CASUALTY_MISSING",
+              title: "失蹤",
+              width: 30,
+              align: "center",
+            },
+            {
+              field: "MOH_SMS",
+              title: "簡訊",
+              width: 50,
+              align: "center",
+            },
+            {
+              field: "MOH_PHONE",
+              title: "電話",
+              width: 50,
+              align: "center",
+            },
+            {
+              field: "LOCAL_SMS",
+              title: "簡訊",
+              width: 60,
+              align: "center",
+            },
+            {
+              field: "LOCAL_PHONE",
+              title: "電話",
+              width: 60,
+              align: "center",
             },
           ],
         ],
@@ -592,12 +722,11 @@ const EventReportManagementPage = {
   generateSampleData: function () {
     return [
       {
-        REGION: "北區",
         COUNTY_LABEL: "台北市",
         HAPPEN_TIME_LABEL: "2026-01-05 10:30",
         DISASTER_TYPE: "地震",
         DISASTER_NO_LABEL: "E1150105-001",
-        DISASTER_NAME: "台北市信義區地震災害事件",
+        DISASTER_NAME: "台北市信義區規模6.2地震災害緊急救護應變事件處理",
         MSG_SOURCE: "REMOC",
         MSG_CREATE_TIME: "2026-01-05 10:35",
         TRIAGE_LEVEL_1: 2,
@@ -608,9 +737,15 @@ const EventReportManagementPage = {
         TRIAGE_LEVEL_UNKNOWN: 0,
         TRIAGE_TOTAL: 15,
         DEATH_COUNT: 0,
+        CASUALTY_DEATH: 0,
+        CASUALTY_INJURED: 15,
+        CASUALTY_MISSING: 0,
+        MOH_SMS: 1,
+        MOH_PHONE: 1,
+        LOCAL_SMS: 2,
+        LOCAL_PHONE: 1,
       },
       {
-        REGION: "北區",
         COUNTY_LABEL: "新北市",
         HAPPEN_TIME_LABEL: "2026-01-04 15:45",
         DISASTER_TYPE: "交通事故",
@@ -626,9 +761,15 @@ const EventReportManagementPage = {
         TRIAGE_LEVEL_UNKNOWN: 0,
         TRIAGE_TOTAL: 8,
         DEATH_COUNT: 1,
+        CASUALTY_DEATH: 1,
+        CASUALTY_INJURED: 7,
+        CASUALTY_MISSING: 0,
+        MOH_SMS: 0,
+        MOH_PHONE: 1,
+        LOCAL_SMS: 1,
+        LOCAL_PHONE: 2,
       },
       {
-        REGION: "中區",
         COUNTY_LABEL: "台中市",
         HAPPEN_TIME_LABEL: "2026-01-03 09:00",
         DISASTER_TYPE: "演習",
@@ -644,9 +785,15 @@ const EventReportManagementPage = {
         TRIAGE_LEVEL_UNKNOWN: 0,
         TRIAGE_TOTAL: 0,
         DEATH_COUNT: 0,
+        CASUALTY_DEATH: 0,
+        CASUALTY_INJURED: 0,
+        CASUALTY_MISSING: 0,
+        MOH_SMS: 0,
+        MOH_PHONE: 0,
+        LOCAL_SMS: 0,
+        LOCAL_PHONE: 0,
       },
       {
-        REGION: "南區",
         COUNTY_LABEL: "高雄市",
         HAPPEN_TIME_LABEL: "2026-01-02 23:15",
         DISASTER_TYPE: "火災",
@@ -662,9 +809,15 @@ const EventReportManagementPage = {
         TRIAGE_LEVEL_UNKNOWN: 0,
         TRIAGE_TOTAL: 5,
         DEATH_COUNT: 2,
+        CASUALTY_DEATH: 2,
+        CASUALTY_INJURED: 3,
+        CASUALTY_MISSING: 0,
+        MOH_SMS: 1,
+        MOH_PHONE: 1,
+        LOCAL_SMS: 2,
+        LOCAL_PHONE: 2,
       },
       {
-        REGION: "北區",
         COUNTY_LABEL: "桃園市",
         HAPPEN_TIME_LABEL: "2026-01-01 18:20",
         DISASTER_TYPE: "寒害",
@@ -680,9 +833,15 @@ const EventReportManagementPage = {
         TRIAGE_LEVEL_UNKNOWN: 0,
         TRIAGE_TOTAL: 12,
         DEATH_COUNT: 0,
+        CASUALTY_DEATH: 0,
+        CASUALTY_INJURED: 12,
+        CASUALTY_MISSING: 0,
+        MOH_SMS: 1,
+        MOH_PHONE: 1,
+        LOCAL_SMS: 1,
+        LOCAL_PHONE: 1,
       },
       {
-        REGION: "北區",
         COUNTY_LABEL: "新竹市",
         HAPPEN_TIME_LABEL: "2025-12-30 08:45",
         DISASTER_TYPE: "火災",
@@ -698,9 +857,15 @@ const EventReportManagementPage = {
         TRIAGE_LEVEL_UNKNOWN: 0,
         TRIAGE_TOTAL: 7,
         DEATH_COUNT: 1,
+        CASUALTY_DEATH: 1,
+        CASUALTY_INJURED: 6,
+        CASUALTY_MISSING: 0,
+        MOH_SMS: 1,
+        MOH_PHONE: 1,
+        LOCAL_SMS: 1,
+        LOCAL_PHONE: 1,
       },
       {
-        REGION: "北區",
         COUNTY_LABEL: "宜蘭縣",
         HAPPEN_TIME_LABEL: "2025-12-29 10:00",
         DISASTER_TYPE: "測試",
@@ -716,9 +881,15 @@ const EventReportManagementPage = {
         TRIAGE_LEVEL_UNKNOWN: 0,
         TRIAGE_TOTAL: 0,
         DEATH_COUNT: 0,
+        CASUALTY_DEATH: 0,
+        CASUALTY_INJURED: 0,
+        CASUALTY_MISSING: 0,
+        MOH_SMS: 0,
+        MOH_PHONE: 0,
+        LOCAL_SMS: 0,
+        LOCAL_PHONE: 0,
       },
       {
-        REGION: "南區",
         COUNTY_LABEL: "嘉義市",
         HAPPEN_TIME_LABEL: "2025-12-28 16:20",
         DISASTER_TYPE: "交通事故",
@@ -734,9 +905,15 @@ const EventReportManagementPage = {
         TRIAGE_LEVEL_UNKNOWN: 0,
         TRIAGE_TOTAL: 6,
         DEATH_COUNT: 0,
+        CASUALTY_DEATH: 0,
+        CASUALTY_INJURED: 6,
+        CASUALTY_MISSING: 0,
+        MOH_SMS: 0,
+        MOH_PHONE: 1,
+        LOCAL_SMS: 1,
+        LOCAL_PHONE: 1,
       },
       {
-        REGION: "中區",
         COUNTY_LABEL: "彰化縣",
         HAPPEN_TIME_LABEL: "2025-12-27 11:30",
         DISASTER_TYPE: "火災",
@@ -752,9 +929,15 @@ const EventReportManagementPage = {
         TRIAGE_LEVEL_UNKNOWN: 0,
         TRIAGE_TOTAL: 4,
         DEATH_COUNT: 0,
+        CASUALTY_DEATH: 0,
+        CASUALTY_INJURED: 4,
+        CASUALTY_MISSING: 0,
+        MOH_SMS: 0,
+        MOH_PHONE: 1,
+        LOCAL_SMS: 1,
+        LOCAL_PHONE: 1,
       },
       {
-        REGION: "北區",
         COUNTY_LABEL: "苗栗縣",
         HAPPEN_TIME_LABEL: "2025-12-26 08:15",
         DISASTER_TYPE: "地震",
@@ -770,9 +953,15 @@ const EventReportManagementPage = {
         TRIAGE_LEVEL_UNKNOWN: 0,
         TRIAGE_TOTAL: 9,
         DEATH_COUNT: 0,
+        CASUALTY_DEATH: 0,
+        CASUALTY_INJURED: 9,
+        CASUALTY_MISSING: 0,
+        MOH_SMS: 1,
+        MOH_PHONE: 1,
+        LOCAL_SMS: 1,
+        LOCAL_PHONE: 1,
       },
       {
-        REGION: "東區",
         COUNTY_LABEL: "花蓮縣",
         HAPPEN_TIME_LABEL: "2025-12-25 13:45",
         DISASTER_TYPE: "交通事故",
@@ -788,9 +977,15 @@ const EventReportManagementPage = {
         TRIAGE_LEVEL_UNKNOWN: 0,
         TRIAGE_TOTAL: 18,
         DEATH_COUNT: 1,
+        CASUALTY_DEATH: 1,
+        CASUALTY_INJURED: 17,
+        CASUALTY_MISSING: 0,
+        MOH_SMS: 1,
+        MOH_PHONE: 1,
+        LOCAL_SMS: 2,
+        LOCAL_PHONE: 2,
       },
       {
-        REGION: "南區",
         COUNTY_LABEL: "屏東縣",
         HAPPEN_TIME_LABEL: "2025-12-24 10:00",
         DISASTER_TYPE: "演習",
@@ -806,9 +1001,15 @@ const EventReportManagementPage = {
         TRIAGE_LEVEL_UNKNOWN: 0,
         TRIAGE_TOTAL: 0,
         DEATH_COUNT: 0,
+        CASUALTY_DEATH: 0,
+        CASUALTY_INJURED: 0,
+        CASUALTY_MISSING: 0,
+        MOH_SMS: 0,
+        MOH_PHONE: 0,
+        LOCAL_SMS: 0,
+        LOCAL_PHONE: 0,
       },
       {
-        REGION: "東區",
         COUNTY_LABEL: "台東縣",
         HAPPEN_TIME_LABEL: "2025-12-23 19:30",
         DISASTER_TYPE: "寒害",
@@ -824,9 +1025,15 @@ const EventReportManagementPage = {
         TRIAGE_LEVEL_UNKNOWN: 0,
         TRIAGE_TOTAL: 5,
         DEATH_COUNT: 0,
+        CASUALTY_DEATH: 0,
+        CASUALTY_INJURED: 5,
+        CASUALTY_MISSING: 0,
+        MOH_SMS: 1,
+        MOH_PHONE: 1,
+        LOCAL_SMS: 1,
+        LOCAL_PHONE: 1,
       },
       {
-        REGION: "中區",
         COUNTY_LABEL: "南投縣",
         HAPPEN_TIME_LABEL: "2025-12-22 14:50",
         DISASTER_TYPE: "地震",
@@ -842,9 +1049,15 @@ const EventReportManagementPage = {
         TRIAGE_LEVEL_UNKNOWN: 0,
         TRIAGE_TOTAL: 11,
         DEATH_COUNT: 0,
+        CASUALTY_DEATH: 0,
+        CASUALTY_INJURED: 11,
+        CASUALTY_MISSING: 0,
+        MOH_SMS: 1,
+        MOH_PHONE: 1,
+        LOCAL_SMS: 1,
+        LOCAL_PHONE: 1,
       },
       {
-        REGION: "中區",
         COUNTY_LABEL: "雲林縣",
         HAPPEN_TIME_LABEL: "2025-12-21 07:40",
         DISASTER_TYPE: "交通事故",
@@ -860,9 +1073,15 @@ const EventReportManagementPage = {
         TRIAGE_LEVEL_UNKNOWN: 0,
         TRIAGE_TOTAL: 7,
         DEATH_COUNT: 0,
+        CASUALTY_DEATH: 0,
+        CASUALTY_INJURED: 7,
+        CASUALTY_MISSING: 0,
+        MOH_SMS: 0,
+        MOH_PHONE: 1,
+        LOCAL_SMS: 1,
+        LOCAL_PHONE: 1,
       },
       {
-        REGION: "北區",
         COUNTY_LABEL: "基隆市",
         HAPPEN_TIME_LABEL: "2025-12-20 21:15",
         DISASTER_TYPE: "火災",
@@ -878,9 +1097,15 @@ const EventReportManagementPage = {
         TRIAGE_LEVEL_UNKNOWN: 0,
         TRIAGE_TOTAL: 8,
         DEATH_COUNT: 1,
+        CASUALTY_DEATH: 1,
+        CASUALTY_INJURED: 7,
+        CASUALTY_MISSING: 0,
+        MOH_SMS: 1,
+        MOH_PHONE: 1,
+        LOCAL_SMS: 1,
+        LOCAL_PHONE: 2,
       },
       {
-        REGION: "北區",
         COUNTY_LABEL: "新竹縣",
         HAPPEN_TIME_LABEL: "2025-12-19 09:30",
         DISASTER_TYPE: "測試",
@@ -896,9 +1121,15 @@ const EventReportManagementPage = {
         TRIAGE_LEVEL_UNKNOWN: 0,
         TRIAGE_TOTAL: 0,
         DEATH_COUNT: 0,
+        CASUALTY_DEATH: 0,
+        CASUALTY_INJURED: 0,
+        CASUALTY_MISSING: 0,
+        MOH_SMS: 0,
+        MOH_PHONE: 0,
+        LOCAL_SMS: 0,
+        LOCAL_PHONE: 0,
       },
       {
-        REGION: "離島",
         COUNTY_LABEL: "澎湖縣",
         HAPPEN_TIME_LABEL: "2025-12-18 15:20",
         DISASTER_TYPE: "交通事故",
@@ -914,9 +1145,15 @@ const EventReportManagementPage = {
         TRIAGE_LEVEL_UNKNOWN: 0,
         TRIAGE_TOTAL: 4,
         DEATH_COUNT: 0,
+        CASUALTY_DEATH: 0,
+        CASUALTY_INJURED: 4,
+        CASUALTY_MISSING: 0,
+        MOH_SMS: 0,
+        MOH_PHONE: 1,
+        LOCAL_SMS: 1,
+        LOCAL_PHONE: 1,
       },
       {
-        REGION: "北區",
         COUNTY_LABEL: "台北市",
         HAPPEN_TIME_LABEL: "2025-12-17 12:10",
         DISASTER_TYPE: "地震",
@@ -932,240 +1169,13 @@ const EventReportManagementPage = {
         TRIAGE_LEVEL_UNKNOWN: 0,
         TRIAGE_TOTAL: 13,
         DEATH_COUNT: 0,
-      },
-      {
-        REGION: "北區",
-        COUNTY_LABEL: "新北市",
-        HAPPEN_TIME_LABEL: "2025-12-16 08:00",
-        DISASTER_TYPE: "演習",
-        DISASTER_NO_LABEL: "G1141216-001",
-        DISASTER_NAME: "新北市新店區災害防救演習",
-        MSG_SOURCE: "REMOC",
-        MSG_CREATE_TIME: "2025-12-16 08:05",
-        TRIAGE_LEVEL_1: 0,
-        TRIAGE_LEVEL_2: 0,
-        TRIAGE_LEVEL_3: 0,
-        TRIAGE_LEVEL_4: 0,
-        TRIAGE_LEVEL_5: 0,
-        TRIAGE_LEVEL_UNKNOWN: 0,
-        TRIAGE_TOTAL: 0,
-        DEATH_COUNT: 0,
-      },
-      {
-        REGION: "中區",
-        COUNTY_LABEL: "彰化縣",
-        HAPPEN_TIME_LABEL: "2025-12-15 11:30",
-        DISASTER_TYPE: "火災",
-        DISASTER_NO_LABEL: "F1141215-002",
-        DISASTER_NAME: "彰化縣和美鎮倉儲火警",
-        MSG_SOURCE: "EMS",
-        MSG_CREATE_TIME: "2025-12-15 11:35",
-        TRIAGE_LEVEL_1: 0,
-        TRIAGE_LEVEL_2: 1,
-        TRIAGE_LEVEL_3: 1,
-        TRIAGE_LEVEL_4: 2,
-        TRIAGE_LEVEL_5: 0,
-        TRIAGE_LEVEL_UNKNOWN: 0,
-        TRIAGE_TOTAL: 4,
-        DEATH_COUNT: 0,
-      },
-      {
-        REGION: "北區",
-        COUNTY_LABEL: "苗栗縣",
-        HAPPEN_TIME_LABEL: "2025-12-14 08:15",
-        DISASTER_TYPE: "地震",
-        DISASTER_NO_LABEL: "E1141214-001",
-        DISASTER_NAME: "苗栗縣頭份市地震災害",
-        MSG_SOURCE: "REMOC",
-        MSG_CREATE_TIME: "2025-12-14 08:20",
-        TRIAGE_LEVEL_1: 1,
-        TRIAGE_LEVEL_2: 2,
-        TRIAGE_LEVEL_3: 3,
-        TRIAGE_LEVEL_4: 2,
-        TRIAGE_LEVEL_5: 1,
-        TRIAGE_LEVEL_UNKNOWN: 0,
-        TRIAGE_TOTAL: 9,
-        DEATH_COUNT: 0,
-      },
-      {
-        REGION: "東區",
-        COUNTY_LABEL: "花蓮縣",
-        HAPPEN_TIME_LABEL: "2025-12-13 13:45",
-        DISASTER_TYPE: "交通事故",
-        DISASTER_NO_LABEL: "C1141213-003",
-        DISASTER_NAME: "花蓮縣花蓮市遊覽車翻覆事故",
-        MSG_SOURCE: "EMS",
-        MSG_CREATE_TIME: "2025-12-13 13:50",
-        TRIAGE_LEVEL_1: 2,
-        TRIAGE_LEVEL_2: 4,
-        TRIAGE_LEVEL_3: 6,
-        TRIAGE_LEVEL_4: 4,
-        TRIAGE_LEVEL_5: 2,
-        TRIAGE_LEVEL_UNKNOWN: 0,
-        TRIAGE_TOTAL: 18,
-        DEATH_COUNT: 1,
-      },
-      {
-        REGION: "南區",
-        COUNTY_LABEL: "屏東縣",
-        HAPPEN_TIME_LABEL: "2025-12-12 10:00",
-        DISASTER_TYPE: "演習",
-        DISASTER_NO_LABEL: "G1141212-001",
-        DISASTER_NAME: "屏東縣大規模災害演練",
-        MSG_SOURCE: "REMOC",
-        MSG_CREATE_TIME: "2025-12-12 10:05",
-        TRIAGE_LEVEL_1: 0,
-        TRIAGE_LEVEL_2: 0,
-        TRIAGE_LEVEL_3: 0,
-        TRIAGE_LEVEL_4: 0,
-        TRIAGE_LEVEL_5: 0,
-        TRIAGE_LEVEL_UNKNOWN: 0,
-        TRIAGE_TOTAL: 0,
-        DEATH_COUNT: 0,
-      },
-      {
-        REGION: "東區",
-        COUNTY_LABEL: "台東縣",
-        HAPPEN_TIME_LABEL: "2025-12-11 19:30",
-        DISASTER_TYPE: "寒害",
-        DISASTER_NO_LABEL: "R1141211-001",
-        DISASTER_NAME: "台東縣卑南鄉寒流事件",
-        MSG_SOURCE: "EMS",
-        MSG_CREATE_TIME: "2025-12-11 19:35",
-        TRIAGE_LEVEL_1: 0,
-        TRIAGE_LEVEL_2: 1,
-        TRIAGE_LEVEL_3: 2,
-        TRIAGE_LEVEL_4: 1,
-        TRIAGE_LEVEL_5: 1,
-        TRIAGE_LEVEL_UNKNOWN: 0,
-        TRIAGE_TOTAL: 5,
-        DEATH_COUNT: 0,
-      },
-      {
-        REGION: "中區",
-        COUNTY_LABEL: "南投縣",
-        HAPPEN_TIME_LABEL: "2025-12-10 14:50",
-        DISASTER_TYPE: "地震",
-        DISASTER_NO_LABEL: "E1141210-002",
-        DISASTER_NAME: "南投縣埔里鎮地震事件",
-        MSG_SOURCE: "REMOC",
-        MSG_CREATE_TIME: "2025-12-10 14:55",
-        TRIAGE_LEVEL_1: 1,
-        TRIAGE_LEVEL_2: 2,
-        TRIAGE_LEVEL_3: 4,
-        TRIAGE_LEVEL_4: 3,
-        TRIAGE_LEVEL_5: 1,
-        TRIAGE_LEVEL_UNKNOWN: 0,
-        TRIAGE_TOTAL: 11,
-        DEATH_COUNT: 0,
-      },
-      {
-        REGION: "中區",
-        COUNTY_LABEL: "雲林縣",
-        HAPPEN_TIME_LABEL: "2025-12-09 07:40",
-        DISASTER_TYPE: "交通事故",
-        DISASTER_NO_LABEL: "C1141209-001",
-        DISASTER_NAME: "雲林縣斗六市重大車禍",
-        MSG_SOURCE: "EMS",
-        MSG_CREATE_TIME: "2025-12-09 07:45",
-        TRIAGE_LEVEL_1: 1,
-        TRIAGE_LEVEL_2: 1,
-        TRIAGE_LEVEL_3: 2,
-        TRIAGE_LEVEL_4: 2,
-        TRIAGE_LEVEL_5: 1,
-        TRIAGE_LEVEL_UNKNOWN: 0,
-        TRIAGE_TOTAL: 7,
-        DEATH_COUNT: 0,
-      },
-      {
-        REGION: "北區",
-        COUNTY_LABEL: "基隆市",
-        HAPPEN_TIME_LABEL: "2025-12-08 21:15",
-        DISASTER_TYPE: "火災",
-        DISASTER_NO_LABEL: "F1141208-003",
-        DISASTER_NAME: "基隆市仁愛區住宅火災",
-        MSG_SOURCE: "REMOC",
-        MSG_CREATE_TIME: "2025-12-08 21:20",
-        TRIAGE_LEVEL_1: 1,
-        TRIAGE_LEVEL_2: 2,
-        TRIAGE_LEVEL_3: 2,
-        TRIAGE_LEVEL_4: 2,
-        TRIAGE_LEVEL_5: 1,
-        TRIAGE_LEVEL_UNKNOWN: 0,
-        TRIAGE_TOTAL: 8,
-        DEATH_COUNT: 1,
-      },
-      {
-        REGION: "北區",
-        COUNTY_LABEL: "新竹縣",
-        HAPPEN_TIME_LABEL: "2025-12-07 09:30",
-        DISASTER_TYPE: "測試",
-        DISASTER_NO_LABEL: "G1141207-002",
-        DISASTER_NAME: "新竹縣竹北市緊急救護測試",
-        MSG_SOURCE: "EMS",
-        MSG_CREATE_TIME: "2025-12-07 09:35",
-        TRIAGE_LEVEL_1: 0,
-        TRIAGE_LEVEL_2: 0,
-        TRIAGE_LEVEL_3: 0,
-        TRIAGE_LEVEL_4: 0,
-        TRIAGE_LEVEL_5: 0,
-        TRIAGE_LEVEL_UNKNOWN: 0,
-        TRIAGE_TOTAL: 0,
-        DEATH_COUNT: 0,
-      },
-      {
-        REGION: "離島",
-        COUNTY_LABEL: "澎湖縣",
-        HAPPEN_TIME_LABEL: "2025-12-06 15:20",
-        DISASTER_TYPE: "交通事故",
-        DISASTER_NO_LABEL: "C1141206-001",
-        DISASTER_NAME: "澎湖縣馬公市港區交通事故",
-        MSG_SOURCE: "REMOC",
-        MSG_CREATE_TIME: "2025-12-06 15:25",
-        TRIAGE_LEVEL_1: 0,
-        TRIAGE_LEVEL_2: 1,
-        TRIAGE_LEVEL_3: 1,
-        TRIAGE_LEVEL_4: 1,
-        TRIAGE_LEVEL_5: 1,
-        TRIAGE_LEVEL_UNKNOWN: 0,
-        TRIAGE_TOTAL: 4,
-        DEATH_COUNT: 0,
-      },
-      {
-        REGION: "北區",
-        COUNTY_LABEL: "台北市",
-        HAPPEN_TIME_LABEL: "2025-12-05 12:10",
-        DISASTER_TYPE: "地震",
-        DISASTER_NO_LABEL: "E1141205-002",
-        DISASTER_NAME: "台北市大安區地震",
-        MSG_SOURCE: "EMS",
-        MSG_CREATE_TIME: "2025-12-05 12:15",
-        TRIAGE_LEVEL_1: 2,
-        TRIAGE_LEVEL_2: 3,
-        TRIAGE_LEVEL_3: 4,
-        TRIAGE_LEVEL_4: 3,
-        TRIAGE_LEVEL_5: 1,
-        TRIAGE_LEVEL_UNKNOWN: 0,
-        TRIAGE_TOTAL: 13,
-        DEATH_COUNT: 0,
-      },
-      {
-        REGION: "北區",
-        COUNTY_LABEL: "新北市",
-        HAPPEN_TIME_LABEL: "2025-12-04 08:00",
-        DISASTER_TYPE: "演習",
-        DISASTER_NO_LABEL: "G1141204-001",
-        DISASTER_NAME: "新北市新店區災害防救演習",
-        MSG_SOURCE: "REMOC",
-        MSG_CREATE_TIME: "2025-12-04 08:05",
-        TRIAGE_LEVEL_1: 0,
-        TRIAGE_LEVEL_2: 0,
-        TRIAGE_LEVEL_3: 0,
-        TRIAGE_LEVEL_4: 0,
-        TRIAGE_LEVEL_5: 0,
-        TRIAGE_LEVEL_UNKNOWN: 0,
-        TRIAGE_TOTAL: 0,
-        DEATH_COUNT: 0,
+        CASUALTY_DEATH: 0,
+        CASUALTY_INJURED: 13,
+        CASUALTY_MISSING: 0,
+        MOH_SMS: 1,
+        MOH_PHONE: 1,
+        LOCAL_SMS: 2,
+        LOCAL_PHONE: 1,
       },
     ];
   },
@@ -1190,11 +1200,10 @@ const EventReportManagementPage = {
     $("#ResultTime").text("");
   },
 
-  // 設定預設日期（上個月至今天）
+  // 設定預設日期（當月1號至今天）
   setDefaultDates: function () {
     const today = new Date();
-    const lastMonth = new Date(today);
-    lastMonth.setMonth(lastMonth.getMonth() - 1);
+    const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
 
     const formatDate = (date) => {
       const year = date.getFullYear();
@@ -1203,7 +1212,7 @@ const EventReportManagementPage = {
       return `${year}-${month}-${day}`;
     };
 
-    $("#Q_HAPPEN_TIME_S").val(formatDate(lastMonth));
+    $("#Q_HAPPEN_TIME_S").val(formatDate(firstDay));
     $("#Q_HAPPEN_TIME_E").val(formatDate(today));
   },
 
@@ -1280,7 +1289,7 @@ const EventReportManagementPage = {
     const $content = $("#EventReportManagementContent");
     const queryText = $("#QueryText").text();
     alert(
-      "資料匯出功能（待實作）\n\n將匯出符合以下條件的資料：\n" +
+      "功能（待實作）\n\n將匯出符合以下條件的資料：\n" +
         (queryText || "全部資料")
     );
   },
