@@ -404,7 +404,7 @@ const EventReportManagementPage = {
             {
               field: "DISASTER_NO_LABEL",
               title: "災害編號",
-              width: 90,
+              width: 100,
               align: "center",
               rowspan: 2,
             },
@@ -458,6 +458,12 @@ const EventReportManagementPage = {
               width: 40,
               align: "center",
               rowspan: 2,
+              formatter: function (value, row, index) {
+                if (row.MSG_SOURCE && row.MSG_SOURCE.includes("REMOC")) {
+                  return "-";
+                }
+                return value || "0";
+              },
             },
             {
               title: "事件傷亡統計",
@@ -471,12 +477,29 @@ const EventReportManagementPage = {
               title: "衛生局/醫院/119通報",
               colspan: 2,
             },
+            {
+              field: "IS_DELETED",
+              title: "是否刪除",
+              width: 65,
+              align: "center",
+              rowspan: 2,
+              formatter: function (value, row, index) {
+                if (value === "Y") {
+                  const reason = row.DELETE_REASON || "未提供原因";
+                  return (
+                    '<span style="color: red;" title="' + reason + '">是</span>'
+                  );
+                } else {
+                  return "<span>否</span>";
+                }
+              },
+            },
           ],
           [
             {
               field: "MSG_SOURCE",
               title: "來源",
-              width: 50,
+              width: 100,
               align: "center",
             },
             {
@@ -496,36 +519,72 @@ const EventReportManagementPage = {
               title: "一",
               width: 30,
               align: "center",
+              formatter: function (value, row, index) {
+                if (row.MSG_SOURCE && row.MSG_SOURCE.includes("REMOC")) {
+                  return "-";
+                }
+                return value || "0";
+              },
             },
             {
               field: "TRIAGE_LEVEL_2",
               title: "二",
               width: 30,
               align: "center",
+              formatter: function (value, row, index) {
+                if (row.MSG_SOURCE && row.MSG_SOURCE.includes("REMOC")) {
+                  return "-";
+                }
+                return value || "0";
+              },
             },
             {
               field: "TRIAGE_LEVEL_3",
               title: "三",
               width: 30,
               align: "center",
+              formatter: function (value, row, index) {
+                if (row.MSG_SOURCE && row.MSG_SOURCE.includes("REMOC")) {
+                  return "-";
+                }
+                return value || "0";
+              },
             },
             {
               field: "TRIAGE_LEVEL_4",
               title: "四",
               width: 30,
               align: "center",
+              formatter: function (value, row, index) {
+                if (row.MSG_SOURCE && row.MSG_SOURCE.includes("REMOC")) {
+                  return "-";
+                }
+                return value || "0";
+              },
             },
             {
               field: "TRIAGE_LEVEL_5",
               title: "五",
               width: 30,
               align: "center",
+              formatter: function (value, row, index) {
+                if (row.MSG_SOURCE && row.MSG_SOURCE.includes("REMOC")) {
+                  return "-";
+                }
+                return value || "0";
+              },
             },
             {
               field: "TRIAGE_LEVEL_UNKNOWN",
               title: "未",
               width: 30,
               align: "center",
+              formatter: function (value, row, index) {
+                if (row.MSG_SOURCE && row.MSG_SOURCE.includes("REMOC")) {
+                  return "-";
+                }
+                return value || "0";
+              },
             },
             {
               field: "TRIAGE_TOTAL",
@@ -535,24 +594,48 @@ const EventReportManagementPage = {
               styler: function (value, row, index) {
                 return "font-weight: bold;";
               },
+              formatter: function (value, row, index) {
+                if (row.MSG_SOURCE && row.MSG_SOURCE.includes("REMOC")) {
+                  return "-";
+                }
+                return value || "0";
+              },
             },
             {
               field: "CASUALTY_DEATH",
               title: "死亡",
-              width: 30,
+              width: 40,
               align: "center",
+              formatter: function (value, row, index) {
+                if (row.MSG_SOURCE === "EMS") {
+                  return "-";
+                }
+                return value || "0";
+              },
             },
             {
               field: "CASUALTY_INJURED",
               title: "傷病",
-              width: 30,
+              width: 40,
               align: "center",
+              formatter: function (value, row, index) {
+                if (row.MSG_SOURCE === "EMS") {
+                  return "-";
+                }
+                return value || "0";
+              },
             },
             {
               field: "CASUALTY_MISSING",
               title: "失蹤",
-              width: 30,
+              width: 40,
               align: "center",
+              formatter: function (value, row, index) {
+                if (row.MSG_SOURCE === "EMS") {
+                  return "-";
+                }
+                return value || "0";
+              },
             },
             {
               field: "MOH_SMS",
@@ -569,13 +652,13 @@ const EventReportManagementPage = {
             {
               field: "LOCAL_SMS",
               title: "簡訊",
-              width: 60,
+              width: 68,
               align: "center",
             },
             {
               field: "LOCAL_PHONE",
               title: "電話",
-              width: 60,
+              width: 68,
               align: "center",
             },
           ],
@@ -727,7 +810,7 @@ const EventReportManagementPage = {
         DISASTER_TYPE: "地震",
         DISASTER_NO_LABEL: "E1150105-001",
         DISASTER_NAME: "台北市信義區規模6.2地震災害緊急救護應變事件處理",
-        MSG_SOURCE: "REMOC",
+        MSG_SOURCE: "台北區REMOC",
         MSG_CREATE_TIME: "2026-01-05 10:35",
         TRIAGE_LEVEL_1: 2,
         TRIAGE_LEVEL_2: 3,
@@ -744,6 +827,8 @@ const EventReportManagementPage = {
         MOH_PHONE: 1,
         LOCAL_SMS: 2,
         LOCAL_PHONE: 1,
+        IS_DELETED: "N",
+        DELETE_REASON: "",
       },
       {
         COUNTY_LABEL: "新北市",
@@ -768,6 +853,8 @@ const EventReportManagementPage = {
         MOH_PHONE: 1,
         LOCAL_SMS: 1,
         LOCAL_PHONE: 2,
+        IS_DELETED: "Y",
+        DELETE_REASON: "資料重複",
       },
       {
         COUNTY_LABEL: "台中市",
@@ -775,7 +862,7 @@ const EventReportManagementPage = {
         DISASTER_TYPE: "演習",
         DISASTER_NO_LABEL: "G1150103-001",
         DISASTER_NAME: "台中市大型活動救護演習",
-        MSG_SOURCE: "REMOC",
+        MSG_SOURCE: "中區REMOC",
         MSG_CREATE_TIME: "2026-01-03 09:05",
         TRIAGE_LEVEL_1: 0,
         TRIAGE_LEVEL_2: 0,
@@ -816,6 +903,8 @@ const EventReportManagementPage = {
         MOH_PHONE: 1,
         LOCAL_SMS: 2,
         LOCAL_PHONE: 2,
+        IS_DELETED: "N",
+        DELETE_REASON: "",
       },
       {
         COUNTY_LABEL: "桃園市",
@@ -840,6 +929,8 @@ const EventReportManagementPage = {
         MOH_PHONE: 1,
         LOCAL_SMS: 1,
         LOCAL_PHONE: 1,
+        IS_DELETED: "N",
+        DELETE_REASON: "",
       },
       {
         COUNTY_LABEL: "新竹市",
@@ -868,10 +959,10 @@ const EventReportManagementPage = {
       {
         COUNTY_LABEL: "宜蘭縣",
         HAPPEN_TIME_LABEL: "2025-12-29 10:00",
-        DISASTER_TYPE: "測試",
+        DISASTER_TYPE: "其他",
         DISASTER_NO_LABEL: "G1141229-001",
         DISASTER_NAME: "宜蘭縣緊急救護系統測試",
-        MSG_SOURCE: "REMOC",
+        MSG_SOURCE: "台北區REMOC",
         MSG_CREATE_TIME: "2025-12-29 10:05",
         TRIAGE_LEVEL_1: 0,
         TRIAGE_LEVEL_2: 0,
@@ -919,7 +1010,7 @@ const EventReportManagementPage = {
         DISASTER_TYPE: "火災",
         DISASTER_NO_LABEL: "F1141227-002",
         DISASTER_NAME: "彰化縣和美鎮倉儲火警",
-        MSG_SOURCE: "REMOC",
+        MSG_SOURCE: "中區REMOC",
         MSG_CREATE_TIME: "2025-12-27 11:35",
         TRIAGE_LEVEL_1: 0,
         TRIAGE_LEVEL_2: 1,
@@ -991,7 +1082,7 @@ const EventReportManagementPage = {
         DISASTER_TYPE: "演習",
         DISASTER_NO_LABEL: "G1141224-001",
         DISASTER_NAME: "屏東縣大規模災害演練",
-        MSG_SOURCE: "REMOC",
+        MSG_SOURCE: "高屏區REMOC",
         MSG_CREATE_TIME: "2025-12-24 10:05",
         TRIAGE_LEVEL_1: 0,
         TRIAGE_LEVEL_2: 0,
@@ -1039,7 +1130,7 @@ const EventReportManagementPage = {
         DISASTER_TYPE: "地震",
         DISASTER_NO_LABEL: "E1141222-002",
         DISASTER_NAME: "南投縣埔里鎮地震事件",
-        MSG_SOURCE: "REMOC",
+        MSG_SOURCE: "中區REMOC",
         MSG_CREATE_TIME: "2025-12-22 14:55",
         TRIAGE_LEVEL_1: 1,
         TRIAGE_LEVEL_2: 2,
@@ -1087,7 +1178,7 @@ const EventReportManagementPage = {
         DISASTER_TYPE: "火災",
         DISASTER_NO_LABEL: "F1141220-003",
         DISASTER_NAME: "基隆市仁愛區住宅火災",
-        MSG_SOURCE: "REMOC",
+        MSG_SOURCE: "台北區REMOC",
         MSG_CREATE_TIME: "2025-12-20 21:20",
         TRIAGE_LEVEL_1: 1,
         TRIAGE_LEVEL_2: 2,
@@ -1108,7 +1199,7 @@ const EventReportManagementPage = {
       {
         COUNTY_LABEL: "新竹縣",
         HAPPEN_TIME_LABEL: "2025-12-19 09:30",
-        DISASTER_TYPE: "測試",
+        DISASTER_TYPE: "其他",
         DISASTER_NO_LABEL: "G1141219-002",
         DISASTER_NAME: "新竹縣竹北市緊急救護測試",
         MSG_SOURCE: "EMS",
@@ -1135,7 +1226,7 @@ const EventReportManagementPage = {
         DISASTER_TYPE: "交通事故",
         DISASTER_NO_LABEL: "C1141218-001",
         DISASTER_NAME: "澎湖縣馬公市港區交通事故",
-        MSG_SOURCE: "REMOC",
+        MSG_SOURCE: "高屏區REMOC",
         MSG_CREATE_TIME: "2025-12-18 15:25",
         TRIAGE_LEVEL_1: 0,
         TRIAGE_LEVEL_2: 1,
@@ -1260,28 +1351,176 @@ const EventReportManagementPage = {
       return;
     }
 
-    const message = `確定要刪除此筆資料嗎？<br/><br/>災害名稱：${selected.DISASTER_NAME}<br/>災害編號：${selected.DISASTER_NO_LABEL}`;
+    // 刪除理由選項
+    const deleteReasons = [
+      { value: "", text: "請選擇刪除理由" },
+      { value: "data_duplicate", text: "資料重複" },
+      { value: "input_error", text: "輸入錯誤" },
+      { value: "test_data", text: "測試資料" },
+      { value: "system_error", text: "系統錯誤" },
+      { value: "cancelled_event", text: "事件取消" },
+      { value: "other", text: "其他原因" },
+    ];
 
-    $.messager.confirm("確認刪除", message, function (r) {
-      if (r) {
-        // 這裡應該呼叫後端 API 刪除資料
+    // 建立 EasyUI 風格的對話框HTML
+    const deleteReasonHtml = `
+      <div class="messager-body panel-body panel-body-noborder window-body">
+        <div class="messager-icon messager-question"></div>
+        <div style="margin-left: 40px;">
+          <div style="margin-bottom: 10px;">
+            <span style="font-weight: bold; font-size: 16px;">確定要刪除此筆資料嗎？</span><br/>
+            災害名稱：${selected.DISASTER_NAME}<br/>
+            災害編號：${selected.DISASTER_NO_LABEL}
+          </div>
+          <div style="margin-bottom: 15px;">
+            <label for="deleteReason" style="display: inline-block; width: 85px; vertical-align: top; white-space: nowrap;"><span style="color: red;">*</span><strong>刪除理由：</strong></label>
+            <select id="deleteReason" class="textbox-text" style="width: 220px; padding: 5px; border: 1px solid #ccc; display: inline-block;" required>
+              ${deleteReasons
+                .map(
+                  (reason) =>
+                    `<option value="${reason.value}">${reason.text}</option>`
+                )
+                .join("")}
+            </select>
+          </div>
+          <div id="otherReasonContainer" style="margin-bottom: 15px; display: none;">
+            <label for="otherReasonText" style="display: inline-block; width: 85px; vertical-align: top; white-space: nowrap;"><span style="color: red;">*</span><strong>請說明：</strong></label>
+            <input type="text" id="otherReasonText" class="textbox-text" style="width: 220px; padding: 5px; border: 1px solid #ccc; display: inline-block;" placeholder="請輸入具體原因..." maxlength="100">
+          </div>
+        </div>
+        <div style="clear:both;"></div>
+        <div class="messager-button" style="text-align: center; padding-top: 15px;">
+          <a href="javascript:void(0)" class="l-btn l-btn-small" id="deleteConfirmBtn" style="margin-left: 10px;">
+            <span class="l-btn-left">
+              <span class="l-btn-text">確定</span>
+            </span>
+          </a>
+          <a href="javascript:void(0)" class="l-btn l-btn-small" id="deleteCancelBtn" style="margin-left: 10px;">
+            <span class="l-btn-left">
+              <span class="l-btn-text">取消</span>
+            </span>
+          </a>
+        </div>
+      </div>
+    `;
 
-        $.messager.show({
-          title: "成功",
-          msg: '<i class="fa fa-check-circle" style="color: #5cb85c; margin-right: 5px;"></i>資料已刪除',
-          timeout: 2000,
-          showType: "fade",
-          style: {
-            top:
-              document.body.scrollTop +
-              (document.documentElement.clientHeight - 150) / 2,
-            left: (document.documentElement.clientWidth - 300) / 2,
-          },
-        });
+    // 建立 EasyUI 風格的模態對話框
+    const $dialogContainer = $(
+      '<div class="panel window messager-window" style="display: none; width: 400px;"></div>'
+    );
+    const $dialogHeader = $(`
+      <div class="panel-header panel-header-noborder window-header">
+        <div class="panel-title">請確認</div>
+        <div class="panel-tool">
+          <a class="panel-tool-close" href="javascript:void(0)"></a>
+        </div>
+      </div>
+    `);
 
-        // 實際應該呼叫 API 並重新查詢
-        // self.searchData();
+    $dialogContainer.append($dialogHeader);
+    $dialogContainer.append(deleteReasonHtml);
+    $("body").append($dialogContainer);
+
+    // 計算居中位置
+    const windowWidth = $(window).width();
+    const windowHeight = $(window).height();
+    const dialogWidth = 400;
+    const dialogHeight = 280;
+
+    $dialogContainer.css({
+      display: "block",
+      position: "fixed",
+      left: (windowWidth - dialogWidth) / 2 + "px",
+      top: (windowHeight - dialogHeight) / 2 + "px",
+      "z-index": 9002,
+    });
+
+    // 加入遮罩
+    const $overlay = $(
+      '<div class="window-mask" style="display: block; z-index: 9001;"></div>'
+    );
+    $("body").append($overlay);
+
+    // 綁定下拉選單變更事件
+    $("#deleteReason").on("change", function () {
+      const selectedValue = $(this).val();
+      const $otherContainer = $("#otherReasonContainer");
+      const $otherInput = $("#otherReasonText");
+
+      if (selectedValue === "other") {
+        $otherContainer.show();
+        $otherInput.focus();
+      } else {
+        $otherContainer.hide();
+        $otherInput.val("").css("border-color", "#ccc");
       }
+    });
+
+    // 綁定確定按鈕事件
+    $("#deleteConfirmBtn").on("click", function () {
+      const selectedReason = $("#deleteReason").val();
+      const otherReasonText = $("#otherReasonText").val().trim();
+
+      // 重置邊框顏色
+      $("#deleteReason").css("border-color", "#ccc");
+      $("#otherReasonText").css("border-color", "#ccc");
+
+      if (!selectedReason || selectedReason === "") {
+        // 高亮必填欄位
+        $("#deleteReason").css("border-color", "#ff4444");
+        $.messager.alert(
+          "提示",
+          "刪除理由為必填項目，請選擇刪除理由！",
+          "warning"
+        );
+        return;
+      }
+
+      // 如果選擇其他原因，檢查文字輸入
+      if (selectedReason === "other" && !otherReasonText) {
+        $("#otherReasonText").css("border-color", "#ff4444");
+        $.messager.alert("提示", "請輸入具體的其他原因！", "warning");
+        $("#otherReasonText").focus();
+        return;
+      }
+
+      // 執行刪除邏輯
+      let reasonText = $("#deleteReason option:selected").text();
+      if (selectedReason === "other") {
+        reasonText = otherReasonText;
+      }
+      console.log("刪除資料:", {
+        record: selected,
+        reason: selectedReason,
+        reasonText: reasonText,
+      });
+
+      // 顯示成功訊息
+      $.messager.show({
+        title: "成功",
+        msg: `<i class="fa fa-check-circle" style="color: #5cb85c; margin-right: 5px;"></i>刪除成功`,
+        timeout: 3000,
+        showType: "fade",
+        style: {
+          right: "",
+          bottom: "",
+          top: ($(window).height() - 150) / 2,
+          left: ($(window).width() - 300) / 2,
+        },
+      });
+
+      // 關閉對話框
+      $dialogContainer.remove();
+      $overlay.remove();
+
+      // 實際應該呼叫 API 並重新查詢
+      // self.searchData();
+    });
+
+    // 綁定取消和關閉按鈕事件
+    $("#deleteCancelBtn, .panel-tool-close").on("click", function () {
+      $dialogContainer.remove();
+      $overlay.remove();
     });
   },
 
