@@ -1,7 +1,7 @@
 // ==================== 訊息來源資料 ====================
 const MessageSourceData = [
-  { code: "EMS", name: "緊急醫療管理系統(EMS)" },
-  { code: "FIRE_DISPATCH", name: "消防局救護派遣系統" },
+  { code: "EMS", name: "EMS" },
+  { code: "FIRE_DISPATCH", name: "119派遣系統" },
   { code: "FIRE_LINE", name: "消防局LINE" },
   { code: "FIRE_RADIO", name: "消防局無線電" },
   { code: "NEWS", name: "網路新聞" },
