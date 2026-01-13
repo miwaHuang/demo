@@ -4,19 +4,19 @@ const EventReportManagementPage = {
   // 生成 HTML 內容
   getContent: function () {
     // 檢查依賴項是否存在
-    if (typeof CommonDataUtils === 'undefined') {
+    if (typeof CommonDataUtils === "undefined") {
       return '<div class="alert alert-danger">錯誤：CommonDataUtils 未定義</div>';
     }
-    if (typeof DisasterData === 'undefined') {
+    if (typeof DisasterData === "undefined") {
       return '<div class="alert alert-danger">錯誤：DisasterData 未定義</div>';
     }
-    if (typeof CountyData === 'undefined') {
+    if (typeof CountyData === "undefined") {
       return '<div class="alert alert-danger">錯誤：CountyData 未定義</div>';
     }
-    if (typeof REMOCData === 'undefined') {
+    if (typeof REMOCData === "undefined") {
       return '<div class="alert alert-danger">錯誤：REMOCData 未定義</div>';
     }
-    if (typeof ButtonComponent === 'undefined') {
+    if (typeof ButtonComponent === "undefined") {
       return '<div class="alert alert-danger">錯誤：ButtonComponent 未定義</div>';
     }
 
@@ -182,10 +182,13 @@ const EventReportManagementPage = {
                         <div class="col-sm-7">
                           <select class="form-control" id="Q_SOURCE" name="Q_SOURCE">
                             <option value="">全部</option>
-                            <option value="ems">EMS</option>
-                            ${CommonDataUtils.generateOptions(
-                              REMOCData.remocInfo
-                            )}
+                            ${
+                              typeof MessageSourceData !== "undefined"
+                                ? CommonDataUtils.generateOptions(
+                                    MessageSourceData
+                                  )
+                                : ""
+                            }
                           </select>
                         </div>
                       </div>
@@ -237,7 +240,7 @@ const EventReportManagementPage = {
                     查詢結果：
                     <span id="ResultText" style="color: #5cb85c; font-weight: bold"></span>
                   </div>
-                  <div class="btn-group" role="group" style="margin-bottom: 10px">
+                  <div class="btn-toolbar" style="margin-bottom: 10px;">
                     ${ButtonComponent.add("btnAdd", "新增")}
                     ${ButtonComponent.edit("btnEdit", "修改")}
                     ${ButtonComponent.view("btnView", "檢視")}
@@ -408,7 +411,7 @@ const EventReportManagementPage = {
             {
               field: "HAPPEN_TIME_LABEL",
               title: "發生日期",
-              width: 90,
+              width: 100,
               align: "center",
               rowspan: 2,
               formatter: function (value, row, index) {
@@ -424,18 +427,24 @@ const EventReportManagementPage = {
               width: 100,
               align: "center",
               rowspan: 2,
+              formatter: function (value, row, index) {
+                if (row.MSG_SOURCE === "EMS") {
+                  return value;
+                }
+                return "-";
+              },
             },
             {
               field: "DISASTER_TYPE",
               title: "災害種類",
-              width: 60,
+              width: 80,
               align: "center",
               rowspan: 2,
             },
             {
               field: "DISASTER_NAME",
               title: "災害名稱",
-              width: 200,
+              width: 220,
               align: "center", // 表頭置中
               rowspan: 2,
               formatter: function (value, row, index) {
@@ -455,9 +464,32 @@ const EventReportManagementPage = {
         columns: [
           [
             {
+              field: "REGION_LABEL",
+              title: "區域",
+              width: 80,
+              align: "center",
+              rowspan: 2,
+              formatter: function (value, row, index) {
+                if (
+                  typeof CommonDataUtils !== "undefined" &&
+                  row.COUNTY_LABEL
+                ) {
+                  // 依照範例資料 COUNTY_LABEL 取得對應 code
+                  var county =
+                    typeof CountyData !== "undefined" &&
+                    CountyData.counties.find(
+                      (c) => c.name === row.COUNTY_LABEL
+                    );
+                  var code = county ? county.code : "";
+                  return CommonDataUtils.getRegionByCounty(code) || "";
+                }
+                return "";
+              },
+            },
+            {
               field: "COUNTY_LABEL",
               title: "發生地",
-              width: 50,
+              width: 80,
               align: "center",
               rowspan: 2,
             },
@@ -476,10 +508,10 @@ const EventReportManagementPage = {
               align: "center",
               rowspan: 2,
               formatter: function (value, row, index) {
-                if (row.MSG_SOURCE && row.MSG_SOURCE.includes("REMOC")) {
-                  return "-";
+                if (row.MSG_SOURCE === "EMS") {
+                  return value || "0";
                 }
-                return value || "0";
+                return "-";
               },
             },
             {
@@ -516,13 +548,13 @@ const EventReportManagementPage = {
             {
               field: "MSG_SOURCE",
               title: "來源",
-              width: 100,
+              width: 120,
               align: "center",
             },
             {
               field: "MSG_CREATE_TIME",
               title: "建立日期",
-              width: 90,
+              width: 100,
               align: "center",
               formatter: function (value, row, index) {
                 if (!value) return "";
@@ -534,94 +566,94 @@ const EventReportManagementPage = {
             {
               field: "TRIAGE_LEVEL_1",
               title: "一",
-              width: 30,
+              width: 40,
               align: "center",
               formatter: function (value, row, index) {
-                if (row.MSG_SOURCE && row.MSG_SOURCE.includes("REMOC")) {
-                  return "-";
+                if (row.MSG_SOURCE === "EMS") {
+                  return value || "0";
                 }
-                return value || "0";
+                return "-";
               },
             },
             {
               field: "TRIAGE_LEVEL_2",
               title: "二",
-              width: 30,
+              width: 40,
               align: "center",
               formatter: function (value, row, index) {
-                if (row.MSG_SOURCE && row.MSG_SOURCE.includes("REMOC")) {
-                  return "-";
+                if (row.MSG_SOURCE === "EMS") {
+                  return value || "0";
                 }
-                return value || "0";
+                return "-";
               },
             },
             {
               field: "TRIAGE_LEVEL_3",
               title: "三",
-              width: 30,
+              width: 40,
               align: "center",
               formatter: function (value, row, index) {
-                if (row.MSG_SOURCE && row.MSG_SOURCE.includes("REMOC")) {
-                  return "-";
+                if (row.MSG_SOURCE === "EMS") {
+                  return value || "0";
                 }
-                return value || "0";
+                return "-";
               },
             },
             {
               field: "TRIAGE_LEVEL_4",
               title: "四",
-              width: 30,
+              width: 40,
               align: "center",
               formatter: function (value, row, index) {
-                if (row.MSG_SOURCE && row.MSG_SOURCE.includes("REMOC")) {
-                  return "-";
+                if (row.MSG_SOURCE === "EMS") {
+                  return value || "0";
                 }
-                return value || "0";
+                return "-";
               },
             },
             {
               field: "TRIAGE_LEVEL_5",
               title: "五",
-              width: 30,
+              width: 40,
               align: "center",
               formatter: function (value, row, index) {
-                if (row.MSG_SOURCE && row.MSG_SOURCE.includes("REMOC")) {
-                  return "-";
+                if (row.MSG_SOURCE === "EMS") {
+                  return value || "0";
                 }
-                return value || "0";
+                return "-";
               },
             },
             {
               field: "TRIAGE_LEVEL_UNKNOWN",
               title: "未",
-              width: 30,
+              width: 40,
               align: "center",
               formatter: function (value, row, index) {
-                if (row.MSG_SOURCE && row.MSG_SOURCE.includes("REMOC")) {
-                  return "-";
+                if (row.MSG_SOURCE === "EMS") {
+                  return value || "0";
                 }
-                return value || "0";
+                return "-";
               },
             },
             {
               field: "TRIAGE_TOTAL",
               title: "總",
-              width: 30,
+              width: 40,
               align: "center",
               styler: function (value, row, index) {
                 return "font-weight: bold;";
               },
               formatter: function (value, row, index) {
-                if (row.MSG_SOURCE && row.MSG_SOURCE.includes("REMOC")) {
-                  return "-";
+                if (row.MSG_SOURCE === "EMS") {
+                  return value || "0";
                 }
-                return value || "0";
+                return "-";
               },
             },
             {
               field: "CASUALTY_DEATH",
               title: "死亡",
-              width: 40,
+              width: 50,
               align: "center",
               formatter: function (value, row, index) {
                 if (row.MSG_SOURCE === "EMS") {
@@ -827,7 +859,7 @@ const EventReportManagementPage = {
         DISASTER_TYPE: "地震",
         DISASTER_NO_LABEL: "E1150105-001",
         DISASTER_NAME: "台北市信義區規模6.2地震災害緊急救護應變事件處理",
-        MSG_SOURCE: "台北區REMOC",
+        MSG_SOURCE: "EMS",
         MSG_CREATE_TIME: "2026-01-05 10:35",
         TRIAGE_LEVEL_1: 2,
         TRIAGE_LEVEL_2: 3,
@@ -846,6 +878,33 @@ const EventReportManagementPage = {
         LOCAL_PHONE: 1,
         IS_DELETED: "N",
         DELETE_REASON: "",
+      },
+      // 新增範例資料
+      {
+        COUNTY_LABEL: "新北市",
+        HAPPEN_TIME_LABEL: "2026-01-04 15:45",
+        DISASTER_TYPE: "交通事故",
+        DISASTER_NO_LABEL: "C1150104-002",
+        DISASTER_NAME: "新北市板橋區重大車禍事件",
+        MSG_SOURCE: "消防局救護派遣系統",
+        MSG_CREATE_TIME: "2026-01-04 15:50",
+        TRIAGE_LEVEL_1: 1,
+        TRIAGE_LEVEL_2: 2,
+        TRIAGE_LEVEL_3: 3,
+        TRIAGE_LEVEL_4: 2,
+        TRIAGE_LEVEL_5: 0,
+        TRIAGE_LEVEL_UNKNOWN: 0,
+        TRIAGE_TOTAL: 8,
+        DEATH_COUNT: 1,
+        CASUALTY_DEATH: 1,
+        CASUALTY_INJURED: 7,
+        CASUALTY_MISSING: 0,
+        MOH_SMS: 1,
+        MOH_PHONE: 1,
+        LOCAL_SMS: 1,
+        LOCAL_PHONE: 2,
+        IS_DELETED: "Y",
+        DELETE_REASON: "資料重複",
       },
       {
         COUNTY_LABEL: "新北市",
@@ -879,7 +938,7 @@ const EventReportManagementPage = {
         DISASTER_TYPE: "演習",
         DISASTER_NO_LABEL: "G1150103-001",
         DISASTER_NAME: "台中市大型活動救護演習",
-        MSG_SOURCE: "中區REMOC",
+        MSG_SOURCE: "消防局LINE",
         MSG_CREATE_TIME: "2026-01-03 09:05",
         TRIAGE_LEVEL_1: 0,
         TRIAGE_LEVEL_2: 0,
@@ -929,7 +988,7 @@ const EventReportManagementPage = {
         DISASTER_TYPE: "寒害",
         DISASTER_NO_LABEL: "R1150101-001",
         DISASTER_NAME: "桃園市寒害事件",
-        MSG_SOURCE: "REMOC",
+        MSG_SOURCE: "消防局無線電",
         MSG_CREATE_TIME: "2026-01-01 18:25",
         TRIAGE_LEVEL_1: 1,
         TRIAGE_LEVEL_2: 2,
@@ -974,28 +1033,28 @@ const EventReportManagementPage = {
         LOCAL_PHONE: 1,
       },
       {
-        COUNTY_LABEL: "宜蘭縣",
-        HAPPEN_TIME_LABEL: "2025-12-29 10:00",
-        DISASTER_TYPE: "其他",
-        DISASTER_NO_LABEL: "G1141229-001",
-        DISASTER_NAME: "宜蘭縣緊急救護系統測試",
-        MSG_SOURCE: "台北區REMOC",
-        MSG_CREATE_TIME: "2025-12-29 10:05",
+        COUNTY_LABEL: "金門縣",
+        HAPPEN_TIME_LABEL: "2026-01-12 14:00",
+        DISASTER_TYPE: "火災",
+        DISASTER_NO_LABEL: "F1150112-001",
+        DISASTER_NAME: "金門縣金城鎮住宅火災",
+        MSG_SOURCE: "網路新聞",
+        MSG_CREATE_TIME: "2026-01-12 14:05",
         TRIAGE_LEVEL_1: 0,
-        TRIAGE_LEVEL_2: 0,
-        TRIAGE_LEVEL_3: 0,
-        TRIAGE_LEVEL_4: 0,
+        TRIAGE_LEVEL_2: 1,
+        TRIAGE_LEVEL_3: 2,
+        TRIAGE_LEVEL_4: 1,
         TRIAGE_LEVEL_5: 0,
         TRIAGE_LEVEL_UNKNOWN: 0,
-        TRIAGE_TOTAL: 0,
+        TRIAGE_TOTAL: 4,
         DEATH_COUNT: 0,
         CASUALTY_DEATH: 0,
-        CASUALTY_INJURED: 0,
+        CASUALTY_INJURED: 4,
         CASUALTY_MISSING: 0,
-        MOH_SMS: 0,
-        MOH_PHONE: 0,
-        LOCAL_SMS: 0,
-        LOCAL_PHONE: 0,
+        MOH_SMS: 1,
+        MOH_PHONE: 1,
+        LOCAL_SMS: 1,
+        LOCAL_PHONE: 1,
       },
       {
         COUNTY_LABEL: "嘉義市",
@@ -1027,7 +1086,7 @@ const EventReportManagementPage = {
         DISASTER_TYPE: "火災",
         DISASTER_NO_LABEL: "F1141227-002",
         DISASTER_NAME: "彰化縣和美鎮倉儲火警",
-        MSG_SOURCE: "中區REMOC",
+        MSG_SOURCE: "網路新聞",
         MSG_CREATE_TIME: "2025-12-27 11:35",
         TRIAGE_LEVEL_1: 0,
         TRIAGE_LEVEL_2: 1,
@@ -1099,7 +1158,7 @@ const EventReportManagementPage = {
         DISASTER_TYPE: "演習",
         DISASTER_NO_LABEL: "G1141224-001",
         DISASTER_NAME: "屏東縣大規模災害演練",
-        MSG_SOURCE: "高屏區REMOC",
+        MSG_SOURCE: "網路新聞",
         MSG_CREATE_TIME: "2025-12-24 10:05",
         TRIAGE_LEVEL_1: 0,
         TRIAGE_LEVEL_2: 0,
@@ -1147,7 +1206,7 @@ const EventReportManagementPage = {
         DISASTER_TYPE: "地震",
         DISASTER_NO_LABEL: "E1141222-002",
         DISASTER_NAME: "南投縣埔里鎮地震事件",
-        MSG_SOURCE: "中區REMOC",
+        MSG_SOURCE: "網路新聞",
         MSG_CREATE_TIME: "2025-12-22 14:55",
         TRIAGE_LEVEL_1: 1,
         TRIAGE_LEVEL_2: 2,
@@ -1195,7 +1254,7 @@ const EventReportManagementPage = {
         DISASTER_TYPE: "火災",
         DISASTER_NO_LABEL: "F1141220-003",
         DISASTER_NAME: "基隆市仁愛區住宅火災",
-        MSG_SOURCE: "台北區REMOC",
+        MSG_SOURCE: "網路新聞",
         MSG_CREATE_TIME: "2025-12-20 21:20",
         TRIAGE_LEVEL_1: 1,
         TRIAGE_LEVEL_2: 2,
@@ -1243,7 +1302,7 @@ const EventReportManagementPage = {
         DISASTER_TYPE: "交通事故",
         DISASTER_NO_LABEL: "C1141218-001",
         DISASTER_NAME: "澎湖縣馬公市港區交通事故",
-        MSG_SOURCE: "高屏區REMOC",
+        MSG_SOURCE: "網路新聞",
         MSG_CREATE_TIME: "2025-12-18 15:25",
         TRIAGE_LEVEL_1: 0,
         TRIAGE_LEVEL_2: 1,
@@ -1325,21 +1384,21 @@ const EventReportManagementPage = {
   },
 
   // 動態載入 EventReportForm
-  loadEventReportForm: function(callback) {
-    if (typeof EventReportForm !== 'undefined') {
+  loadEventReportForm: function (callback) {
+    if (typeof EventReportForm !== "undefined") {
       // 已載入，直接執行回調
       if (callback) callback();
       return;
     }
-    
+
     // 動態載入 EventReportForm.js
-    const script = document.createElement('script');
-    script.src = 'pages/EventReportForm.js';
-    script.onload = function() {
+    const script = document.createElement("script");
+    script.src = "pages/EventReportForm.js";
+    script.onload = function () {
       if (callback) callback();
     };
-    script.onerror = function() {
-      $.messager.alert('錯誤', '無法載入事件表單元件', 'error');
+    script.onerror = function () {
+      $.messager.alert("錯誤", "無法載入事件表單元件", "error");
     };
     document.head.appendChild(script);
   },
@@ -1348,7 +1407,7 @@ const EventReportManagementPage = {
   addRecord: function () {
     // 載入 EventReportForm.js 並顯示新增表單
     this.loadEventReportForm(() => {
-      EventReportForm.show('add');
+      EventReportForm.show("add");
     });
   },
 
@@ -1356,13 +1415,13 @@ const EventReportManagementPage = {
     const $table = $(`#${this.tableId}`);
     const selected = $table.datagrid("getSelected");
     if (!selected) {
-      $.messager.alert('提示', '請先選擇要編輯的記錄！', 'warning');
+      $.messager.alert("提示", "請先選擇要編輯的記錄！", "warning");
       return;
     }
-    
+
     // 載入 EventReportForm.js 並顯示編輯表單
     this.loadEventReportForm(() => {
-      EventReportForm.show('edit', selected);
+      EventReportForm.show("edit", selected);
     });
   },
 
@@ -1370,13 +1429,13 @@ const EventReportManagementPage = {
     const $table = $(`#${this.tableId}`);
     const selected = $table.datagrid("getSelected");
     if (!selected) {
-      $.messager.alert('提示', '請先選擇要檢視的記錄！', 'warning');
+      $.messager.alert("提示", "請先選擇要檢視的記錄！", "warning");
       return;
     }
-    
+
     // 載入 EventReportForm.js 並顯示檢視表單
     this.loadEventReportForm(() => {
-      EventReportForm.show('view', selected);
+      EventReportForm.show("view", selected);
     });
   },
 

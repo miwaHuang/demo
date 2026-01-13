@@ -46,542 +46,119 @@ const EventReportForm = {
     }
 
     return /*html*/ `
-      <style>
-        :root {
-            --primary: #2c3e50;
-            --accent: #3498db;
-            --danger: #e74c3c;
-            --success: #27ae60;
-            --bg: #f4f7f6;
-            --card: #ffffff;
-            --border: #ccd1d9;
-        }
-
-        .modal-backdrop {
-          position: fixed;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          background: rgba(0, 0, 0, 0.3);
-          z-index: 9998;
-        }
-        
-        .modal-container {
-          position: fixed;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          z-index: 9999;
-          padding: 20px;
-          box-sizing: border-box;
-          font-family: "PingFang TC", "Microsoft JhengHei", sans-serif;
-        }
-
-        .event-form-container {
-          background: var(--card);
-          width: 100%;
-          max-width: 900px;
-          max-height: 85vh;
-          border-radius: 8px;
-          box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-          overflow: hidden;
-          display: flex;
-          flex-direction: column;
-          border: 1px solid #ccd1d9;
-        }
-        
-        .form-header {
-          background: linear-gradient(135deg, #2c5aa0 0%, #1e3c72 100%);
-          color: white;
-          padding: 15px 20px;
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          border-bottom: none;
-          flex-shrink: 0;
-          position: relative;
-        }
-        
-        .form-header h2 {
-          margin: 0;
-          font-size: 1.3rem;
-          color: white;
-          font-weight: 500;
-          flex: 1;
-        }
-        
-        .modal-close {
-          position: absolute;
-          top: 10px;
-          right: 15px;
-          background: none;
-          border: none;
-          color: white;
-          font-size: 1.5rem;
-          cursor: pointer;
-          padding: 5px;
-          line-height: 1;
-          transition: opacity 0.3s ease;
-        }
-        
-        .modal-close:hover {
-          opacity: 0.7;
-        }
-        
-        .auto-info {
-          text-align: right;
-          font-size: 0.75rem;
-          color: rgba(255,255,255,0.9);
-          line-height: 1.3;
-          margin-right: 40px;
-        }
-        
-        .form-body {
-          padding: 20px;
-          overflow-y: auto;
-          flex: 1;
-          min-height: 0;
-        }
-        
-        .section-title {
-          font-weight: 600;
-          color: var(--primary);
-          margin-bottom: 12px;
-          display: flex;
-          align-items: center;
-          font-size: 1rem;
-          border-bottom: 2px solid #eef2f3;
-          padding-bottom: 6px;
-        }
-        
-        .form-section {
-          margin-bottom: 20px;
-        }
-        
-        .section-content {
-          margin-top: 12px;
-        }
-        
-        .form-row {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-          gap: 12px;
-          margin-bottom: 15px;
-        }
-        
-        .form-group {
-          display: flex;
-          flex-direction: column;
-        }
-        
-        .form-group label {
-          font-size: 14px;
-          color: #444;
-          margin-bottom: 4px;
-          font-weight: 600;
-        }
-        
-        .form-group label.required::after {
-          content: " *";
-          color: var(--danger);
-        }
-        
-        .form-control {
-          padding: 8px 10px;
-          border: 1px solid var(--border);
-          border-radius: 4px;
-          font-size: 14px;
-          width: 100%;
-          box-sizing: border-box;
-          transition: border-color 0.3s ease;
-        }
-        
-        .form-control:focus {
-          outline: none;
-          border-color: var(--accent);
-          box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
-        }
-        
-        .form-control:disabled,
-        .form-control[readonly] {
-          background-color: #f8f9fa;
-          color: #6c757d;
-          cursor: not-allowed;
-        }
-        
-        /* 動態發生地樣式 */
-        .location-container {
-          background: #f9f9f9;
-          padding: 12px;
-          border-radius: 4px;
-          border: 1px solid #eee;
-          margin-bottom: 15px;
-        }
-        
-        .dynamic-item {
-          display: grid;
-          grid-template-columns: 200px 1fr 50px;
-          gap: 10px;
-          margin-bottom: 10px;
-          align-items: flex-end;
-        }
-        
-        .btn-add-location {
-          background: #fff;
-          border: 1px dashed var(--accent);
-          color: var(--accent);
-          padding: 8px;
-          text-align: center;
-          border-radius: 6px;
-          cursor: pointer;
-          font-weight: bold;
-          transition: all 0.3s ease;
-        }
-        
-        .btn-add-location:hover {
-          background: var(--accent);
-          color: white;
-        }
-        
-        .btn-remove-location {
-          background: #fff0f0;
-          color: var(--danger);
-          border: 1px solid #ffccd5;
-          padding: 9px;
-          border-radius: 6px;
-          cursor: pointer;
-          transition: all 0.3s ease;
-        }
-        
-        .btn-remove-location:hover {
-          background: var(--danger);
-          color: white;
-        }
-        
-        /* 統計區塊樣式 */
-        .stats-container {
-          padding: 12px;
-          border-radius: 6px;
-          border: 1px solid #e6e9ed;
-          margin-bottom: 12px;
-        }
-        
-        .stats-fieldset {
-          border: 1px solid #d1d9e1;
-          border-radius: 8px;
-          padding: 15px;
-          margin-bottom: 10px;
-          background: #fff;
-        }
-        
-        .stats-legend {
-          font-size: 0.85rem;
-          font-weight: bold;
-          color: var(--accent);
-          padding: 0 10px;
-          background: white;
-        }
-        
-        /* REMOC填報區塊 */
-        .remoc-section {
-          padding: 12px;
-          border-radius: 4px;
-          margin-bottom: 15px;
-          border-left: 3px solid var(--accent);
-        }
-        
-        .remoc-title {
-          color: #495057;
-          margin-bottom: 15px;
-          font-weight: 600;
-          font-size: 1rem;
-        }
-        
-        /* EMC系統區塊 */
-        .emc-section {
-          padding: 12px;
-          border-radius: 4px;
-          border-left: 3px solid var(--success);
-        }
-        
-        .emc-title {
-          color: #495057;
-          margin-bottom: 15px;
-          font-weight: 600;
-          font-size: 1rem;
-        }
-        
-        /* 檢傷分級網格 */
-        .triage-grid {
-          display: grid;
-          grid-template-columns: repeat(5, 1fr);
-          gap: 10px;
-          margin-bottom: 12px;
-        }
-        
-        .triage-total-row {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 10px;
-          border-top: 1px solid #dee2e6;
-          padding-top: 12px;
-        }
-        
-        .total-field .form-control {
-          font-weight: bold;
-        }
-        
-        .total-success .form-control {
-          background-color: #e8f5e8;
-          border: 2px solid var(--success);
-        }
-        
-        .total-danger .form-control {
-          background-color: #f8f9fa;
-          border: 2px solid var(--danger);
-        }
-        
-        /* 文本區域 */
-        textarea.form-control {
-          height: 80px;
-          resize: vertical;
-          line-height: 1.5;
-        }
-        
-        /* 按鈕樣式 */
-        .form-actions {
-          text-align: center;
-          padding: 15px 20px;
-          background: #f8f9fa;
-          border-top: 1px solid #e0e6ed;
-          flex-shrink: 0;
-        }
-        
-        .btn {
-          padding: 12px 24px;
-          margin: 0 10px;
-          border: none;
-          border-radius: 6px;
-          cursor: pointer;
-          font-size: 1rem;
-          font-weight: 500;
-          transition: all 0.3s ease;
-          min-width: 120px;
-        }
-        
-        .btn-success {
-          background: var(--primary);
-          color: white;
-        }
-        
-        .btn-success:hover {
-          background: #1a252f;
-          transform: translateY(-1px);
-          box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-        }
-        
-        .btn-secondary {
-          background: #6c757d;
-          color: white;
-        }
-        
-        .btn-secondary:hover {
-          background: #545b62;
-          transform: translateY(-1px);
-          box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-        }
-        
-        /* 小提示文字 */
-        .text-muted {
-          color: #6c757d;
-          font-size: 14px;
-          margin-top: 3px;
-          display: block;
-        }
-        
-        /* 錯誤訊息 */
-        .error-message {
-          color: var(--danger);
-          font-size: 14px;
-          margin-top: 5px;
-          display: none;
-        }
-        
-        /* 特殊網格佈局 */
-        .grid-2-1-1 {
-          grid-template-columns: 2fr 1fr 1fr;
-        }
-        
-        .grid-1-1-1-1 {
-          grid-template-columns: 1.5fr 1fr 1fr 1fr;
-        }
-        
-        .grid-1-1 {
-          grid-template-columns: 1fr 1fr;
-        }
-        
-        .grid-full {
-          grid-template-columns: 1fr;
-        }
-        
-        /* 響應式設計 */
-        @media (max-width: 768px) {
-          .modal-container {
-            padding: 10px;
-          }
-          
-          .event-form-container {
-            max-width: none;
-            max-height: 95vh;
-          }
-          
-          .form-row {
-            grid-template-columns: 1fr;
-          }
-          
-          .dynamic-item {
-            grid-template-columns: 1fr;
-          }
-          
-          .triage-grid {
-            grid-template-columns: repeat(2, 1fr);
-          }
-          
-          .triage-total-row {
-            grid-template-columns: 1fr;
-          }
-          
-          .form-header {
-            padding: 12px 15px;
-          }
-          
-          .form-header h2 {
-            font-size: 1.1rem;
-          }
-          
-          .form-body {
-            padding: 15px;
-          }
-        }
-        
-        /* Fieldset 樣式 */
-        fieldset {
-          border: 2px solid #e0e6ed;
-          border-radius: 8px;
-          padding: 15px;
-          margin-bottom: 10px;
-          background: #fff;
-        }
-        
-        fieldset legend {
-          font-weight: 600;
-          color: var(--primary);
-          padding: 0 10px;
-          font-size: 14px;
-          background: white;
-        }
-      </style>
-      
-      <div class="modal-backdrop"></div>
-      <div class="modal-container">
-        <div class="event-form-container">
-          <div class="form-header">
-            <h2>${
-              mode === "add" ? "新增" : mode === "edit" ? "編輯" : "檢閱"
-            } 事件</h2>
-            <button type="button" class="modal-close" onclick="handleCancel()" title="關閉">✕</button>
-            <div class="auto-info">
-              <div>消息來源：${remocInfo.name}</div>
-              <div id="createTimeDisplay">建立日期：${
-                mode === "add"
-                  ? new Date().toLocaleString("zh-TW", { hour12: false })
-                  : data && data.CREATE_TIME
-                  ? new Date(data.CREATE_TIME).toLocaleString("zh-TW", {
-                      hour12: false,
-                    })
-                  : new Date().toLocaleString("zh-TW", { hour12: false })
-              }</div>
+      <div class="modal fade" id="eventReportModal" tabindex="-1" role="dialog" aria-labelledby="eventReportModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h4 class="modal-title" id="eventReportModalLabel">${
+                mode === "add" ? "新增" : mode === "edit" ? "編輯" : "檢閱"
+              } 事件</h4>
+              <button type="button" class="close" data-dismiss="modal" aria-label="關閉">
+                <span aria-hidden="true">&times;</span>
+              </button>
+              <div class="auto-info">
+                <small class="text-muted">
+                  <div>消息來源：${remocInfo.name}</div>
+                  <div id="createTimeDisplay">建立日期：${
+                    mode === "add"
+                      ? new Date().toLocaleString("zh-TW", { hour12: false })
+                      : data && data.CREATE_TIME
+                      ? new Date(data.CREATE_TIME).toLocaleString("zh-TW", {
+                          hour12: false,
+                        })
+                      : new Date().toLocaleString("zh-TW", { hour12: false })
+                  }</div>
+                </small>
+              </div>
             </div>
-          </div>
-          
-          <div class="form-body">
+            
+            <div class="modal-body">
             <form id="${formId}">
               <!-- 基本通報資訊 -->
               <div class="form-section">
                 <div class="section-title">📍 基本通報資訊</div>
                 <div class="section-content">
-                  <div class="form-row grid-1-1">
-                    <div class="form-group">
-                      <label class="required">事件名稱</label>
-                      <input type="text" class="form-control" name="INCIDENT_NAME" placeholder="例：台鐵XX號脫軌事故" required ${
-                        mode === "view" ? "readonly" : ""
-                      } />
-                      <div class="error-message">請輸入事件名稱</div>
+                  <div class="row">
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <label class="required">事件名稱</label>
+                        <input type="text" class="form-control" name="INCIDENT_NAME" placeholder="例：台鐵XX號脫軌事故" required ${
+                          mode === "view" ? "readonly" : ""
+                        } />
+                        <div class="error-message">請輸入事件名稱</div>
+                      </div>
                     </div>
-                    <div class="form-group">
-                      <label class="required">填報人員</label>
-                      <input type="text" class="form-control" name="REPORTER" placeholder="姓名/代號" required ${
-                        mode === "view" ? "readonly" : ""
-                      } />
-                      <div class="error-message">請輸入填報人員</div>
-                    </div>
-                  </div>
-                  
-                  <div class="form-row grid-1-1-1-1">
-                    <div class="form-group">
-                      <label class="required">消息來源時間</label>
-                      <input type="datetime-local" class="form-control" name="SOURCE_TIME" required ${
-                        mode === "view" ? "readonly" : ""
-                      } />
-                      <div class="error-message">請選擇時間</div>
-                    </div>
-                    <div class="form-group">
-                      <label class="required">通報來源</label>
-                      <select class="form-control" name="SOURCE_TYPE" required ${
-                        mode === "view" ? "disabled" : ""
-                      }>
-                        <option value="">請選擇</option>
-                        <option value="新聞">新聞媒體</option>
-                        <option value="Line">Line 群組</option>
-                        <option value="電話">電話通報</option>
-                        <option value="119">119 轉報</option>
-                      </select>
-                      <div class="error-message">請選擇通報來源</div>
-                    </div>
-                    <div class="form-group">
-                      <label class="required">災害屬性</label>
-                      <select class="form-control" name="DISASTER_ATTR" onchange="updateDisasterTypes(this)" required ${
-                        mode === "view" ? "disabled" : ""
-                      }>
-                        <option value="">請選擇</option>
-                        <!-- 選項由JavaScript動態產生 -->
-                      </select>
-                      <div class="error-message">請選擇災害屬性</div>
-                    </div>
-                    <div class="form-group">
-                      <label class="required">災害種類</label>
-                      <select class="form-control" name="DISASTER_TYPE" required ${
-                        mode === "view" ? "disabled" : ""
-                      }>
-                        <option value="">請選擇</option>
-                        <!-- 選項由JavaScript動態產生 -->
-                      </select>
-                      <div class="error-message">請選擇災害種類</div>
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <label class="required">填報人員</label>
+                        <input type="text" class="form-control" name="REPORTER" placeholder="姓名/代號" required ${
+                          mode === "view" ? "readonly" : ""
+                        } />
+                        <div class="error-message">請輸入填報人員</div>
+                      </div>
                     </div>
                   </div>
                   
-                  <div class="form-row grid-full">
-                    <div class="form-group">
-                      <label class="required">事件摘要</label>
-                      <textarea class="form-control" name="INCIDENT_SUMMARY" placeholder="請簡述事件概要，包含時間、地點、原因、影響範圍等關鍵資訊..." required ${
-                        mode === "view" ? "readonly" : ""
-                      }></textarea>
-                      <div class="error-message">請輸入事件摘要</div>
+                  <div class="row">
+                    <div class="col-md-3">
+                      <div class="form-group">
+                        <label class="required">消息來源時間</label>
+                        <input type="datetime-local" class="form-control" name="SOURCE_TIME" required ${
+                          mode === "view" ? "readonly" : ""
+                        } />
+                        <div class="error-message">請選擇時間</div>
+                      </div>
+                    </div>
+                    <div class="col-md-3">
+                      <div class="form-group">
+                        <label class="required">通報來源</label>
+                        <select class="form-control" name="SOURCE_TYPE" required ${
+                          mode === "view" ? "disabled" : ""
+                        }>
+                          <option value="">請選擇</option>
+                          <option value="新聞">新聞媒體</option>
+                          <option value="Line">Line 群組</option>
+                          <option value="電話">電話通報</option>
+                          <option value="119">119 轉報</option>
+                        </select>
+                        <div class="error-message">請選擇通報來源</div>
+                      </div>
+                    </div>
+                    <div class="col-md-3">
+                      <div class="form-group">
+                        <label class="required">災害屬性</label>
+                        <select class="form-control" name="DISASTER_ATTR" onchange="updateDisasterTypes(this)" required ${
+                          mode === "view" ? "disabled" : ""
+                        }>
+                          <option value="">請選擇</option>
+                          <!-- 選項由JavaScript動態產生 -->
+                        </select>
+                        <div class="error-message">請選擇災害屬性</div>
+                      </div>
+                    </div>
+                    <div class="col-md-3">
+                      <div class="form-group">
+                        <label class="required">災害種類</label>
+                        <select class="form-control" name="DISASTER_TYPE" required ${
+                          mode === "view" ? "disabled" : ""
+                        }>
+                          <option value="">請選擇</option>
+                          <!-- 選項由JavaScript動態產生 -->
+                        </select>
+                        <div class="error-message">請選擇災害種類</div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="row">
+                    <div class="col-md-12">
+                      <div class="form-group">
+                        <label class="required">事件摘要</label>
+                        <textarea class="form-control" name="INCIDENT_SUMMARY" placeholder="請簡述事件概要，包含時間、地點、原因、影響範圍等關鍵資訊..." required ${
+                          mode === "view" ? "readonly" : ""
+                        }></textarea>
+                        <div class="error-message">請輸入事件摘要</div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -610,7 +187,7 @@ const EventReportForm = {
                           <label>&nbsp;</label>
                           ${
                             mode !== "view"
-                              ? '<button type="button" class="btn-remove-location" onclick="removeLocationItem(this)">✕</button>'
+                              ? '<button type="button" class="btn-remove-location" title="移除" style="color:#d9534f;display:flex;align-items:center;" onclick="removeLocationItem(this)"><i class="fa fa-trash fa-lg"></i></button>'
                               : ""
                           }
                         </div>
@@ -618,7 +195,7 @@ const EventReportForm = {
                     </div>
                     ${
                       mode !== "view"
-                        ? '<div class="btn-add-location" onclick="addLocationItem()">＋ 新增發生地欄位</div>'
+                        ? '<button type="button" class="btn btn-primary btn-add-location" style="margin-top:10px;" onclick="addLocationItem()">＋ 新增發生地欄位</button>'
                         : ""
                     }
                   </div>
@@ -630,8 +207,8 @@ const EventReportForm = {
                 <div class="section-title">📊 聯絡統計與傷情</div>
                 <div class="section-content">
                   <div class="remoc-section">
-                    <div class="row" style="display: flex; gap: 15px; margin-bottom: 15px;">
-                      <div style="flex: 1;">
+                    <div class="row">
+                      <div class="col-md-6">
                         <fieldset>
                           <legend>中央 (部/署) 聯絡</legend>
                           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
@@ -650,7 +227,7 @@ const EventReportForm = {
                           </div>
                         </fieldset>
                       </div>
-                      <div style="flex: 1;">
+                      <div class="col-md-6">
                         <fieldset>
                           <legend>地方 (衛生局、責任醫院、救災救護指揮中心) 聯絡</legend>
                           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
@@ -673,35 +250,43 @@ const EventReportForm = {
                     
                     <!-- 新聞傷亡統計 -->
                     <div class="stats-container">
-                      <div class="form-row" style="border-bottom: 1px dashed #ddd; padding-bottom: 15px; margin-bottom: 15px;">
-                        <div class="form-group">
-                          <label style="color:var(--danger)">死亡 (新聞)</label>
-                          <input type="number" class="form-control" name="NEWS_DEATH" value="0" min="0" style="color:var(--danger)" ${
-                            mode === "view" ? "readonly" : ""
-                          } />
+                      <div class="row">
+                        <div class="col-md-4">
+                          <div class="form-group">
+                            <label style="color:var(--danger)">死亡</label>
+                            <input type="number" class="form-control" name="NEWS_DEATH" value="0" min="0" style="color:var(--danger)" ${
+                              mode === "view" ? "readonly" : ""
+                            } />
+                          </div>
                         </div>
-                        <div class="form-group">
-                          <label>傷病 (新聞)</label>
-                          <input type="number" class="form-control" name="NEWS_INJURY" value="0" min="0" ${
-                            mode === "view" ? "readonly" : ""
-                          } />
+                        <div class="col-md-4">
+                          <div class="form-group">
+                            <label>傷病</label>
+                            <input type="number" class="form-control" name="NEWS_INJURY" value="0" min="0" ${
+                              mode === "view" ? "readonly" : ""
+                            } />
+                          </div>
                         </div>
-                        <div class="form-group">
-                          <label>失蹤 (新聞)</label>
-                          <input type="number" class="form-control" name="NEWS_MISSING" value="0" min="0" ${
-                            mode === "view" ? "readonly" : ""
-                          } />
+                        <div class="col-md-4">
+                          <div class="form-group">
+                            <label>失蹤</label>
+                            <input type="number" class="form-control" name="NEWS_MISSING" value="0" min="0" ${
+                              mode === "view" ? "readonly" : ""
+                            } />
+                          </div>
                         </div>
                       </div>
                     </div>
 
-                    <div class="form-row grid-full">
-                      <div class="form-group">
-                        <label>📝 處置作為概述</label>
-                        <textarea class="form-control" name="ACTION_SUMMARY" placeholder="請敘述 REMOC 目前處置進度，例如：&#10;1. 已與該縣市衛生局對口聯繫。&#10;2. 通知該區責任醫院啟動大傷。&#10;3. 監測病床與收容量資訊中..." ${
-                          mode === "view" ? "readonly" : ""
-                        }></textarea>
-                        <span class="text-muted">詳述目前處置進度與後續規劃</span>
+                    <div class="row">
+                      <div class="col-md-12">
+                        <div class="form-group">
+                          <label>📝 處置作為概述</label>
+                          <textarea class="form-control" name="ACTION_SUMMARY" placeholder="請敘述 REMOC 目前處置進度，例如：&#10;1. 已與該縣市衛生局對口聯繫。&#10;2. 通知該區責任醫院啟動大傷。&#10;3. 監測病床與收容量資訊中..." ${
+                            mode === "view" ? "readonly" : ""
+                          }></textarea>
+                          <span class="text-muted">詳述目前處置進度與後續規劃</span>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -712,54 +297,38 @@ const EventReportForm = {
               <div class="form-section">
                 <div class="section-title">📊 EMC 系統傷患統計</div>
                 <div class="section-content">
-                  <div class="emc-section">
-                    <div class="emc-title">緊急醫療管理系統統計數據</div>
-                    
+                  <div class="emc-section">               
                     <div class="triage-grid">
                       <div class="form-group">
                         <label>檢傷一級</label>
-                        <input type="number" class="form-control emc-input" name="EMC_TRIAGE1" value="0" min="0" ${
-                          mode === "view" ? "readonly" : ""
-                        } />
+                        <input type="number" class="form-control emc-input" name="EMC_TRIAGE1" value="0" min="0" readonly />
                       </div>
                       <div class="form-group">
                         <label>檢傷二級</label>
-                        <input type="number" class="form-control emc-input" name="EMC_TRIAGE2" value="0" min="0" ${
-                          mode === "view" ? "readonly" : ""
-                        } />
+                        <input type="number" class="form-control emc-input" name="EMC_TRIAGE2" value="0" min="0" readonly />
                       </div>
                       <div class="form-group">
                         <label>檢傷三級</label>
-                        <input type="number" class="form-control emc-input" name="EMC_TRIAGE3" value="0" min="0" ${
-                          mode === "view" ? "readonly" : ""
-                        } />
+                        <input type="number" class="form-control emc-input" name="EMC_TRIAGE3" value="0" min="0" readonly />
                       </div>
                       <div class="form-group">
                         <label>檢傷四級</label>
-                        <input type="number" class="form-control emc-input" name="EMC_TRIAGE4" value="0" min="0" ${
-                          mode === "view" ? "readonly" : ""
-                        } />
+                        <input type="number" class="form-control emc-input" name="EMC_TRIAGE4" value="0" min="0" readonly />
                       </div>
                       <div class="form-group">
                         <label>檢傷五級</label>
-                        <input type="number" class="form-control emc-input" name="EMC_TRIAGE5" value="0" min="0" ${
-                          mode === "view" ? "readonly" : ""
-                        } />
+                        <input type="number" class="form-control emc-input" name="EMC_TRIAGE5" value="0" min="0" readonly />
                       </div>
                     </div>
 
                     <div class="triage-total-row">
-                      <div class="form-group total-field total-success">
+                      <div class="form-group total-field ">
                         <label>送醫總數</label>
                         <input type="number" class="form-control" name="EMC_TOTAL_ADMITTED" value="0" min="0" readonly />
-                  
                       </div>
-                      <div class="form-group total-field total-danger">
+                      <div class="form-group total-field ">
                         <label>死亡總數</label>
-                        <input type="number" class="form-control" name="EMC_TOTAL_DEATH" value="0" min="0" ${
-                          mode === "view" ? "readonly" : ""
-                        } />
-                     
+                        <input type="number" class="form-control" name="EMC_TOTAL_DEATH" value="0" min="0" readonly />
                       </div>
                     </div>
                   </div>
@@ -784,11 +353,12 @@ const EventReportForm = {
             </form>
           </div>
 
-          <div class="form-actions">
-            <button type="button" class="btn btn-success" onclick="handleSubmit()">${
-              mode === "view" ? "關閉" : mode === "add" ? "新增" : "更新"
-            }</button>
-            <button type="button" class="btn btn-secondary" onclick="handleCancel()">取消</button>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+              <button type="button" class="btn btn-success" onclick="handleSubmit()">${
+                mode === "view" ? "關閉" : mode === "add" ? "新增" : "更新"
+              }</button>
+            </div>
           </div>
         </div>
       </div>
@@ -810,10 +380,16 @@ const EventReportForm = {
     const content = this.getContent(mode, data);
 
     // 移除現有表單
-    $("#eventReportFormModal").remove();
+    $("#eventReportModal").remove();
 
     // 添加到頁面
-    $("body").append(`<div id="eventReportFormModal">${content}</div>`);
+    $("body").append(content);
+
+    // 顯示Bootstrap modal
+    $("#eventReportModal").modal({
+      backdrop: "static",
+      keyboard: false,
+    });
 
     // 初始化表單
     this.initForm(data);
@@ -1156,7 +732,10 @@ const EventReportForm = {
 
   // 關閉表單
   close: function () {
-    $("#eventReportFormModal").remove();
+    $("#eventReportModal").modal("hide");
+    setTimeout(() => {
+      $("#eventReportModal").remove();
+    }, 300);
   },
 };
 
@@ -1209,7 +788,7 @@ function addLocationItem() {
       <input type="text" class="form-control location-detail" placeholder="詳細發生地">
     </div>
     <div class="form-group">
-      <button type="button" class="btn-remove-location" onclick="removeLocationItem(this)">✕</button>
+      <button type="button" class="btn-remove-location" title="移除" style="background:none;border:none;padding:0;margin:0;color:#d9534f;display:flex;align-items:center;" onclick="removeLocationItem(this)"><i class="fa fa-trash fa-lg"></i></button>
     </div>
   `;
   locationList.appendChild(div);
@@ -1228,7 +807,7 @@ function removeLocationItem(button) {
 
 // 全域函數：表單提交處理
 function handleSubmit() {
-  const form = document.querySelector("#eventReportFormModal form");
+  const form = document.querySelector("#eventReportModal form");
   if (!form) return;
 
   // 驗證必填欄位

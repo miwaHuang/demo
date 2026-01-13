@@ -1,14 +1,3 @@
-// ==================== 訊息來源資料 ====================
-const MessageSourceData = [
-  { code: "EMS", name: "緊急醫療管理系統(EMS)" },
-  { code: "FIRE_DISPATCH", name: "消防局救護派遣系統" },
-  { code: "FIRE_LINE", name: "消防局LINE" },
-  { code: "FIRE_RADIO", name: "消防局無線電" },
-  { code: "NEWS", name: "網路新聞" },
-  { code: "BROADCAST", name: "廣播" },
-  { code: "HEALTH_BUREAU", name: "衛生局" },
-  { code: "OTHER", name: "其他" },
-];
 // CommonData.js - 共用靜態資料清單
 // 此檔案包含系統中多個頁面共用的基礎資料，如開案單位、縣市、災害類別等
 
@@ -134,7 +123,6 @@ const CountyData = {
 const RegionalData = {
   // 區域列表
   regions: [
-    { code: "00", name: "台灣" },
     { code: "01", name: "台北區" },
     { code: "02", name: "北區" },
     { code: "03", name: "中區" },
@@ -145,10 +133,6 @@ const RegionalData = {
 
   // 區域縣市對應
   countyByRegion: {
-    "00": [
-      // 台灣
-      { code: "00", name: "台灣" },
-    ],
     "01": [
       // 台北區
       { code: "11", name: "基隆市" },
@@ -188,31 +172,6 @@ const RegionalData = {
       // 東區
       { code: "45", name: "花蓮縣" },
       { code: "46", name: "台東縣" },
-    ],
-    TW: [
-      // 台灣
-      { code: "11", name: "基隆市" },
-      { code: "31", name: "新北市" },
-      { code: "01", name: "台北市" },
-      { code: "32", name: "桃園市" },
-      { code: "33", name: "新竹縣" },
-      { code: "12", name: "新竹市" },
-      { code: "35", name: "苗栗縣" },
-      { code: "03", name: "台中市" },
-      { code: "37", name: "彰化縣" },
-      { code: "38", name: "南投縣" },
-      { code: "39", name: "雲林縣" },
-      { code: "40", name: "嘉義縣" },
-      { code: "22", name: "嘉義市" },
-      { code: "05", name: "台南市" },
-      { code: "07", name: "高雄市" },
-      { code: "43", name: "屏東縣" },
-      { code: "34", name: "宜蘭縣" },
-      { code: "45", name: "花蓮縣" },
-      { code: "46", name: "台東縣" },
-      { code: "44", name: "澎湖縣" },
-      { code: "91", name: "連江縣" },
-      { code: "90", name: "金門縣" },
     ],
   },
 };

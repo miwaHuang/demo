@@ -1,0 +1,322 @@
+/* 增加垃圾桶按鈕底部空間與高度 */
+.form-group .btn-remove-location {
+  margin-bottom: 8px;
+  min-height: 40px;
+}
+/* 讓所有垃圾桶按鈕置中顯示 */
+.form-group .btn-remove-location {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  background: none;
+  border: none;
+  color: #d9534f;
+  padding: 0;
+  margin: 0;
+}
+/* EventReportForm.css - 事件通報表單專用樣式 */
+/* 使用Bootstrap標準顏色 */
+
+/* 自定義modal header樣式 */
+#eventReportModal .modal-content {
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15), 0 4px 20px rgba(0, 0, 0, 0.1);
+  border: none;
+}
+
+#eventReportModal .modal-header {
+  background: linear-gradient(135deg, #337ab7 0%, #286090 100%);
+  color: white;
+  border-bottom: none;
+  padding: 15px 20px;
+  min-height: auto;
+  position: relative;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+  display: flex;
+  align-items: center;
+}
+
+#eventReportModal .modal-title {
+  color: #ffffff;
+  font-size: 1.5rem;
+  margin: 0;
+  line-height: 1.2;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  font-weight: 600;
+}
+
+#eventReportModal .close {
+  color: white;
+  opacity: 0.8;
+  position: absolute;
+  top: 50%;
+  right: 15px;
+  transform: translateY(-50%);
+  z-index: 10;
+  font-size: 1.5rem;
+}
+
+#eventReportModal .close:hover {
+  color: white;
+  opacity: 1;
+}
+
+#eventReportModal .auto-info {
+  position: absolute;
+  right: 60px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 12px;
+  line-height: 1.4;
+  text-align: right;
+  color: #ffffff;
+  font-weight: 500;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  max-width: 200px;
+  white-space: nowrap;
+}
+
+/* 設定modal大小 */
+#eventReportModal .modal-body {
+  max-height: 70vh;
+  overflow-y: auto;
+  padding: 20px;
+}
+
+.section-title {
+  font-weight: 600;
+  color: #337ab7; /* Bootstrap primary */
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  font-size: 1.1rem;
+  border-bottom: 2px solid #e8f4fd;
+  padding-bottom: 8px;
+}
+
+.form-section {
+  margin-bottom: 25px;
+}
+
+.form-group label {
+  font-size: 14px;
+  color: #2c3e50;
+  margin-bottom: 6px;
+  font-weight: 600;
+  display: block;
+}
+
+/* 美化form-control focus效果 */
+#eventReportModal .form-control:focus {
+  border-color: #337ab7;
+  box-shadow: 0 0 0 3px rgba(51, 122, 183, 0.1);
+  transform: translateY(-1px);
+  transition: all 0.3s ease;
+}
+
+#eventReportModal .form-control {
+  transition: all 0.3s ease;
+  border: 2px solid #e8f0fe;
+}
+
+#eventReportModal .form-control:hover {
+  border-color: #b3d7ff;
+}
+
+.form-group label.required::after {
+  content: " *";
+  color: #d9534f; /* Bootstrap danger */
+}
+
+/* 動態發生地樣式 */
+.location-container {
+  background: #f8fbff;
+  padding: 18px;
+  border-radius: 6px;
+  border: 1px solid #e8f4fd;
+  margin-bottom: 20px;
+}
+
+.dynamic-item {
+  display: grid;
+  grid-template-columns: 200px 1fr 50px;
+  gap: 10px;
+  margin-bottom: 10px;
+  align-items: flex-end;
+}
+
+.event-form-container .btn-add-location {
+  background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+  border: none;
+  color: white;
+  padding: 12px 20px;
+  text-align: center;
+  border-radius: 25px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  transition: all 0.3s ease;
+  display: inline-block;
+  margin-top: 15px;
+  box-shadow: 0 3px 10px rgba(40, 167, 69, 0.3);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.event-form-container .btn-add-location:hover {
+  background: linear-gradient(135deg, #20c997 0%, #17a2b8 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4);
+}
+
+.event-form-container .btn-remove-location {
+  background: #fff0f0;
+  color: #d9534f; /* Bootstrap danger */
+  border: 1px solid #ffccd5;
+  padding: 9px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.event-form-container .btn-remove-location:hover {
+  background: #d9534f; /* Bootstrap danger */
+  color: white;
+}
+
+/* 統計區塊樣式 */
+.stats-container {
+  padding: 8px;
+  margin-bottom: 8px;
+  background: none;
+  border: none;
+  border-radius: 0;
+}
+
+.remoc-section {
+  padding: 0px;
+  border-radius: 6px;
+  margin-bottom: 20px;
+  background: #f8fbff;
+}
+
+.emc-section {
+  padding: 20px;
+  border-radius: 6px;
+  background: #f0fff4;
+}
+
+/* 檢傷分級網格 */
+.triage-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.triage-total-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  border-top: 1px solid #dee2e6;
+  padding-top: 12px;
+}
+
+.total-field .form-control {
+  font-weight: bold;
+}
+
+.total-success .form-control {
+  background-color: #e8f5e8;
+  border: 2px solid #5cb85c; /* Bootstrap success */
+}
+
+.total-danger .form-control {
+  background-color: #f8f9fa;
+  border: 2px solid #d9534f; /* Bootstrap danger */
+}
+
+/* 文本區域 */
+textarea.form-control {
+  height: 80px;
+  resize: vertical;
+  line-height: 1.5;
+}
+
+/* 小提示文字 */
+.text-muted {
+  color: #6c757d;
+  font-size: 14px;
+  margin-top: 3px;
+  display: block;
+}
+
+/* Modal內的小提示文字覆蓋 */
+#eventReportModal .auto-info .text-muted,
+#eventReportModal .auto-info small {
+  color: #ffffff !important;
+  font-weight: 500;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* 錯誤訊息 */
+.error-message {
+  color: #d9534f; /* Bootstrap danger */
+  font-size: 14px;
+  margin-top: 5px;
+  display: none;
+}
+
+/* Bootstrap Modal響應式調整 */
+@media (max-width: 768px) {
+  #eventReportModal .modal-dialog {
+    margin: 10px;
+    max-width: none;
+  }
+
+  #eventReportModal .modal-body {
+    max-height: 60vh;
+  }
+
+  #eventReportModal .auto-info {
+    display: none; /* 在小螢幕上隱藏 */
+  }
+
+  #eventReportModal .modal-header {
+    padding: 10px 15px; /* 小螢幕上減少內距 */
+  }
+
+  .dynamic-item {
+    grid-template-columns: 1fr;
+  }
+
+  .triage-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .triage-total-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Fieldset 樣式 */
+fieldset {
+  border: 1px dashed #bbb;
+  border-radius: 6px;
+  padding: 20px;
+  margin-bottom: 15px;
+  background: #ffffff;
+}
+
+fieldset legend {
+  font-weight: 600;
+  color: white;
+  padding: 5px 15px;
+  font-size: 14px;
+  background: #337ab7;
+  border-radius: 15px;
+}
