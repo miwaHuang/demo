@@ -31,7 +31,7 @@
   background: linear-gradient(135deg, #337ab7 0%, #286090 100%);
   color: white;
   border-bottom: none;
-  padding: 15px 20px;
+
   min-height: auto;
   position: relative;
   border-top-left-radius: 8px;
@@ -44,7 +44,7 @@
   color: #ffffff;
   font-size: 1.5rem;
   margin: 0;
-  line-height: 1.2;
+  line-height: 1;
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
   font-weight: 600;
 }
@@ -90,7 +90,7 @@
 .section-title {
   font-weight: 600;
   color: #337ab7; /* Bootstrap primary */
-  margin-bottom: 15px;
+  margin-bottom: 10px;
   display: flex;
   align-items: center;
   font-size: 1.1rem;
@@ -131,9 +131,10 @@
 /* 動態發生地樣式 */
 .section-content {
   background: #f8fbff;
-  padding: 10px 15px 10px 15px;
+  padding: 10px 15px 5px 15px;
   border-radius: 6px;
   border: 1px solid #e8f4fd;
+  margin-bottom: 10px;
 }
 
 .dynamic-item {

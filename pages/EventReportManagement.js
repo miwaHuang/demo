@@ -176,9 +176,9 @@ const EventReportManagementPage = {
                         </div>
                       </div>
 
-                      <!-- 訊息來源 -->
+                      <!--事件來源 -->
                       <div class="form-group">
-                        <label class="col-sm-5 control-label">訊息來源</label>
+                        <label class="col-sm-5 control-label">事件來源</label>
                         <div class="col-sm-7">
                           <select class="form-control" id="Q_SOURCE" name="Q_SOURCE">
                             <option value="">全部</option>
@@ -494,7 +494,7 @@ const EventReportManagementPage = {
               rowspan: 2,
             },
             {
-              title: "訊息",
+              title: "事件",
               colspan: 2,
             },
             {

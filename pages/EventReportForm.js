@@ -100,17 +100,17 @@ const EventReportForm = {
                   <div class="row">
                     <div class="col-md-3">
                       <div class="form-group">
-                        <label class="required">消息來源</label>
-                        <input type="text" class="form-control" name="SOURCE_TYPE" placeholder="請輸入消息來源" required ${
+                        <label class="required">事件來源</label>
+                        <input type="text" class="form-control" name="SOURCE_TYPE" placeholder="請輸入事件來源" required ${
                           mode === "view" ? "readonly" : ""
                         } />
-                        <div class="error-message">請輸入通報來源</div>
+                        <div class="error-message">請輸入事件來源</div>
                       </div>
                     </div>
                  
                     <div class="col-md-2">
                       <div class="form-group">
-                        <label class="required">消息來源時間 (日期)</label>
+                        <label class="required">事件來源時間 (日期)</label>
                         <input type="date" class="form-control" name="SOURCE_TIME_DATE" required ${
                           mode === "view" ? "readonly" : ""
                         } />
@@ -119,7 +119,7 @@ const EventReportForm = {
                     </div>
                      <div class="col-md-2">
                       <div class="form-group">
-                        <label class="required">消息來源時間 (時間)</label>
+                        <label class="required">事件來源時間 (時間)</label>
                         <input type="time" class="form-control" name="SOURCE_TIME_TIME" required ${
                           mode === "view" ? "readonly" : ""
                         } />                       
@@ -281,78 +281,90 @@ const EventReportForm = {
                       </div>
                     </div>
                     
-                    <!-- 新聞傷亡統計 -->
+                    <!-- 傷亡統計 -->
                     <div class="stats-container">
-                      <div class="row">
-                        <div class="col-md-4">
-                          <div class="form-group">
-                            <label style="color:var(--danger)">死亡</label>
-                            <input type="number" class="form-control" name="NEWS_DEATH" value="0" min="0" style="color:var(--danger)" ${
-                              mode === "view" ? "readonly" : ""
-                            } />
-                          </div>
-                        </div>
-                        <div class="col-md-4">
-                          <div class="form-group">
-                            <label>傷病</label>
-                            <input type="number" class="form-control" name="NEWS_INJURY" value="0" min="0" ${
-                              mode === "view" ? "readonly" : ""
-                            } />
-                          </div>
-                        </div>
-                        <div class="col-md-4">
-                          <div class="form-group">
-                            <label>失蹤</label>
-                            <input type="number" class="form-control" name="NEWS_MISSING" value="0" min="0" ${
-                              mode === "view" ? "readonly" : ""
-                            } />
-                          </div>
-                        </div>
-                  
-                    </div>
+                   
                   </div>
                 </div>
               </div>
 
               <!-- EMC 系統傷患統計 -->
               <div class="form-section">
-                <div class="section-title">📍醫療檢傷人數</div>
+                <div class="section-title">📍${
+                  data && data.MSG_SOURCE === "EMS"
+                    ? "醫療檢傷人數"
+                    : "事件傷亡人數"
+                }</div>
                 <div class="section-content">
-                  <div  style="display: grid; grid-template-columns: repeat(8, 1fr); gap: 4px;">               
-                    <div class="form-group">
-                      <label>一級</label>
-                      <input type="number" class="form-control emc-input" name="EMC_TRIAGE1" value="0" min="0" readonly />
+                  ${
+                    data && data.MSG_SOURCE === "EMS"
+                      ? `
+                    <!-- 醫療檢傷人數 -->
+                    <div style="display: grid; grid-template-columns: repeat(8, 1fr); gap: 4px;">
+                      <div class="form-group">
+                        <label>一級</label>
+                        <input type="number" class="form-control emc-input" name="EMC_TRIAGE1" value="0" min="0" readonly />
+                      </div>
+                      <div class="form-group">
+                        <label>二級</label>
+                        <input type="number" class="form-control emc-input" name="EMC_TRIAGE2" value="0" min="0" readonly />
+                      </div>
+                      <div class="form-group">
+                        <label>三級</label>
+                        <input type="number" class="form-control emc-input" name="EMC_TRIAGE3" value="0" min="0" readonly />
+                      </div>
+                      <div class="form-group">
+                        <label>四級</label>
+                        <input type="number" class="form-control emc-input" name="EMC_TRIAGE4" value="0" min="0" readonly />
+                      </div>
+                      <div class="form-group">
+                        <label>五級</label>
+                        <input type="number" class="form-control emc-input" name="EMC_TRIAGE5" value="0" min="0" readonly />
+                      </div>
+                      <div class="form-group">
+                        <label>未填</label>
+                        <input type="number" class="form-control emc-input" name="EMC_UNFILLED" value="0" min="0" readonly />
+                      </div>
+                      <div class="form-group">
+                        <label>總數</label>
+                        <input type="number" class="form-control" name="EMC_TOTAL_ADMITTED" value="0" min="0" readonly />
+                      </div>
+                      <div class="form-group">
+                        <label>死亡總數</label>
+                        <input type="number" class="form-control" name="EMC_TOTAL_DEATH" value="0" min="0" readonly />
+                      </div>
                     </div>
-                    <div class="form-group">
-                      <label>二級</label>
-                      <input type="number" class="form-control emc-input" name="EMC_TRIAGE2" value="0" min="0" readonly />
+                  `
+                      : `
+                    <!-- 事件傷亡人數 -->
+                    <div class="row">
+                      <div class="col-md-4">
+                        <div class="form-group">
+                          <label style="color:var(--danger)">死亡</label>
+                          <input type="number" class="form-control" name="NEWS_DEATH" value="0" min="0" style="color:var(--danger)" ${
+                            mode === "view" ? "readonly" : ""
+                          } />
+                        </div>
+                      </div>
+                      <div class="col-md-4">
+                        <div class="form-group">
+                          <label>傷病</label>
+                          <input type="number" class="form-control" name="NEWS_INJURY" value="0" min="0" ${
+                            mode === "view" ? "readonly" : ""
+                          } />
+                        </div>
+                      </div>
+                      <div class="col-md-4">
+                        <div class="form-group">
+                          <label>失蹤</label>
+                          <input type="number" class="form-control" name="NEWS_MISSING" value="0" min="0" ${
+                            mode === "view" ? "readonly" : ""
+                          } />
+                        </div>
+                      </div>
                     </div>
-                    <div class="form-group">
-                      <label>三級</label>
-                      <input type="number" class="form-control emc-input" name="EMC_TRIAGE3" value="0" min="0" readonly />
-                    </div>
-                    <div class="form-group">
-                      <label>四級</label>
-                      <input type="number" class="form-control emc-input" name="EMC_TRIAGE4" value="0" min="0" readonly />
-                    </div>
-                    <div class="form-group">
-                      <label>五級</label>
-                      <input type="number" class="form-control emc-input" name="EMC_TRIAGE5" value="0" min="0" readonly />
-                    </div>
-                    <div class="form-group">
-                      <label>未填</label>
-                      <input type="number" class="form-control emc-input" name="EMC_UNFILLED" value="0" min="0" readonly />
-                    </div>
-                    <div class="form-group">
-                      <label>總數</label>
-                      <input type="number" class="form-control" name="EMC_TOTAL_ADMITTED" value="0" min="0" readonly />
-                    </div>
-
-                    <div class="form-group">
-                      <label>死亡總數</label>
-                      <input type="number" class="form-control" name="EMC_TOTAL_DEATH" value="0" min="0" readonly />
-                    </div>
-                  </div>
+                  `
+                  }
                 </div>
               </div>
               
@@ -444,7 +456,7 @@ const EventReportForm = {
       });
     }
 
-    // 初始化消息來源時間為當前時間
+    // 初始化事件來源時間為當前時間
     if (this.mode === "add") {
       const sourceTimeHidden = document.querySelector(
         'input[name="SOURCE_TIME"]'
@@ -567,7 +579,7 @@ const EventReportForm = {
       this.loadData(data);
     }
 
-    // 設定預設消息來源時間為當前時間
+    // 設定預設事件來源時間為當前時間
     if (this.mode === "add") {
       const now = new Date();
       $("#MESSAGE_TIME").val(now.toISOString().slice(0, 16));
@@ -586,7 +598,7 @@ const EventReportForm = {
     $("#DISASTER_ATTR").val(data.DISASTER_ATTR || "");
     $("#DISASTER_TYPE").val(data.DISASTER_TYPE || "");
 
-    // 載入消息來源時間
+    // 載入事件來源時間
     if (data.SOURCE_TIME) {
       const date = new Date(data.SOURCE_TIME);
       if (EventReportForm.mode === "view") {
@@ -722,7 +734,7 @@ const EventReportForm = {
       }
     });
 
-    // 組合消息來源時間
+    // 組合事件來源時間
     if (formData.SOURCE_TIME_DATE && formData.SOURCE_TIME_TIME) {
       formData.SOURCE_TIME = `${formData.SOURCE_TIME_DATE} ${formData.SOURCE_TIME_TIME}:00`;
       delete formData.SOURCE_TIME_DATE;
@@ -902,7 +914,7 @@ function handleSubmit() {
     data[key] = value;
   }
 
-  // 組合消息來源時間
+  // 組合事件來源時間
   if (data.SOURCE_TIME_DATE && data.SOURCE_TIME_TIME) {
     data.SOURCE_TIME = `${data.SOURCE_TIME_DATE} ${data.SOURCE_TIME_TIME}:00`;
     delete data.SOURCE_TIME_DATE;
