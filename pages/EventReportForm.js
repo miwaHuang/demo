@@ -1,4 +1,4 @@
-// EventReportForm.js - 事件通報表單頁面
+// EventReportForm.js - 事件消息表單頁面
 // 支援新增、編輯、檢視三種模式
 
 const EventReportForm = {
@@ -8,17 +8,6 @@ const EventReportForm = {
 
   // 動態欄位計數器
   locationCounter: 1,
-
-  // 通報來源選項
-  reportSources: [
-    { code: "NEWS", name: "新聞" },
-    { code: "LINE", name: "Line" },
-    { code: "PHONE", name: "電話" },
-    { code: "119", name: "119轉報" },
-    { code: "EMAIL", name: "電子郵件" },
-    { code: "FAX", name: "傳真" },
-    { code: "OTHER", name: "其他" },
-  ],
 
   // 生成表單 HTML
   getContent: function (mode = "add", data = null) {
@@ -47,8 +36,8 @@ const EventReportForm = {
 
     return /*html*/ `
       <div class="modal fade" id="eventReportModal" tabindex="-1" role="dialog" aria-labelledby="eventReportModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg" role="document">
-          <div class="modal-content">
+        <div class="modal-dialog modal-lg" role="document" style="width: 1500px; max-width: 95vw;">
+          <div class="modal-content" style="height: 100%; overflow: auto;">
             <div class="modal-header">
               <h4 class="modal-title" id="eventReportModalLabel">${
                 mode === "add" ? "新增" : mode === "edit" ? "編輯" : "檢閱"
@@ -58,15 +47,16 @@ const EventReportForm = {
               </button>
               <div class="auto-info">
                 <small class="text-muted">
-                  <div>消息來源：${remocInfo.name}</div>
+               
                   <div id="createTimeDisplay">建立日期：${
                     mode === "add"
-                      ? new Date().toLocaleString("zh-TW", { hour12: false })
+                      ? new Date().toISOString().slice(0, 16).replace("T", " ")
                       : data && data.CREATE_TIME
-                      ? new Date(data.CREATE_TIME).toLocaleString("zh-TW", {
-                          hour12: false,
-                        })
-                      : new Date().toLocaleString("zh-TW", { hour12: false })
+                      ? new Date(data.CREATE_TIME)
+                          .toISOString()
+                          .slice(0, 16)
+                          .replace("T", " ")
+                      : new Date().toISOString().slice(0, 16).replace("T", " ")
                   }</div>
                 </small>
               </div>
@@ -88,43 +78,55 @@ const EventReportForm = {
                         <div class="error-message">請輸入事件名稱</div>
                       </div>
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-md-3">
                       <div class="form-group">
-                        <label class="required">填報人員</label>
-                        <input type="text" class="form-control" name="REPORTER" placeholder="姓名/代號" required ${
+                        <label class="required">監看人員</label>
+                        <input type="text" class="form-control" name="REPORTER" placeholder="請輸入姓名" required ${
                           mode === "view" ? "readonly" : ""
                         } />
-                        <div class="error-message">請輸入填報人員</div>
+                        <div class="error-message">請輸入監看人員</div>
+                      </div>
+                    </div>
+                    <div class="col-md-3">
+                      <div class="form-group">
+                        <label class="required">連絡電話</label>
+                        <input type="tel" class="form-control" name="CONTACT_PHONE" placeholder="請輸入電話號碼" required ${
+                          mode === "view" ? "readonly" : ""
+                        } />
+                        <div class="error-message">請輸入連絡電話</div>
                       </div>
                     </div>
                   </div>
-                  
                   <div class="row">
                     <div class="col-md-3">
                       <div class="form-group">
-                        <label class="required">消息來源時間</label>
-                        <input type="datetime-local" class="form-control" name="SOURCE_TIME" required ${
+                        <label class="required">消息來源</label>
+                        <input type="text" class="form-control" name="SOURCE_TYPE" placeholder="請輸入消息來源" required ${
                           mode === "view" ? "readonly" : ""
                         } />
+                        <div class="error-message">請輸入通報來源</div>
+                      </div>
+                    </div>
+                 
+                    <div class="col-md-2">
+                      <div class="form-group">
+                        <label class="required">消息來源時間 (日期)</label>
+                        <input type="date" class="form-control" name="SOURCE_TIME_DATE" required ${
+                          mode === "view" ? "readonly" : ""
+                        } />
+                        <div class="error-message">請選擇日期</div>
+                      </div>
+                    </div>
+                     <div class="col-md-2">
+                      <div class="form-group">
+                        <label class="required">消息來源時間 (時間)</label>
+                        <input type="time" class="form-control" name="SOURCE_TIME_TIME" required ${
+                          mode === "view" ? "readonly" : ""
+                        } />                       
                         <div class="error-message">請選擇時間</div>
                       </div>
                     </div>
-                    <div class="col-md-3">
-                      <div class="form-group">
-                        <label class="required">通報來源</label>
-                        <select class="form-control" name="SOURCE_TYPE" required ${
-                          mode === "view" ? "disabled" : ""
-                        }>
-                          <option value="">請選擇</option>
-                          <option value="新聞">新聞媒體</option>
-                          <option value="Line">Line 群組</option>
-                          <option value="電話">電話通報</option>
-                          <option value="119">119 轉報</option>
-                        </select>
-                        <div class="error-message">請選擇通報來源</div>
-                      </div>
-                    </div>
-                    <div class="col-md-3">
+                    <div class="col-md-2">
                       <div class="form-group">
                         <label class="required">災害屬性</label>
                         <select class="form-control" name="DISASTER_ATTR" onchange="updateDisasterTypes(this)" required ${
@@ -147,17 +149,25 @@ const EventReportForm = {
                         </select>
                         <div class="error-message">請選擇災害種類</div>
                       </div>
-                    </div>
+                    </div>                   
                   </div>
                   
                   <div class="row">
-                    <div class="col-md-12">
+                    <div class="col-md-6">
                       <div class="form-group">
                         <label class="required">事件摘要</label>
                         <textarea class="form-control" name="INCIDENT_SUMMARY" placeholder="請簡述事件概要，包含時間、地點、原因、影響範圍等關鍵資訊..." required ${
                           mode === "view" ? "readonly" : ""
-                        }></textarea>
+                        } style="height: 50px;"></textarea>
                         <div class="error-message">請輸入事件摘要</div>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <label>📝 處置作為概述</label>
+                        <textarea class="form-control" name="ACTION_SUMMARY" placeholder="請敘述 REMOC 目前處置進度。" ${
+                          mode === "view" ? "readonly" : ""
+                        } style="height: 50px;"></textarea>
                       </div>
                     </div>
                   </div>
@@ -166,9 +176,8 @@ const EventReportForm = {
 
               <!-- 事故發生地 -->
               <div class="form-section">
-                <div class="section-title">🗺️ 事故發生地 (多筆新增)</div>
-                <div class="section-content">
-                  <div class="location-container">
+                <div class="section-title">📍事故發生地</div>             
+                  <div class="section-content">
                     <div id="locationList">
                       <div class="dynamic-item">
                         <div class="form-group">
@@ -195,32 +204,44 @@ const EventReportForm = {
                     </div>
                     ${
                       mode !== "view"
-                        ? '<button type="button" class="btn btn-primary btn-add-location" style="margin-top:10px;" onclick="addLocationItem()">＋ 新增發生地欄位</button>'
+                        ? '<button type="button" class="btn btn-primary btn-add-location" style="margin-top:10px;" onclick="addLocationItem()">＋ 新增發生地</button>'
                         : ""
                     }
                   </div>
-                </div>
+           
               </div>
 
-              <!-- 聯絡統計與傷情 -->
+              <!-- 簡訊/電話通報數 -->
               <div class="form-section">
-                <div class="section-title">📊 聯絡統計與傷情</div>
+                <div class="section-title"> 📍簡訊/電話通報數</div>
                 <div class="section-content">
-                  <div class="remoc-section">
+                
                     <div class="row">
                       <div class="col-md-6">
                         <fieldset>
-                          <legend>中央 (部/署) 聯絡</legend>
-                          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                          <legend>簡訊通報數</legend>
+                          <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;">
                             <div class="form-group">
-                              <label>傳發簡訊</label>
-                              <input type="number" class="form-control" name="CENTRAL_SMS" value="0" min="0" ${
+                              <label>衛福部</label>
+                              <input type="number" class="form-control" name="MOH_SMS" value="0" min="0" ${
                                 mode === "view" ? "readonly" : ""
                               } />
                             </div>
                             <div class="form-group">
-                              <label>電話聯絡</label>
-                              <input type="number" class="form-control" name="CENTRAL_PHONE" value="0" min="0" ${
+                              <label>衛生局</label>
+                              <input type="number" class="form-control" name="LOCAL_SMS" value="0" min="0" ${
+                                mode === "view" ? "readonly" : ""
+                              } />
+                            </div>
+                            <div class="form-group">
+                              <label>責任醫院</label>
+                              <input type="number" class="form-control" name="HOSPITAL_SMS" value="0" min="0" ${
+                                mode === "view" ? "readonly" : ""
+                              } />
+                            </div>
+                            <div class="form-group">
+                              <label>指揮中心</label>
+                              <input type="number" class="form-control" name="COMMAND_SMS" value="0" min="0" ${
                                 mode === "view" ? "readonly" : ""
                               } />
                             </div>
@@ -229,17 +250,29 @@ const EventReportForm = {
                       </div>
                       <div class="col-md-6">
                         <fieldset>
-                          <legend>地方 (衛生局、責任醫院、救災救護指揮中心) 聯絡</legend>
-                          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                          <legend>電話通報數</legend>
+                          <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;">
                             <div class="form-group">
-                              <label>傳發簡訊</label>
-                              <input type="number" class="form-control" name="LOCAL_SMS" value="0" min="0" ${
+                              <label>衛福部</label>
+                              <input type="number" class="form-control" name="MOH_PHONE" value="0" min="0" ${
                                 mode === "view" ? "readonly" : ""
                               } />
                             </div>
                             <div class="form-group">
-                              <label>電話聯絡</label>
+                              <label>衛生局</label>
                               <input type="number" class="form-control" name="LOCAL_PHONE" value="0" min="0" ${
+                                mode === "view" ? "readonly" : ""
+                              } />
+                            </div>
+                            <div class="form-group">
+                              <label>責任醫院</label>
+                              <input type="number" class="form-control" name="HOSPITAL_PHONE" value="0" min="0" ${
+                                mode === "view" ? "readonly" : ""
+                              } />
+                            </div>
+                            <div class="form-group">
+                              <label>指揮中心</label>
+                              <input type="number" class="form-control" name="COMMAND_PHONE" value="0" min="0" ${
                                 mode === "view" ? "readonly" : ""
                               } />
                             </div>
@@ -275,19 +308,7 @@ const EventReportForm = {
                             } />
                           </div>
                         </div>
-                      </div>
-                    </div>
-
-                    <div class="row">
-                      <div class="col-md-12">
-                        <div class="form-group">
-                          <label>📝 處置作為概述</label>
-                          <textarea class="form-control" name="ACTION_SUMMARY" placeholder="請敘述 REMOC 目前處置進度，例如：&#10;1. 已與該縣市衛生局對口聯繫。&#10;2. 通知該區責任醫院啟動大傷。&#10;3. 監測病床與收容量資訊中..." ${
-                            mode === "view" ? "readonly" : ""
-                          }></textarea>
-                          <span class="text-muted">詳述目前處置進度與後續規劃</span>
-                        </div>
-                      </div>
+                  
                     </div>
                   </div>
                 </div>
@@ -295,41 +316,41 @@ const EventReportForm = {
 
               <!-- EMC 系統傷患統計 -->
               <div class="form-section">
-                <div class="section-title">📊 EMC 系統傷患統計</div>
+                <div class="section-title">📍醫療檢傷人數</div>
                 <div class="section-content">
-                  <div class="emc-section">               
-                    <div class="triage-grid">
-                      <div class="form-group">
-                        <label>檢傷一級</label>
-                        <input type="number" class="form-control emc-input" name="EMC_TRIAGE1" value="0" min="0" readonly />
-                      </div>
-                      <div class="form-group">
-                        <label>檢傷二級</label>
-                        <input type="number" class="form-control emc-input" name="EMC_TRIAGE2" value="0" min="0" readonly />
-                      </div>
-                      <div class="form-group">
-                        <label>檢傷三級</label>
-                        <input type="number" class="form-control emc-input" name="EMC_TRIAGE3" value="0" min="0" readonly />
-                      </div>
-                      <div class="form-group">
-                        <label>檢傷四級</label>
-                        <input type="number" class="form-control emc-input" name="EMC_TRIAGE4" value="0" min="0" readonly />
-                      </div>
-                      <div class="form-group">
-                        <label>檢傷五級</label>
-                        <input type="number" class="form-control emc-input" name="EMC_TRIAGE5" value="0" min="0" readonly />
-                      </div>
+                  <div  style="display: grid; grid-template-columns: repeat(8, 1fr); gap: 4px;">               
+                    <div class="form-group">
+                      <label>一級</label>
+                      <input type="number" class="form-control emc-input" name="EMC_TRIAGE1" value="0" min="0" readonly />
+                    </div>
+                    <div class="form-group">
+                      <label>二級</label>
+                      <input type="number" class="form-control emc-input" name="EMC_TRIAGE2" value="0" min="0" readonly />
+                    </div>
+                    <div class="form-group">
+                      <label>三級</label>
+                      <input type="number" class="form-control emc-input" name="EMC_TRIAGE3" value="0" min="0" readonly />
+                    </div>
+                    <div class="form-group">
+                      <label>四級</label>
+                      <input type="number" class="form-control emc-input" name="EMC_TRIAGE4" value="0" min="0" readonly />
+                    </div>
+                    <div class="form-group">
+                      <label>五級</label>
+                      <input type="number" class="form-control emc-input" name="EMC_TRIAGE5" value="0" min="0" readonly />
+                    </div>
+                    <div class="form-group">
+                      <label>未填</label>
+                      <input type="number" class="form-control emc-input" name="EMC_UNFILLED" value="0" min="0" readonly />
+                    </div>
+                    <div class="form-group">
+                      <label>總數</label>
+                      <input type="number" class="form-control" name="EMC_TOTAL_ADMITTED" value="0" min="0" readonly />
                     </div>
 
-                    <div class="triage-total-row">
-                      <div class="form-group total-field ">
-                        <label>送醫總數</label>
-                        <input type="number" class="form-control" name="EMC_TOTAL_ADMITTED" value="0" min="0" readonly />
-                      </div>
-                      <div class="form-group total-field ">
-                        <label>死亡總數</label>
-                        <input type="number" class="form-control" name="EMC_TOTAL_DEATH" value="0" min="0" readonly />
-                      </div>
+                    <div class="form-group">
+                      <label>死亡總數</label>
+                      <input type="number" class="form-control" name="EMC_TOTAL_DEATH" value="0" min="0" readonly />
                     </div>
                   </div>
                 </div>
@@ -424,11 +445,24 @@ const EventReportForm = {
     }
 
     // 初始化消息來源時間為當前時間
-    const sourceTimeInput = document.querySelector('input[name="SOURCE_TIME"]');
-    if (sourceTimeInput && this.mode === "add") {
-      const now = new Date();
-      now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
-      sourceTimeInput.value = now.toISOString().slice(0, 16);
+    if (this.mode === "add") {
+      const sourceTimeHidden = document.querySelector(
+        'input[name="SOURCE_TIME"]'
+      );
+      const sourceDateInput = document.querySelector(
+        'input[name="SOURCE_TIME_DATE"]'
+      );
+      const sourceTimeInput = document.querySelector(
+        'input[name="SOURCE_TIME_TIME"]'
+      );
+      if (sourceTimeHidden && sourceDateInput && sourceTimeInput) {
+        const now = new Date();
+        const dateStr = now.toISOString().split("T")[0];
+        const timeStr = now.toTimeString().slice(0, 5);
+        sourceTimeHidden.value = `${dateStr} ${timeStr}:00`;
+        sourceDateInput.value = dateStr;
+        sourceTimeInput.value = timeStr;
+      }
     }
 
     // 設定建立日期顯示 (新增模式才需要即時更新)
@@ -436,10 +470,10 @@ const EventReportForm = {
       const updateCreateTime = () => {
         const createTimeDisplay = document.getElementById("createTimeDisplay");
         if (createTimeDisplay) {
-          createTimeDisplay.textContent = `建立日期：${new Date().toLocaleString(
-            "zh-TW",
-            { hour12: false }
-          )}`;
+          createTimeDisplay.textContent = `建立日期：${new Date()
+            .toISOString()
+            .slice(0, 16)
+            .replace("T", " ")}`;
         }
       };
 
@@ -552,6 +586,23 @@ const EventReportForm = {
     $("#DISASTER_ATTR").val(data.DISASTER_ATTR || "");
     $("#DISASTER_TYPE").val(data.DISASTER_TYPE || "");
 
+    // 載入消息來源時間
+    if (data.SOURCE_TIME) {
+      const date = new Date(data.SOURCE_TIME);
+      if (EventReportForm.mode === "view") {
+        const dateStr = date.toISOString().split("T")[0];
+        const timeStr = date.toTimeString().slice(0, 5);
+        $('[name="SOURCE_TIME_DATE"]').val(dateStr);
+        $('[name="SOURCE_TIME_TIME"]').val(timeStr);
+      } else {
+        const dateStr = date.toISOString().split("T")[0];
+        const timeStr = date.toTimeString().slice(0, 5);
+        $('[name="SOURCE_TIME"]').val(`${dateStr} ${timeStr}:00`);
+        $('[name="SOURCE_TIME_DATE"]').val(dateStr);
+        $('[name="SOURCE_TIME_TIME"]').val(timeStr);
+      }
+    }
+
     // 載入傷亡統計
     $("#REMOC_DEATH_COUNT").val(data.DEATH_COUNT || 0);
     $("#REMOC_INJURED_COUNT").val(data.CASUALTY_INJURED || 0);
@@ -566,10 +617,14 @@ const EventReportForm = {
     $("#EMC_UNKNOWN_COUNT").val(data.TRIAGE_LEVEL_UNKNOWN || 0);
 
     // 載入聯絡統計
-    $("#CENTRAL_SMS").val(data.MOH_SMS || 0);
-    $("#CENTRAL_PHONE").val(data.MOH_PHONE || 0);
-    $("#LOCAL_SMS").val(data.LOCAL_SMS || 0);
-    $("#LOCAL_PHONE").val(data.LOCAL_PHONE || 0);
+    $('[name="MOH_SMS"]').val(data.MOH_SMS || 0);
+    $('[name="LOCAL_SMS"]').val(data.LOCAL_SMS || 0);
+    $('[name="HOSPITAL_SMS"]').val(data.HOSPITAL_SMS || 0);
+    $('[name="COMMAND_SMS"]').val(data.COMMAND_SMS || 0);
+    $('[name="MOH_PHONE"]').val(data.MOH_PHONE || 0);
+    $('[name="LOCAL_PHONE"]').val(data.LOCAL_PHONE || 0);
+    $('[name="HOSPITAL_PHONE"]').val(data.HOSPITAL_PHONE || 0);
+    $('[name="COMMAND_PHONE"]').val(data.COMMAND_PHONE || 0);
 
     // 載入災害種類（需要先設定災害屬性）
     if (data.DISASTER_ATTR) {
@@ -666,6 +721,13 @@ const EventReportForm = {
         formData[name] = $field.val();
       }
     });
+
+    // 組合消息來源時間
+    if (formData.SOURCE_TIME_DATE && formData.SOURCE_TIME_TIME) {
+      formData.SOURCE_TIME = `${formData.SOURCE_TIME_DATE} ${formData.SOURCE_TIME_TIME}:00`;
+      delete formData.SOURCE_TIME_DATE;
+      delete formData.SOURCE_TIME_TIME;
+    }
 
     // 收集發生地資料
     formData.locations = [];
@@ -838,6 +900,13 @@ function handleSubmit() {
   // 基本欄位
   for (let [key, value] of formData.entries()) {
     data[key] = value;
+  }
+
+  // 組合消息來源時間
+  if (data.SOURCE_TIME_DATE && data.SOURCE_TIME_TIME) {
+    data.SOURCE_TIME = `${data.SOURCE_TIME_DATE} ${data.SOURCE_TIME_TIME}:00`;
+    delete data.SOURCE_TIME_DATE;
+    delete data.SOURCE_TIME_TIME;
   }
 
   // 收集發生地點資料

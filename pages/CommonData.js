@@ -1,12 +1,6 @@
 // ==================== 訊息來源資料 ====================
 const MessageSourceData = [
   { code: "EMS", name: "EMS" },
-  { code: "FIRE_DISPATCH", name: "119派遣系統" },
-  { code: "FIRE_LINE", name: "消防局LINE" },
-  { code: "FIRE_RADIO", name: "消防局無線電" },
-  { code: "NEWS", name: "網路新聞" },
-  { code: "BROADCAST", name: "廣播" },
-  { code: "HEALTH_BUREAU", name: "衛生局" },
   { code: "OTHER", name: "其他" },
 ];
 // CommonData.js - 共用靜態資料清單

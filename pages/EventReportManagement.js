@@ -245,6 +245,7 @@ const EventReportManagementPage = {
                     ${ButtonComponent.edit("btnEdit", "修改")}
                     ${ButtonComponent.view("btnView", "檢視")}
                     ${ButtonComponent.delete("btnDelete", "刪除")}
+                    ${ButtonComponent.export("btnExport")}
                   </div>
                   <!-- EasyUI DataGrid -->
                 <!-- EasyUI DataGrid -->
@@ -368,13 +369,12 @@ const EventReportManagementPage = {
 
     // 更新查詢時間
     const now = new Date();
-    const timeStr = `${now.getFullYear()}年${String(
-      now.getMonth() + 1
-    ).padStart(2, "0")}月${String(now.getDate()).padStart(2, "0")}日 ${String(
+    const timeStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(
+      2,
+      "0"
+    )}-${String(now.getDate()).padStart(2, "0")} ${String(
       now.getHours()
-    ).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}:${String(
-      now.getSeconds()
-    ).padStart(2, "0")}`;
+    ).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
     $("#ResultTime").text(timeStr);
 
     // 初始化或重新載入 DataGrid
@@ -515,7 +515,7 @@ const EventReportManagementPage = {
               },
             },
             {
-              title: "事件傷亡統計",
+              title: "事件傷亡人數",
               colspan: 3,
             },
             {
@@ -527,8 +527,21 @@ const EventReportManagementPage = {
               colspan: 4,
             },
             {
+              field: "REPORTER",
+              title: "監看<br/>人員",
+              width: 65,
+              align: "center",
+              rowspan: 2,
+              formatter: function (value, row, index) {
+                const contactPhone = row.CONTACT_PHONE || "";
+                const titleText =
+                  value + (contactPhone ? " / " + contactPhone : "");
+                return '<span title="' + titleText + '">' + value + "</span>";
+              },
+            },
+            {
               field: "IS_DELETED",
-              title: "是否刪除",
+              title: "是否<br/>刪除",
               width: 65,
               align: "center",
               rowspan: 2,
@@ -906,6 +919,8 @@ const EventReportManagementPage = {
         COMMAND_PHONE: 4,
         IS_DELETED: "N",
         DELETE_REASON: "",
+        REPORTER: "王小明",
+        CONTACT_PHONE: "0912345678",
       },
       {
         COUNTY_LABEL: "新北市",
@@ -936,6 +951,8 @@ const EventReportManagementPage = {
         COMMAND_PHONE: 1,
         IS_DELETED: "Y",
         DELETE_REASON: "資料重複",
+        REPORTER: "林美玉",
+        CONTACT_PHONE: "0987654321",
       },
       {
         COUNTY_LABEL: "新北市",
@@ -966,6 +983,8 @@ const EventReportManagementPage = {
         COMMAND_PHONE: 1,
         IS_DELETED: "Y",
         DELETE_REASON: "資料重複",
+        REPORTER: "張志強",
+        CONTACT_PHONE: "0955123456",
       },
       {
         COUNTY_LABEL: "台中市",
@@ -994,6 +1013,8 @@ const EventReportManagementPage = {
         BUREAU_PHONE: 0,
         HOSPITAL_PHONE: 0,
         COMMAND_PHONE: 0,
+        REPORTER: "李大仁",
+        CONTACT_PHONE: "0911223344",
       },
       {
         COUNTY_LABEL: "高雄市",
@@ -1024,6 +1045,8 @@ const EventReportManagementPage = {
         COMMAND_PHONE: 4,
         IS_DELETED: "N",
         DELETE_REASON: "",
+        REPORTER: "陳美華",
+        CONTACT_PHONE: "0933445566",
       },
       {
         COUNTY_LABEL: "桃園市",
@@ -1054,6 +1077,8 @@ const EventReportManagementPage = {
         COMMAND_PHONE: 1,
         IS_DELETED: "N",
         DELETE_REASON: "",
+        REPORTER: "吳俊賢",
+        CONTACT_PHONE: "0977889900",
       },
       {
         COUNTY_LABEL: "新竹市",
@@ -1082,6 +1107,8 @@ const EventReportManagementPage = {
         BUREAU_PHONE: 1,
         HOSPITAL_PHONE: 1,
         COMMAND_PHONE: 1,
+        REPORTER: "周怡君",
+        CONTACT_PHONE: "0922113344",
       },
       {
         COUNTY_LABEL: "金門縣",
@@ -1110,6 +1137,7 @@ const EventReportManagementPage = {
         BUREAU_PHONE: 1,
         HOSPITAL_PHONE: 1,
         COMMAND_PHONE: 1,
+        REPORTER: "許志明",
       },
       {
         COUNTY_LABEL: "嘉義市",
@@ -1138,6 +1166,7 @@ const EventReportManagementPage = {
         BUREAU_PHONE: 1,
         HOSPITAL_PHONE: 1,
         COMMAND_PHONE: 1,
+        REPORTER: "黃子軒",
       },
       {
         COUNTY_LABEL: "彰化縣",
@@ -1166,6 +1195,7 @@ const EventReportManagementPage = {
         BUREAU_PHONE: 1,
         HOSPITAL_PHONE: 1,
         COMMAND_PHONE: 1,
+        REPORTER: "簡佩珊",
       },
       {
         COUNTY_LABEL: "苗栗縣",
@@ -1194,6 +1224,7 @@ const EventReportManagementPage = {
         BUREAU_PHONE: 1,
         HOSPITAL_PHONE: 1,
         COMMAND_PHONE: 1,
+        REPORTER: "林信宏",
       },
       {
         COUNTY_LABEL: "花蓮縣",

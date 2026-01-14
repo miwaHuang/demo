@@ -82,8 +82,8 @@
 
 /* 設定modal大小 */
 #eventReportModal .modal-body {
-  max-height: 70vh;
-  overflow-y: auto;
+  height: 80vh;
+  overflow: auto;
   padding: 20px;
 }
 
@@ -96,10 +96,6 @@
   font-size: 1.1rem;
   border-bottom: 2px solid #e8f4fd;
   padding-bottom: 8px;
-}
-
-.form-section {
-  margin-bottom: 25px;
 }
 
 .form-group label {
@@ -133,19 +129,18 @@
 }
 
 /* 動態發生地樣式 */
-.location-container {
+.section-content {
   background: #f8fbff;
-  padding: 18px;
+  padding: 10px 15px 10px 15px;
   border-radius: 6px;
   border: 1px solid #e8f4fd;
-  margin-bottom: 20px;
 }
 
 .dynamic-item {
   display: grid;
   grid-template-columns: 200px 1fr 50px;
   gap: 10px;
-  margin-bottom: 10px;
+
   align-items: flex-end;
 }
 
@@ -191,7 +186,6 @@
 /* 統計區塊樣式 */
 .stats-container {
   padding: 8px;
-  margin-bottom: 8px;
   background: none;
   border: none;
   border-radius: 0;
@@ -202,12 +196,6 @@
   border-radius: 6px;
   margin-bottom: 20px;
   background: #f8fbff;
-}
-
-.emc-section {
-  padding: 20px;
-  border-radius: 6px;
-  background: #f0fff4;
 }
 
 /* 檢傷分級網格 */
@@ -307,8 +295,7 @@ textarea.form-control {
 fieldset {
   border: 1px dashed #bbb;
   border-radius: 6px;
-  padding: 20px;
-  margin-bottom: 15px;
+  padding: 10px 20px 10px 20px;
   background: #ffffff;
 }
 

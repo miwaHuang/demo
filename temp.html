@@ -1,72 +1,53 @@
-<!DOCTYPE html>
-<html lang="zh-TW">
-  <head>
-    <meta charset="utf-8" />
-    <title>EasyUI Datagrid Demo</title>
+<div class="col-sm-4">
+  <input
+    data-val="true"
+    data-val-date="欄位 HAPPEN_TIME 必須是日期。"
+    data-val-required="HAPPEN_TIME 欄位是必要項。"
+    id="HAPPEN_TIME"
+    name="HAPPEN_TIME"
+    type="hidden"
+    value="2026-01-13 16:24:00"
+    autocomplete="off"
+  />
+  <div class="form-inline">
+    <div class="input-group padding-none">
+      <div class="input-group-addon" style="width: 42px">
+        <i class="zmdi zmdi-calendar-note"></i>
+      </div>
+      <input
+        class="form-control hasDatepicker"
+        data-invalid-message="請輸入「Step4.災害內容」發生時間(日期)。"
+        data-type="date"
+        id="HAPPEN_TIME_DATE"
+        name="HAPPEN_TIME_DATE"
+        onchange="MEDA100CreateNew639039182901861492HappenTimeChange()"
+        pattern="^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$"
+        required=""
+        type="text"
+        value="2026-01-13"
+        autocomplete="off"
+        date-inited=""
+      />
+    </div>
 
-    <!-- EasyUI CSS -->
-    <link
-      rel="stylesheet"
-      type="text/css"
-      href="https://www.jeasyui.com/easyui/themes/default/easyui.css"
-    />
-    <link
-      rel="stylesheet"
-      type="text/css"
-      href="https://www.jeasyui.com/easyui/themes/icon.css"
-    />
-
-    <!-- jQuery & EasyUI JS -->
-    <script src="https://www.jeasyui.com/easyui/jquery.min.js"></script>
-    <script src="https://www.jeasyui.com/easyui/jquery.easyui.min.js"></script>
-  </head>
-  <body style="padding: 20px">
-    <h2>EasyUI Datagrid 實際畫面</h2>
-
-    <table id="table"></table>
-
-    <script>
-      $("#table").datagrid({
-        title: "使用者清單",
-        width: 700,
-        height: 350,
-        fitColumns: true,
-        striped: true,
-        rownumbers: true,
-        singleSelect: true,
-        pagination: true,
-        pageSize: 5,
-
-        columns: [
-          [
-            { field: "id", title: "ID", width: 50 },
-            { field: "name", title: "姓名", width: 100 },
-            { field: "email", title: "Email", width: 180 },
-            {
-              field: "status",
-              title: "狀態",
-              width: 80,
-              formatter: function (value) {
-                return value === 1 ? "啟用" : "停用";
-              },
-            },
-          ],
-        ],
-
-        data: {
-          total: 8,
-          rows: [
-            { id: 1, name: "王小明", email: "ming@test.com", status: 1 },
-            { id: 2, name: "陳美麗", email: "mei@test.com", status: 1 },
-            { id: 3, name: "林志豪", email: "lin@test.com", status: 0 },
-            { id: 4, name: "張雅婷", email: "chang@test.com", status: 1 },
-            { id: 5, name: "黃國華", email: "huang@test.com", status: 0 },
-            { id: 6, name: "吳佩珊", email: "wu@test.com", status: 1 },
-            { id: 7, name: "蔡宗翰", email: "tsai@test.com", status: 1 },
-            { id: 8, name: "劉書涵", email: "liu@test.com", status: 0 },
-          ],
-        },
-      });
-    </script>
-  </body>
-</html>
+    <div class="input-group padding-none">
+      <div class="input-group-addon" style="width: 42px">
+        <i class="zmdi zmdi-time"></i>
+      </div>
+      <input
+        class="form-control hasDatepicker"
+        data-invalid-message="請輸入「Step4.災害內容」發生時間(時間)。"
+        data-type="time"
+        id="HAPPEN_TIME_TIME"
+        name="HAPPEN_TIME_TIME"
+        onchange="MEDA100CreateNew639039182901861492HappenTimeChange()"
+        pattern="^([01]\d|2[0-3]):[0-5]\d$"
+        required=""
+        type="text"
+        value="16:24"
+        autocomplete="off"
+        time-inited=""
+      />
+    </div>
+  </div>
+</div>
