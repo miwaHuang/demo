@@ -16,6 +16,9 @@ const EventReportManagementPage = {
     if (typeof REMOCData === "undefined") {
       return '<div class="alert alert-danger">錯誤：REMOCData 未定義</div>';
     }
+    if (typeof RegionalData === "undefined") {
+      return '<div class="alert alert-danger">錯誤：RegionalData 未定義</div>';
+    }
     if (typeof ButtonComponent === "undefined") {
       return '<div class="alert alert-danger">錯誤：ButtonComponent 未定義</div>';
     }
@@ -84,17 +87,17 @@ const EventReportManagementPage = {
                 <div class="form-horizontal">
                       <!-- 編號 -->
                       <div class="form-group">
-                        <label class="col-sm-5 control-label">編號</label>
+                        <label class="col-sm-5 control-label">災害編號</label>
                         <div class="col-sm-7">
-                          <input type="text" class="form-control" id="Q_EVENT_NO" name="Q_EVENT_NO" placeholder="請輸入事件編號">
+                          <input type="text" class="form-control" id="Q_EVENT_NO" name="Q_EVENT_NO" placeholder="請輸入災害編號">
                         </div>
                       </div>
 
                       <!-- 名稱 -->
                       <div class="form-group">
-                        <label class="col-sm-5 control-label">名稱</label>
+                        <label class="col-sm-5 control-label">災害名稱</label>
                         <div class="col-sm-7">
-                          <input type="text" class="form-control" id="Q_EVENT_NAME" name="Q_EVENT_NAME" placeholder="請輸入事件名稱">
+                          <input type="text" class="form-control" id="Q_EVENT_NAME" name="Q_EVENT_NAME" placeholder="請輸入災害名稱">
                         </div>
                       </div>
 
@@ -121,7 +124,7 @@ const EventReportManagementPage = {
                         </div>
                       </div>
 
-                      
+                  
 
                       <!-- 發生日期 -->
                       <div class="form-group">
@@ -162,6 +165,19 @@ const EventReportManagementPage = {
                         </div>
                       </div>
 
+                      <!-- 區域 -->
+                      <div class="form-group">
+                        <label class="col-sm-5 control-label">區域</label>
+                        <div class="col-sm-7">
+                          <select class="form-control" id="Q_REGION" name="Q_REGION">
+                            <option value="">全部</option>
+                            ${CommonDataUtils.generateOptions(
+                              RegionalData.regions
+                            )}
+                          </select>
+                        </div>
+                      </div>
+
                       <!-- 發生地 -->
                       <div class="form-group">
                         <label class="col-sm-5 control-label">發生地</label>
@@ -198,7 +214,7 @@ const EventReportManagementPage = {
                         <label class="col-sm-5 control-label">是否刪除</label>
                         <div class="col-sm-7">
                           <select class="form-control" id="Q_IS_DELETED" name="Q_IS_DELETED">
-                            <option value="">全部</option>
+                     
                             <option value="N" selected>否</option>
                             <option value="Y">是</option>
                           </select>
@@ -1584,7 +1600,7 @@ const EventReportManagementPage = {
 
     // 刪除理由選項
     const deleteReasons = [
-      { value: "", text: "請選擇刪除理由" },
+      { value: "", text: "請選擇" },
       { value: "data_duplicate", text: "資料重複" },
       { value: "input_error", text: "輸入錯誤" },
       { value: "test_data", text: "測試資料" },
@@ -1601,7 +1617,6 @@ const EventReportManagementPage = {
           <div style="margin-bottom: 10px;">
             <span style="font-weight: bold; font-size: 16px;">確定要刪除此筆資料嗎？</span><br/>
             災害名稱：${selected.DISASTER_NAME}<br/>
-            災害編號：${selected.DISASTER_NO_LABEL}
           </div>
           <div style="margin-bottom: 15px;">
             <label for="deleteReason" style="display: inline-block; width: 85px; vertical-align: top; white-space: nowrap;"><span style="color: red;">*</span><strong>刪除理由：</strong></label>
@@ -1615,8 +1630,8 @@ const EventReportManagementPage = {
             </select>
           </div>
           <div id="otherReasonContainer" style="margin-bottom: 15px; display: none;">
-            <label for="otherReasonText" style="display: inline-block; width: 85px; vertical-align: top; white-space: nowrap;"><span style="color: red;">*</span><strong>請說明：</strong></label>
-            <input type="text" id="otherReasonText" class="textbox-text" style="width: 220px; padding: 5px; border: 1px solid #ccc; display: inline-block;" placeholder="請輸入具體原因..." maxlength="100">
+            <label for="otherReasonText" style="display: inline-block; width: 85px; vertical-align: top; white-space: nowrap;"><span style="color: red;">*</span><strong>其他原因：</strong></label>
+            <input type="text" id="otherReasonText" class="textbox-text" style="width: 220px; padding: 5px; border: 1px solid #ccc; display: inline-block;"  maxlength="100">
           </div>
         </div>
         <div style="clear:both;"></div>
@@ -1710,7 +1725,7 @@ const EventReportManagementPage = {
       // 如果選擇其他原因，檢查文字輸入
       if (selectedReason === "other" && !otherReasonText) {
         $("#otherReasonText").css("border-color", "#ff4444");
-        $.messager.alert("提示", "請輸入具體的其他原因！", "warning");
+        $.messager.alert("提示", "請輸入其他原因！", "warning");
         $("#otherReasonText").focus();
         return;
       }

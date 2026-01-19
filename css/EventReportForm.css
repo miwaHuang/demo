@@ -1,10 +1,10 @@
 /* 增加垃圾桶按鈕底部空間與高度 */
-.form-group .btn-remove-location {
+#reportModal .form-group .btn-remove-location {
   margin-bottom: 8px;
   min-height: 40px;
 }
 /* 讓所有垃圾桶按鈕置中顯示 */
-.form-group .btn-remove-location {
+#reportModal .form-group .btn-remove-location {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -20,14 +20,14 @@
 /* 使用Bootstrap標準顏色 */
 
 /* 自定義modal header樣式 */
-#eventReportModal .modal-content {
+#reportModal .modal-content {
   border-radius: 12px;
   overflow: hidden;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15), 0 4px 20px rgba(0, 0, 0, 0.1);
   border: none;
 }
 
-#eventReportModal .modal-header {
+#reportModal .modal-header {
   background: linear-gradient(135deg, #337ab7 0%, #286090 100%);
   color: white;
   border-bottom: none;
@@ -40,7 +40,7 @@
   align-items: center;
 }
 
-#eventReportModal .modal-title {
+#reportModal .modal-title {
   color: #ffffff;
   font-size: 1.5rem;
   margin: 0;
@@ -49,23 +49,23 @@
   font-weight: 600;
 }
 
-#eventReportModal .close {
+#reportModal .close {
   color: white;
   opacity: 0.8;
   position: absolute;
   top: 50%;
   right: 15px;
   transform: translateY(-50%);
-  z-index: 10;
+  z-indrtmodalex: 10;
   font-size: 1.5rem;
 }
 
-#eventReportModal .close:hover {
+#reportModal .close:hover {
   color: white;
   opacity: 1;
 }
 
-#eventReportModal .auto-info {
+#reportModal .auto-info {
   position: absolute;
   right: 60px;
   top: 50%;
@@ -81,13 +81,13 @@
 }
 
 /* 設定modal大小 */
-#eventReportModal .modal-body {
+#reportModal .modal-body {
   height: 80vh;
   overflow: auto;
   padding: 20px;
 }
 
-.section-title {
+#reportModal .section-title {
   font-weight: 600;
   color: #337ab7; /* Bootstrap primary */
   margin-bottom: 10px;
@@ -98,7 +98,7 @@
   padding-bottom: 8px;
 }
 
-.form-group label {
+#reportModal .form-group label {
   font-size: 14px;
   color: #2c3e50;
   margin-bottom: 6px;
@@ -107,29 +107,29 @@
 }
 
 /* 美化form-control focus效果 */
-#eventReportModal .form-control:focus {
+#reportModal .form-control:focus {
   border-color: #337ab7;
   box-shadow: 0 0 0 3px rgba(51, 122, 183, 0.1);
   transform: translateY(-1px);
   transition: all 0.3s ease;
 }
 
-#eventReportModal .form-control {
+#reportModal .form-control {
   transition: all 0.3s ease;
   border: 2px solid #e8f0fe;
 }
 
-#eventReportModal .form-control:hover {
+#reportModal .form-control:hover {
   border-color: #b3d7ff;
 }
 
-.form-group label.required::after {
+#reportModal .form-group label.required::after {
   content: " *";
   color: #d9534f; /* Bootstrap danger */
 }
 
 /* 動態發生地樣式 */
-.section-content {
+#reportModal .section-content {
   background: #f8fbff;
   padding: 10px 15px 5px 15px;
   border-radius: 6px;
@@ -137,7 +137,7 @@
   margin-bottom: 10px;
 }
 
-.dynamic-item {
+#reportModal .dynamic-item {
   display: grid;
   grid-template-columns: 200px 1fr 50px;
   gap: 10px;
@@ -145,7 +145,7 @@
   align-items: flex-end;
 }
 
-.event-form-container .btn-add-location {
+#reportModal .event-form-container .btn-add-location {
   background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
   border: none;
   color: white;
@@ -163,13 +163,13 @@
   letter-spacing: 0.5px;
 }
 
-.event-form-container .btn-add-location:hover {
+#reportModal .event-form-container .btn-add-location:hover {
   background: linear-gradient(135deg, #20c997 0%, #17a2b8 100%);
   transform: translateY(-2px);
   box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4);
 }
 
-.event-form-container .btn-remove-location {
+#reportModal .event-form-container .btn-remove-location {
   background: #fff0f0;
   color: #d9534f; /* Bootstrap danger */
   border: 1px solid #ffccd5;
@@ -179,20 +179,20 @@
   transition: all 0.3s ease;
 }
 
-.event-form-container .btn-remove-location:hover {
+#reportModal .event-form-container .btn-remove-location:hover {
   background: #d9534f; /* Bootstrap danger */
   color: white;
 }
 
 /* 統計區塊樣式 */
-.stats-container {
+#reportModal .stats-container {
   padding: 8px;
   background: none;
   border: none;
   border-radius: 0;
 }
 
-.remoc-section {
+#reportModal .remoc-section {
   padding: 0px;
   border-radius: 6px;
   margin-bottom: 20px;
@@ -200,14 +200,14 @@
 }
 
 /* 檢傷分級網格 */
-.triage-grid {
+#reportModal .triage-grid {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   gap: 10px;
   margin-bottom: 12px;
 }
 
-.triage-total-row {
+#reportModal .triage-total-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 10px;
@@ -215,29 +215,29 @@
   padding-top: 12px;
 }
 
-.total-field .form-control {
+#reportModal .total-field .form-control {
   font-weight: bold;
 }
 
-.total-success .form-control {
+#reportModal .total-success .form-control {
   background-color: #e8f5e8;
   border: 2px solid #5cb85c; /* Bootstrap success */
 }
 
-.total-danger .form-control {
+#reportModal .total-danger .form-control {
   background-color: #f8f9fa;
   border: 2px solid #d9534f; /* Bootstrap danger */
 }
 
 /* 文本區域 */
-textarea.form-control {
+#reportModal textarea.form-control {
   height: 80px;
   resize: vertical;
   line-height: 1.5;
 }
 
 /* 小提示文字 */
-.text-muted {
+#reportModal .text-muted {
   color: #6c757d;
   font-size: 14px;
   margin-top: 3px;
@@ -245,15 +245,15 @@ textarea.form-control {
 }
 
 /* Modal內的小提示文字覆蓋 */
-#eventReportModal .auto-info .text-muted,
-#eventReportModal .auto-info small {
+#reportModal .auto-info .text-muted,
+#reportModal .auto-info small {
   color: #ffffff !important;
   font-weight: 500;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 /* 錯誤訊息 */
-.error-message {
+#reportModal .error-message {
   color: #d9534f; /* Bootstrap danger */
   font-size: 14px;
   margin-top: 5px;
@@ -262,45 +262,45 @@ textarea.form-control {
 
 /* Bootstrap Modal響應式調整 */
 @media (max-width: 768px) {
-  #eventReportModal .modal-dialog {
+  #reportModal .modal-dialog {
     margin: 10px;
     max-width: none;
   }
 
-  #eventReportModal .modal-body {
+  #reportModal .modal-body {
     max-height: 60vh;
   }
 
-  #eventReportModal .auto-info {
+  #reportModal .auto-info {
     display: none; /* 在小螢幕上隱藏 */
   }
 
-  #eventReportModal .modal-header {
+  #reportModal .modal-header {
     padding: 10px 15px; /* 小螢幕上減少內距 */
   }
 
-  .dynamic-item {
+  #reportModal .dynamic-item {
     grid-template-columns: 1fr;
   }
 
-  .triage-grid {
+  #reportModal .triage-grid {
     grid-template-columns: repeat(2, 1fr);
   }
 
-  .triage-total-row {
+  #reportModal .triage-total-row {
     grid-template-columns: 1fr;
   }
 }
 
 /* Fieldset 樣式 */
-fieldset {
+#reportModal fieldset {
   border: 1px dashed #bbb;
   border-radius: 6px;
   padding: 10px 20px 10px 20px;
   background: #ffffff;
 }
 
-fieldset legend {
+#reportModal fieldset legend {
   font-weight: 600;
   color: white;
   padding: 5px 15px;

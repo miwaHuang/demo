@@ -35,11 +35,11 @@ const EventReportForm = {
     }
 
     return /*html*/ `
-      <div class="modal fade" id="eventReportModal" tabindex="-1" role="dialog" aria-labelledby="eventReportModalLabel" aria-hidden="true">
+      <div class="modal fade" id="reportModal" tabindex="-1" role="dialog" aria-labelledby="reportModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg" role="document" style="width: 1500px; max-width: 95vw;">
           <div class="modal-content" style="height: 100%; overflow: auto;">
             <div class="modal-header">
-              <h4 class="modal-title" id="eventReportModalLabel">${
+              <h4 class="modal-title" id="reportModalLabel">${
                 mode === "add" ? "新增" : mode === "edit" ? "編輯" : "檢閱"
               } 事件</h4>
               <button type="button" class="close" data-dismiss="modal" aria-label="關閉">
@@ -69,7 +69,22 @@ const EventReportForm = {
                 <div class="section-title">📍 基本通報資訊</div>
                 <div class="section-content">
                   <div class="row">
-                    <div class="col-md-6">
+                    
+                    <div class="col-md-2">
+                      <div class="form-group">
+                        <label class="required">EMS是否開案</label>
+                        <select class="form-control" name="IS_CASE_OPEN" required ${
+                          mode === "view" ? "disabled" : ""
+                        }>
+                          <option value="">請選擇</option>
+                          <option value="Y">是</option>
+                          <option value="N">否</option>
+                        </select>
+                        <div class="error-message">請選擇是否開案</div>
+                      </div>
+                      </div>
+                  
+                    <div class="col-md-4">
                       <div class="form-group">
                         <label class="required">事件名稱</label>
                         <input type="text" class="form-control" name="INCIDENT_NAME" placeholder="例：台鐵XX號脫軌事故" required ${
@@ -78,7 +93,20 @@ const EventReportForm = {
                         <div class="error-message">請輸入事件名稱</div>
                       </div>
                     </div>
-                    <div class="col-md-3">
+                      <div class="col-md-2">
+                        <div class="form-group">
+                            <label>區域</label>
+                            <input type="text" class="form-control" name="REGION" value="${
+                              data && data.REGION
+                                ? data.REGION
+                                : typeof remocInfo !== "undefined" &&
+                                  remocInfo.name
+                                ? remocInfo.name
+                                : ""
+                            }" readonly />
+                        </div>
+                    </div>
+                    <div class="col-md-2">
                       <div class="form-group">
                         <label class="required">監看人員</label>
                         <input type="text" class="form-control" name="REPORTER" placeholder="請輸入姓名" required ${
@@ -87,7 +115,7 @@ const EventReportForm = {
                         <div class="error-message">請輸入監看人員</div>
                       </div>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-2">
                       <div class="form-group">
                         <label class="required">連絡電話</label>
                         <input type="tel" class="form-control" name="CONTACT_PHONE" placeholder="請輸入電話號碼" required ${
@@ -149,7 +177,7 @@ const EventReportForm = {
                         </select>
                         <div class="error-message">請選擇災害種類</div>
                       </div>
-                    </div>                   
+                    </div>     
                   </div>
                   
                   <div class="row">
@@ -181,10 +209,11 @@ const EventReportForm = {
                     <div id="locationList">
                       <div class="dynamic-item">
                         <div class="form-group">
-                          <label>縣市 (鄉鎮市區)</label>
+                          <label class="required">縣市 (鄉鎮市區)</label>
                           <input type="text" class="form-control location-city" placeholder="如：新北市板橋區" ${
-                            mode === "view" ? "readonly" : ""
+                            mode === "view" ? "readonly" : "required"
                           } />
+                          <div class="error-message">請輸入縣市</div>
                         </div>
                         <div class="form-group">
                           <label>詳細發生地</label>
@@ -330,7 +359,7 @@ const EventReportForm = {
                         <input type="number" class="form-control" name="EMC_TOTAL_ADMITTED" value="0" min="0" readonly />
                       </div>
                       <div class="form-group">
-                        <label>死亡總數</label>
+                        <label>死亡</label>
                         <input type="number" class="form-control" name="EMC_TOTAL_DEATH" value="0" min="0" readonly />
                       </div>
                     </div>
@@ -387,10 +416,14 @@ const EventReportForm = {
           </div>
 
             <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
-              <button type="button" class="btn btn-success" onclick="handleSubmit()">${
-                mode === "view" ? "關閉" : mode === "add" ? "新增" : "更新"
+              <button type="button" class="btn btn-secondary" onclick="handleCancel()">${
+                mode !== "view" ? "取消" : "關閉"
               }</button>
+              ${
+                mode !== "view"
+                  ? `<button type="button" class="btn btn-success" onclick="handleSubmit()">儲存</button>`
+                  : ""
+              }
             </div>
           </div>
         </div>
@@ -413,13 +446,13 @@ const EventReportForm = {
     const content = this.getContent(mode, data);
 
     // 移除現有表單
-    $("#eventReportModal").remove();
+    $("#reportModal").remove();
 
     // 添加到頁面
     $("body").append(content);
 
     // 顯示Bootstrap modal
-    $("#eventReportModal").modal({
+    $("#reportModal").modal({
       backdrop: "static",
       keyboard: false,
     });
@@ -800,15 +833,17 @@ const EventReportForm = {
   // 取消
   cancel: function () {
     if (confirm("確定要取消嗎？未儲存的變更將會遺失。")) {
-      this.close();
+      if (confirm("確認取消？\n\n資料尚未儲存，確定要離開嗎？")) {
+        this.close();
+      }
     }
   },
 
   // 關閉表單
   close: function () {
-    $("#eventReportModal").modal("hide");
+    $("#reportModal").modal("hide");
     setTimeout(() => {
-      $("#eventReportModal").remove();
+      $("#reportModal").remove();
     }, 300);
   },
 };
@@ -856,7 +891,9 @@ function addLocationItem() {
   div.className = "dynamic-item";
   div.innerHTML = `
     <div class="form-group">
-      <input type="text" class="form-control location-city" placeholder="縣市 (鄉鎮市區)">
+      <label class="required">縣市 (鄉鎮市區)</label>
+      <input type="text" class="form-control location-city" placeholder="如：新北市板橋區" required>
+      <div class="error-message">請輸入縣市</div>
     </div>
     <div class="form-group">
       <input type="text" class="form-control location-detail" placeholder="詳細發生地">
@@ -875,13 +912,13 @@ function removeLocationItem(button) {
   if (locationList.children.length > 1) {
     button.closest(".dynamic-item").remove();
   } else {
-    $.messager.alert("提示", "至少需要保留一個發生地欄位", "info");
+    $.messager.alert("提示", "至少需要一個事故發生地", "info");
   }
 }
 
 // 全域函數：表單提交處理
 function handleSubmit() {
-  const form = document.querySelector("#eventReportModal form");
+  const form = document.querySelector("#reportModal form");
   if (!form) return;
 
   // 驗證必填欄位
@@ -939,11 +976,11 @@ function handleSubmit() {
 
   // 根據模式進行不同處理
   if (EventReportForm.mode === "add") {
-    $.messager.alert("成功", "事件報告已新增", "info", () => {
+    $.messager.alert("成功", "儲存成功", "info", () => {
       EventReportForm.close();
     });
   } else if (EventReportForm.mode === "edit") {
-    $.messager.alert("成功", "事件報告已更新", "info", () => {
+    $.messager.alert("成功", "儲存成功", "info", () => {
       EventReportForm.close();
     });
   } else {
@@ -953,7 +990,19 @@ function handleSubmit() {
 
 // 全域函數：取消處理
 function handleCancel() {
-  EventReportForm.close();
+  if (EventReportForm.mode === "add" || EventReportForm.mode === "edit") {
+    $.messager.confirm(
+      "確認取消？",
+      "資料尚未儲存，確定要離開嗎？",
+      function (r) {
+        if (r) {
+          EventReportForm.close();
+        }
+      }
+    );
+  } else {
+    EventReportForm.close();
+  }
 }
 
 // 綁定數字輸入的自動計算
@@ -1017,6 +1066,7 @@ function calculateEMCTotals() {
 }
 
 // 註冊到 window 供全域使用
+
 if (typeof window !== "undefined") {
   window.EventReportForm = EventReportForm;
 }
