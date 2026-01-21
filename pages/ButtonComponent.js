@@ -2,6 +2,14 @@
 // 統一管理按鈕樣式和顏色
 
 const ButtonComponent = {
+  // 額外匯出顏色
+  exportLightPurple: function (id = "btnExportLightPurple") {
+    return this.create({
+      id: id,
+      text: "匯出",
+      color: "exportLightPurple",
+    });
+  },
   // 按鈕顏色配置
   colors: {
     primary: "btn-primary", // 藍色 - 主要操作
@@ -11,6 +19,7 @@ const ButtonComponent = {
     danger: "btn-danger", // 紅色 - 危險/刪除
     default: "btn-default", // 灰白色 - 預設
     gray: "btn-gray", // 灰色 - 取消/清除
+    exportLightPurple: "btn-export-lightpurple", // 淺紫
   },
 
   // 生成按鈕 HTML
@@ -50,13 +59,6 @@ const ButtonComponent = {
   },
 
   // 快捷方法 - 匯出按鈕
-  export: function (id = "btnExport") {
-    return this.create({
-      id: id,
-      text: "匯出",
-      color: "default",
-    });
-  },
 
   // 快捷方法 - 新增按鈕
   add: function (id = "btnAdd", text = "新增") {

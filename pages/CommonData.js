@@ -215,8 +215,8 @@ const RegionalData = {
 const DisasterData = {
   // 災害屬性
   disasterTypeAttr: [
-    { code: "A", name: "天然災害" },
-    { code: "B", name: "人為災害" },
+    { code: "A", name: "天然" },
+    { code: "B", name: "人為" },
   ],
 
   // 災害種類（依屬性分類）

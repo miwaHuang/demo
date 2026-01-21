@@ -1,4 +1,22 @@
-﻿html,
+﻿/* 匯出按鈕 淺紫 */
+.btn-export-lightpurple {
+  color: #fff;
+  background-color: #ce93d8;
+  border-color: #ba68c8;
+}
+.btn-export-lightpurple:hover,
+.btn-export-lightpurple:focus {
+  color: #fff;
+  background-color: #ba68c8;
+  border-color: #8e24aa;
+}
+.btn-export-lightpurple:active,
+.btn-export-lightpurple.active {
+  color: #fff;
+  background-color: #ab47bc;
+  border-color: #8e24aa;
+}
+html,
 body,
 div,
 span,
@@ -79,7 +97,11 @@ video {
   font-size: 100%;
   font: inherit;
   vertical-align: baseline;
-  font-family: Microsoft JhengHei, "cwTeXYen", "Roboto", sans-serif;
+  font-family:
+    Microsoft JhengHei,
+    "cwTeXYen",
+    "Roboto",
+    sans-serif;
   font-size: 14px;
 }
 
@@ -96,7 +118,11 @@ h6,
   font-size: 100%;
   font: inherit;
   vertical-align: baseline;
-  font-family: Microsoft JhengHei, "cwTeXYen", "Roboto", sans-serif;
+  font-family:
+    Microsoft JhengHei,
+    "cwTeXYen",
+    "Roboto",
+    sans-serif;
 }
 
 .clearfix {

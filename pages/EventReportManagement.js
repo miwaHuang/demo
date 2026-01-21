@@ -108,7 +108,7 @@ const EventReportManagementPage = {
                           <select class="form-control" id="Q_DISASTER_ATTR" name="Q_DISASTER_ATTR">
                             <option value="">全部</option>
                             ${CommonDataUtils.generateOptions(
-                              DisasterData.disasterTypeAttr
+                              DisasterData.disasterTypeAttr,
                             )}
                           </select>
                         </div>
@@ -172,7 +172,7 @@ const EventReportManagementPage = {
                           <select class="form-control" id="Q_REGION" name="Q_REGION">
                             <option value="">全部</option>
                             ${CommonDataUtils.generateOptions(
-                              RegionalData.regions
+                              RegionalData.regions,
                             )}
                           </select>
                         </div>
@@ -186,7 +186,7 @@ const EventReportManagementPage = {
                             <option value="">全部</option>
                             <option value="TW">台灣</option>
                             ${CommonDataUtils.generateOptions(
-                              CountyData.counties
+                              CountyData.counties,
                             )}
                           </select>
                         </div>
@@ -201,7 +201,7 @@ const EventReportManagementPage = {
                             ${
                               typeof MessageSourceData !== "undefined"
                                 ? CommonDataUtils.generateOptions(
-                                    MessageSourceData
+                                    MessageSourceData,
                                   )
                                 : ""
                             }
@@ -215,6 +215,7 @@ const EventReportManagementPage = {
                         <div class="col-sm-7">
                           <select class="form-control" id="Q_IS_DELETED" name="Q_IS_DELETED">
                      
+                            <option value="">全部</option>
                             <option value="N" selected>否</option>
                             <option value="Y">是</option>
                           </select>
@@ -226,7 +227,7 @@ const EventReportManagementPage = {
             <div class="row search-btns">
               <div class="col-md-12">
                 ${ButtonComponent.search()} ${ButtonComponent.clear()}
-                ${ButtonComponent.export()}
+                 ${ButtonComponent.exportLightPurple()}
               </div>
             </div>
           </form>
@@ -261,7 +262,7 @@ const EventReportManagementPage = {
                     ${ButtonComponent.edit("btnEdit", "修改")}
                     ${ButtonComponent.view("btnView", "檢視")}
                     ${ButtonComponent.delete("btnDelete", "刪除")}
-                    ${ButtonComponent.export("btnExport")}
+                    ${ButtonComponent.exportLightPurple("btnExportLightPurple")}
                   </div>
                   <!-- EasyUI DataGrid -->
                 <!-- EasyUI DataGrid -->
@@ -280,7 +281,7 @@ const EventReportManagementPage = {
   DatePickerInit: function () {
     const $content = $("#EventReportManagementContent");
     const $dateInputs = $content.find(
-      'input[type="text"][data-type="date"]:not([date-inited])'
+      'input[type="text"][data-type="date"]:not([date-inited])',
     );
 
     if ($dateInputs.length > 0) {
@@ -387,9 +388,9 @@ const EventReportManagementPage = {
     const now = new Date();
     const timeStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(
       2,
-      "0"
+      "0",
     )}-${String(now.getDate()).padStart(2, "0")} ${String(
-      now.getHours()
+      now.getHours(),
     ).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
     $("#ResultTime").text(timeStr);
 
@@ -460,7 +461,7 @@ const EventReportManagementPage = {
             {
               field: "DISASTER_NAME",
               title: "災害名稱",
-              width: 220,
+              width: 210,
               align: "center", // 表頭置中
               rowspan: 2,
               formatter: function (value, row, index) {
@@ -494,7 +495,7 @@ const EventReportManagementPage = {
                   var county =
                     typeof CountyData !== "undefined" &&
                     CountyData.counties.find(
-                      (c) => c.name === row.COUNTY_LABEL
+                      (c) => c.name === row.COUNTY_LABEL,
                     );
                   var code = county ? county.code : "";
                   return CommonDataUtils.getRegionByCounty(code) || "";
@@ -545,7 +546,7 @@ const EventReportManagementPage = {
             {
               field: "REPORTER",
               title: "監看<br/>人員",
-              width: 65,
+              width: 55,
               align: "center",
               rowspan: 2,
               formatter: function (value, row, index) {
@@ -558,7 +559,7 @@ const EventReportManagementPage = {
             {
               field: "IS_DELETED",
               title: "是否<br/>刪除",
-              width: 65,
+              width: 55,
               align: "center",
               rowspan: 2,
               formatter: function (value, row, index) {
@@ -814,7 +815,7 @@ const EventReportManagementPage = {
                 start + 1
               }筆到第${Math.min(end, allData.length)}筆，實際載入${
                 pageData.length
-              }筆`
+              }筆`,
             );
 
             // 阻止預設的載入行為並載入我們的資料
@@ -840,7 +841,7 @@ const EventReportManagementPage = {
           };
 
           console.log(
-            `載入資料 - 總共${allData.length}筆，顯示前${pageSize}筆，實際載入${newData.rows.length}筆`
+            `載入資料 - 總共${allData.length}筆，顯示前${pageSize}筆，實際載入${newData.rows.length}筆`,
           );
 
           // 載入新資料
@@ -874,8 +875,8 @@ const EventReportManagementPage = {
           console.log(
             `載入第${pageNumber}頁資料 - 從第${start + 1}筆到第${Math.min(
               end,
-              allData.length
-            )}筆，實際載入${pageData.length}筆`
+              allData.length,
+            )}筆，實際載入${pageData.length}筆`,
           );
 
           // 載入分頁資料
@@ -894,7 +895,7 @@ const EventReportManagementPage = {
     console.log(
       `getPagedData: 第${pageNumber}頁, 每頁${pageSize}筆, 取第${
         start + 1
-      }-${Math.min(end, allData.length)}筆, 實際傳回${pagedData.length}筆`
+      }-${Math.min(end, allData.length)}筆, 實際傳回${pagedData.length}筆`,
     );
 
     return {
@@ -1624,7 +1625,7 @@ const EventReportManagementPage = {
               ${deleteReasons
                 .map(
                   (reason) =>
-                    `<option value="${reason.value}">${reason.text}</option>`
+                    `<option value="${reason.value}">${reason.text}</option>`,
                 )
                 .join("")}
             </select>
@@ -1652,7 +1653,7 @@ const EventReportManagementPage = {
 
     // 建立 EasyUI 風格的模態對話框
     const $dialogContainer = $(
-      '<div class="panel window messager-window" style="display: none; width: 400px;"></div>'
+      '<div class="panel window messager-window" style="display: none; width: 400px;"></div>',
     );
     const $dialogHeader = $(`
       <div class="panel-header panel-header-noborder window-header">
@@ -1683,7 +1684,7 @@ const EventReportManagementPage = {
 
     // 加入遮罩
     const $overlay = $(
-      '<div class="window-mask" style="display: block; z-index: 9001;"></div>'
+      '<div class="window-mask" style="display: block; z-index: 9001;"></div>',
     );
     $("body").append($overlay);
 
@@ -1717,7 +1718,7 @@ const EventReportManagementPage = {
         $.messager.alert(
           "提示",
           "刪除理由為必填項目，請選擇刪除理由！",
-          "warning"
+          "warning",
         );
         return;
       }
@@ -1775,7 +1776,7 @@ const EventReportManagementPage = {
     const queryText = $("#QueryText").text();
     alert(
       "功能（待實作）\n\n將匯出符合以下條件的資料：\n" +
-        (queryText || "全部資料")
+        (queryText || "全部資料"),
     );
   },
 
@@ -1805,7 +1806,7 @@ const EventReportManagementPage = {
         CommonDataUtils.reloadCascadingDropdown(
           attrValue,
           "Q_DISASTER_TYPE",
-          DisasterData.disasterType
+          DisasterData.disasterType,
         );
         // 在開頭插入全部選項並設為預設選中
         $("#Q_DISASTER_TYPE").prepend('<option value="">全部</option>').val("");

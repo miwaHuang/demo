@@ -157,12 +157,9 @@ const EventReportForm = {
                     <div class="col-md-2">
                       <div class="form-group">
                         <label class="required">災害屬性</label>
-                        <select class="form-control" name="DISASTER_ATTR" onchange="updateDisasterTypes(this)" required ${
-                          mode === "view" ? "disabled" : ""
-                        }>
-                          <option value="">請選擇</option>
-                          <!-- 選項由JavaScript動態產生 -->
-                        </select>
+                        <div id="disasterAttrRadioGroup" style="display: flex; flex-wrap: nowrap; gap: 16px; align-items: center;">
+                          <!-- 災害屬性選項由 JavaScript 動態產生 -->
+                        </div>
                         <div class="error-message">請選擇災害屬性</div>
                       </div>
                     </div>
@@ -465,12 +462,11 @@ const EventReportForm = {
   initForm: function (data) {
     const self = this;
 
-    // 載入災害屬性選項
-    const disasterAttrSelect = document.querySelector(
-      'select[name="DISASTER_ATTR"]'
+    // 載入災害屬性選項 (radio button)
+    const disasterAttrRadioGroup = document.getElementById(
+      "disasterAttrRadioGroup"
     );
-    if (disasterAttrSelect) {
-      // 使用 CommonData.js 的資料
+    if (disasterAttrRadioGroup) {
       let attributes = [];
       if (
         typeof DisasterData !== "undefined" &&
@@ -481,12 +477,18 @@ const EventReportForm = {
         console.warn("無法載入災害屬性資料，請確認 CommonData.js 是否正確載入");
       }
 
-      attributes.forEach((attr) => {
-        const option = document.createElement("option");
-        option.value = attr.code;
-        option.textContent = attr.name;
-        disasterAttrSelect.appendChild(option);
-      });
+      disasterAttrRadioGroup.innerHTML = attributes
+        .map(
+          (attr) =>
+            `<label style="margin-right:12px;"><input type="radio" name="DISASTER_ATTR" value="${
+              attr.code
+            }" ${
+              self.mode === "view" ? "disabled" : ""
+            } required onchange="updateDisasterTypesRadio(this)"> ${
+              attr.name
+            }</label>`
+        )
+        .join("");
     }
 
     // 初始化事件來源時間為當前時間
@@ -628,7 +630,16 @@ const EventReportForm = {
 
     // 載入基本欄位
     $("#EVENT_NAME").val(data.DISASTER_NAME || "");
-    $("#DISASTER_ATTR").val(data.DISASTER_ATTR || "");
+    // 災害屬性 (radio)
+    if (data.DISASTER_ATTR) {
+      const radios = document.getElementsByName("DISASTER_ATTR");
+      Array.from(radios).forEach((radio) => {
+        if (radio.value === data.DISASTER_ATTR) {
+          radio.checked = true;
+          updateDisasterTypesRadio(radio);
+        }
+      });
+    }
     $("#DISASTER_TYPE").val(data.DISASTER_TYPE || "");
 
     // 載入事件來源時間
@@ -737,14 +748,23 @@ const EventReportForm = {
     // 檢查必填欄位
     $("#EventReportForm [required]").each(function () {
       const $field = $(this);
-      const value = $field.val().trim();
-
-      if (!value) {
-        $field.siblings(".error-message").show();
-        $field.css("border-color", "#e74c3c");
-        isValid = false;
+      // radio button 特殊處理
+      if ($field.attr("type") === "radio") {
+        const name = $field.attr("name");
+        const checked = $("input[name='" + name + "']:checked").length > 0;
+        if (!checked) {
+          $field.closest(".form-group").find(".error-message").show();
+          isValid = false;
+        }
       } else {
-        $field.css("border-color", "#ddd");
+        const value = $field.val().trim();
+        if (!value) {
+          $field.siblings(".error-message").show();
+          $field.css("border-color", "#e74c3c");
+          isValid = false;
+        } else {
+          $field.css("border-color", "#ddd");
+        }
       }
     });
 
@@ -849,6 +869,40 @@ const EventReportForm = {
 };
 
 // 全域函數：災害種類聯動
+// Radio 版災害屬性聯動
+function updateDisasterTypesRadio(radio) {
+  const attrCode = radio.value;
+  const form = radio.form || document.querySelector("#reportModal form");
+  const typeSelect = form.querySelector('select[name="DISASTER_TYPE"]');
+
+  // 清空現有選項
+  typeSelect.innerHTML = '<option value="">請選擇災害種類</option>';
+
+  if (!attrCode) {
+    typeSelect.innerHTML = '<option value="">請先選擇災害屬性</option>';
+    return;
+  }
+
+  // 取得災害種類資料
+  let types = [];
+  if (
+    typeof DisasterData !== "undefined" &&
+    DisasterData.disasterType &&
+    DisasterData.disasterType[attrCode]
+  ) {
+    types = DisasterData.disasterType[attrCode];
+  } else {
+    console.warn("無法載入災害種類資料，請確認 CommonData.js 是否正確載入");
+  }
+
+  // 根據災害屬性載入對應的災害種類
+  types.forEach((type) => {
+    const option = document.createElement("option");
+    option.value = type.code;
+    option.textContent = type.name;
+    typeSelect.appendChild(option);
+  });
+}
 function updateDisasterTypes(attrSelect) {
   const attrCode = attrSelect.value;
   const typeSelect = attrSelect.form.querySelector(
