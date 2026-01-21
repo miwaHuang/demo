@@ -4,7 +4,8 @@ const EventReportManagementPage = {
   // 生成 HTML 內容
   getContent: function () {
     // 檢查依賴項是否存在
-    if (typeof CommonDataUtils === "undefined") {
+    var utils = window.CommonDataUtils || CommonDataUtils;
+    if (typeof utils === "undefined") {
       return '<div class="alert alert-danger">錯誤：CommonDataUtils 未定義</div>';
     }
     if (typeof DisasterData === "undefined") {
@@ -18,9 +19,6 @@ const EventReportManagementPage = {
     }
     if (typeof RegionalData === "undefined") {
       return '<div class="alert alert-danger">錯誤：RegionalData 未定義</div>';
-    }
-    if (typeof ButtonComponent === "undefined") {
-      return '<div class="alert alert-danger">錯誤：ButtonComponent 未定義</div>';
     }
 
     const timestamp = Date.now();
@@ -107,7 +105,7 @@ const EventReportManagementPage = {
                         <div class="col-sm-7">
                           <select class="form-control" id="Q_DISASTER_ATTR" name="Q_DISASTER_ATTR">
                             <option value="">全部</option>
-                            ${CommonDataUtils.generateOptions(
+                            ${utils.generateOptions(
                               DisasterData.disasterTypeAttr,
                             )}
                           </select>
@@ -171,9 +169,7 @@ const EventReportManagementPage = {
                         <div class="col-sm-7">
                           <select class="form-control" id="Q_REGION" name="Q_REGION">
                             <option value="">全部</option>
-                            ${CommonDataUtils.generateOptions(
-                              RegionalData.regions,
-                            )}
+                            ${utils.generateOptions(RegionalData.regions)}
                           </select>
                         </div>
                       </div>
@@ -185,9 +181,7 @@ const EventReportManagementPage = {
                           <select class="form-control" id="Q_LOCATION" name="Q_LOCATION">
                             <option value="">全部</option>
                             <option value="TW">台灣</option>
-                            ${CommonDataUtils.generateOptions(
-                              CountyData.counties,
-                            )}
+                            ${utils.generateOptions(CountyData.counties)}
                           </select>
                         </div>
                       </div>
@@ -200,9 +194,7 @@ const EventReportManagementPage = {
                             <option value="">全部</option>
                             ${
                               typeof MessageSourceData !== "undefined"
-                                ? CommonDataUtils.generateOptions(
-                                    MessageSourceData,
-                                  )
+                                ? utils.generateOptions(MessageSourceData)
                                 : ""
                             }
                           </select>
@@ -487,10 +479,7 @@ const EventReportManagementPage = {
               align: "center",
               rowspan: 2,
               formatter: function (value, row, index) {
-                if (
-                  typeof CommonDataUtils !== "undefined" &&
-                  row.COUNTY_LABEL
-                ) {
+                if (typeof utils !== "undefined" && row.COUNTY_LABEL) {
                   // 依照範例資料 COUNTY_LABEL 取得對應 code
                   var county =
                     typeof CountyData !== "undefined" &&
@@ -498,7 +487,7 @@ const EventReportManagementPage = {
                       (c) => c.name === row.COUNTY_LABEL,
                     );
                   var code = county ? county.code : "";
-                  return CommonDataUtils.getRegionByCounty(code) || "";
+                  return utils.getRegionByCounty(code) || "";
                 }
                 return "";
               },

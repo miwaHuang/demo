@@ -1,0 +1,265 @@
+// 活動資訊管理頁面元件 var ActivityInfoManagementPage = { getContent: function
+() { const utils = window.CommonDataUtils || CommonDataUtils; const timestamp =
+Date.now(); const tableId = `ActivityInfoTable${timestamp}`; this.tableId =
+tableId; return /*html*/ `
+<style>
+  .datagrid-frozen .datagrid-btable {
+    border-right: 3px solid #ccc !important;
+  }
+  .datagrid-frozen-panel {
+    border-right: 3px solid #ccc !important;
+  }
+  .datagrid-view2 .datagrid-header,
+  .datagrid-view2 .datagrid-body {
+    border-left: 3px solid #ccc !important;
+  }
+</style>
+<div id="ActivityInfoManagementContent" class="content">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item">REMOC管理</li>
+      <li class="breadcrumb-item">事件、活動及統計管理</li>
+      <li class="breadcrumb-item active" aria-current="page">活動資訊管理</li>
+    </ol>
+  </nav>
+  <div class="subpage-box">
+    <div
+      class="tab-struct form-abs-left tab-shrink"
+      data-toggle="tab-container"
+    >
+      <div class="form-abs-arrow">
+        <i class="fa fa-angle-double-left"></i>
+        <i class="fa fa-angle-double-right"></i>
+        <span>查詢列表</span>
+      </div>
+      <ul class="nav nav-tabs">
+        <li class="active">
+          <a
+            aria-expanded="true"
+            data-toggle="tab"
+            role="tab"
+            id="Form_Search"
+            href="#FormSearch"
+          >
+            <span class="text">查詢列表</span>
+          </a>
+        </li>
+      </ul>
+      <div class="tab-content" style="padding: 15px 5px !important">
+        <form id="FormSearch" class="tab-pane active">
+          <div class="row search-content">
+            <div class="col-md-12">
+              <div class="form-horizontal">
+                <!-- 活動名稱 -->
+                <div class="form-group">
+                  <label class="col-sm-5 control-label">活動名稱</label>
+                  <div class="col-sm-7">
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="Q_ACTIVITY_NAME"
+                      name="Q_ACTIVITY_NAME"
+                      placeholder="請輸入活動名稱"
+                    />
+                  </div>
+                </div>
+                <!-- 區域 -->
+                <div class="form-group">
+                  <label class="col-sm-5 control-label">區域</label>
+                  <div class="col-sm-7">
+                    <select class="form-control" id="Q_REGION" name="Q_REGION">
+                      <option value="">全部</option>
+                      ${utils.generateOptions(RegionalData.regions)}
+                    </select>
+                  </div>
+                </div>
+                <!-- 工作類別 -->
+                <div class="form-group">
+                  <label class="col-sm-5 control-label">工作類別</label>
+                  <div class="col-sm-7">
+                    <select
+                      class="form-control"
+                      id="Q_WORK_TYPE"
+                      name="Q_WORK_TYPE"
+                    >
+                      <option value="">全部</option>
+                      ${utils.generateOptions(window.ActivityWorkTypeData)}
+                    </select>
+                  </div>
+                </div>
+                <!-- 活動類別 -->
+                <div class="form-group">
+                  <label class="col-sm-5 control-label">活動類別</label>
+                  <div class="col-sm-7">
+                    <select
+                      class="form-control"
+                      id="Q_ACTIVITY_TYPE"
+                      name="Q_ACTIVITY_TYPE"
+                    >
+                      <option value="">全部</option>
+                      ${utils.generateOptions(window.ActivityTypeData)}
+                    </select>
+                  </div>
+                </div>
+                <!-- 活動辦理進度 -->
+                <div class="form-group">
+                  <label class="col-sm-5 control-label">活動辦理進度</label>
+                  <div class="col-sm-7">
+                    <select
+                      class="form-control"
+                      id="Q_ACTIVITY_STATUS"
+                      name="Q_ACTIVITY_STATUS"
+                    >
+                      <option value="">全部</option>
+                      ${utils.generateOptions(window.ActivityStatusData)}
+                    </select>
+                  </div>
+                </div>
+                <!-- 活動日期(起) -->
+                <div class="form-group">
+                  <label class="col-sm-5 control-label">活動日期(起)</label>
+                  <div class="col-sm-7">
+                    <div class="input-group padding-none">
+                      <div class="input-group-addon">
+                        <i class="zmdi zmdi-calendar-note"></i>
+                      </div>
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="Q_ACTIVITY_DATE_S"
+                        name="Q_ACTIVITY_DATE_S"
+                        data-type="date"
+                        autocomplete="off"
+                      />
+                    </div>
+                  </div>
+                </div>
+                <!-- 活動日期(訖) -->
+                <div class="form-group">
+                  <label class="col-sm-5 control-label">活動日期(訖)</label>
+                  <div class="col-sm-7">
+                    <div class="input-group padding-none">
+                      <div class="input-group-addon">
+                        <i class="zmdi zmdi-calendar-note"></i>
+                      </div>
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="Q_ACTIVITY_DATE_E"
+                        name="Q_ACTIVITY_DATE_E"
+                        data-type="date"
+                        autocomplete="off"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 是否刪除 -->
+                <div class="form-group">
+                  <label class="col-sm-5 control-label">是否刪除</label>
+                  <div class="col-sm-7">
+                    <select
+                      class="form-control"
+                      id="Q_IS_DELETED"
+                      name="Q_IS_DELETED"
+                    >
+                      <option value="">全部</option>
+                      <option value="N" selected>否</option>
+                      <option value="Y">是</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row search-btns">
+            <div class="col-md-12">
+              <button type="button" class="btn btn-primary">查詢</button>
+              <button type="reset" class="btn btn-default">清除</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div class="body">
+    <div
+      class="col-sm-12 panel panel-none padding-left-35"
+      style="height: 100%"
+    >
+      <div class="panel-body" style="height: 100%">
+        <div class="form-horizontal" style="height: 100%">
+          <div
+            id="SearchAreaDefault"
+            class="tab-struct aid-case-tab"
+            data-toggle="tab-container"
+            style="height: 100%"
+          >
+            <div
+              id="ActivityInfoRemindCont"
+              class="tab-content"
+              style="
+                display: flex;
+                flex-direction: column;
+                width: 100%;
+                height: 100%;
+              "
+            >
+              <div class="col-sm-12">
+                <div
+                  style="
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                  "
+                >
+                  <div>
+                    查詢條件：
+                    <span id="QueryText" style="color: #337ab7"></span>
+                  </div>
+                  <div>
+                    查詢時間：
+                    <span id="ResultTime" style="color: #666"></span>
+                  </div>
+                </div>
+                <div style="margin-bottom: 5px">
+                  查詢結果：
+                  <span
+                    id="ResultText"
+                    style="color: #5cb85c; font-weight: bold"
+                  ></span>
+                </div>
+                <div class="btn-toolbar" style="margin-bottom: 10px">
+                  <button type="button" class="btn btn-success">新增</button>
+                  <button type="button" class="btn btn-warning">修改</button>
+                  <button type="button" class="btn btn-info">檢視</button>
+                  <button type="button" class="btn btn-danger">刪除</button>
+                  <button type="button" class="btn btn-purple">匯出</button>
+                </div>
+                <table id="${tableId}" class="EMSDataGrid"></table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`; }, init: function () { // 預設活動日期(起)為當月1號，(訖)為今日 var today =
+new Date(); var yyyy = today.getFullYear(); var mm = (today.getMonth() +
+1).toString().padStart(2, "0"); var dd = today.getDate().toString().padStart(2,
+"0"); var firstDay = yyyy + "-" + mm + "-01"; var lastDay = yyyy + "-" + mm +
+"-" + dd; $("#Q_ACTIVITY_DATE_S").val(firstDay);
+$("#Q_ACTIVITY_DATE_E").val(lastDay); // 初始化區域下拉選單 var utils =
+window.CommonDataUtils || CommonDataUtils; if (typeof utils !== "undefined") {
+utils.initRegionSelect("Q_REGION"); } // 查詢列表展開/收合事件 const $content =
+$("#ActivityInfoManagementContent"); const tabs =
+$content.find(".tab-struct.form-abs-left"); if (tabs.length == 0) return;
+$.each(tabs, function (index, item) { $(item) .find(".form-abs-arrow")
+.on("click", function () { $(item).toggleClass("tab-shrink");
+$(".subpage-box").toggleClass("subpage-box-block"); }); $(item).on("tabsShrink",
+function () { if (!$(item).hasClass("tab-shrink")) {
+$(item).addClass("tab-shrink");
+$(".subpage-box").removeClass("subpage-box-block"); } }); }); }, }; //
+將元件掛到 window 物件 window.ActivityInfoManagementPage =
+ActivityInfoManagementPage;

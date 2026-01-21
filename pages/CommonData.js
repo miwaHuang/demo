@@ -8,92 +8,118 @@ const MessageSourceData = [
 
 // ==================== 開案單位資料 ====================
 const DepartmentData = {
-  // 開案單位類別
   deptTypes: [
     { code: "01", name: "消防機關" },
     { code: "02", name: "衛生機關" },
     { code: "03", name: "醫療機構" },
     { code: "04", name: "民間救護團體" },
   ],
+};
 
-  // 開案單位（依類別分類）
-  departments: {
-    "01": [
-      // 消防機關
-      { code: "0101", name: "台北市消防局" },
-      { code: "0102", name: "新北市消防局" },
-      { code: "0103", name: "桃園市消防局" },
-      { code: "0104", name: "台中市消防局" },
-      { code: "0105", name: "台南市消防局" },
-      { code: "0106", name: "高雄市消防局" },
-      { code: "0107", name: "基隆市消防局" },
-      { code: "0108", name: "新竹市消防局" },
-      { code: "0109", name: "嘉義市消防局" },
-      { code: "0110", name: "新竹縣消防局" },
-      { code: "0111", name: "苗栗縣消防局" },
-      { code: "0112", name: "彰化縣消防局" },
-      { code: "0113", name: "南投縣消防局" },
-      { code: "0114", name: "雲林縣消防局" },
-      { code: "0115", name: "嘉義縣消防局" },
-      { code: "0116", name: "屏東縣消防局" },
-      { code: "0117", name: "宜蘭縣消防局" },
-      { code: "0118", name: "花蓮縣消防局" },
-      { code: "0119", name: "台東縣消防局" },
-      { code: "0120", name: "澎湖縣消防局" },
-      { code: "0121", name: "金門縣消防局" },
-      { code: "0122", name: "連江縣消防局" },
-    ],
-    "02": [
-      // 衛生機關
-      { code: "0201", name: "台北市衛生局" },
-      { code: "0202", name: "新北市衛生局" },
-      { code: "0203", name: "桃園市衛生局" },
-      { code: "0204", name: "台中市衛生局" },
-      { code: "0205", name: "台南市衛生局" },
-      { code: "0206", name: "高雄市衛生局" },
-      { code: "0207", name: "基隆市衛生局" },
-      { code: "0208", name: "新竹市衛生局" },
-      { code: "0209", name: "嘉義市衛生局" },
-      { code: "0210", name: "新竹縣衛生局" },
-      { code: "0211", name: "苗栗縣衛生局" },
-      { code: "0212", name: "彰化縣衛生局" },
-      { code: "0213", name: "南投縣衛生局" },
-      { code: "0214", name: "雲林縣衛生局" },
-      { code: "0215", name: "嘉義縣衛生局" },
-      { code: "0216", name: "屏東縣衛生局" },
-      { code: "0217", name: "宜蘭縣衛生局" },
-      { code: "0218", name: "花蓮縣衛生局" },
-      { code: "0219", name: "台東縣衛生局" },
-      { code: "0220", name: "澎湖縣衛生局" },
-      { code: "0221", name: "金門縣衛生局" },
-      { code: "0222", name: "連江縣衛生局" },
-    ],
-    "03": [
-      // 醫療機構
-      { code: "0301", name: "台大醫院" },
-      { code: "0302", name: "台北榮民總醫院" },
-      { code: "0303", name: "三軍總醫院" },
-      { code: "0304", name: "台北長庚醫院" },
-      { code: "0305", name: "馬偕醫院" },
-      { code: "0306", name: "新光醫院" },
-      { code: "0307", name: "亞東醫院" },
-      { code: "0308", name: "中國醫藥大學附設醫院" },
-      { code: "0309", name: "台中榮民總醫院" },
-      { code: "0310", name: "彰化基督教醫院" },
-      { code: "0311", name: "成大醫院" },
-      { code: "0312", name: "台南奇美醫院" },
-      { code: "0313", name: "高雄長庚醫院" },
-      { code: "0314", name: "高雄榮民總醫院" },
-      { code: "0315", name: "高雄醫學大學附設醫院" },
-    ],
-    "04": [
-      // 民間救護團體
-      { code: "0401", name: "中華民國紅十字會總會" },
-      { code: "0402", name: "慈濟基金會" },
-      { code: "0403", name: "中華民國消防協會" },
-      { code: "0404", name: "台灣緊急救護發展協會" },
-    ],
-  },
+// ==================== 活動管理用資料 ====================
+const ActivityTypeData = [
+  { code: "綜合", name: "綜合" },
+  { code: "緊急醫療", name: "緊急醫療" },
+  { code: "DMAT", name: "DMAT" },
+  { code: "毒化災", name: "毒化災" },
+  { code: "輻傷", name: "輻傷" },
+  { code: "其他", name: "其他" },
+];
+
+const ActivityWorkTypeData = [
+  { code: "議約事項", name: "議約事項" },
+  { code: "主辦任務", name: "主辦任務" },
+  { code: "品質提昇", name: "品質提昇" },
+  { code: "共同任務", name: "共同任務" },
+  { code: "其他", name: "其他" },
+];
+
+const ActivityStatusData = [
+  { code: "預計", name: "預計" },
+  { code: "確認", name: "確認" },
+  { code: "延期", name: "延期" },
+  { code: "完成", name: "完成" },
+];
+
+// ==================== 開案單位資料 ====================
+
+// 開案單位（依類別分類）
+const departments = {
+  "01": [
+    // 消防機關
+    { code: "0101", name: "台北市消防局" },
+    { code: "0102", name: "新北市消防局" },
+    { code: "0103", name: "桃園市消防局" },
+    { code: "0104", name: "台中市消防局" },
+    { code: "0105", name: "台南市消防局" },
+    { code: "0106", name: "高雄市消防局" },
+    { code: "0107", name: "基隆市消防局" },
+    { code: "0108", name: "新竹市消防局" },
+    { code: "0109", name: "嘉義市消防局" },
+    { code: "0110", name: "新竹縣消防局" },
+    { code: "0111", name: "苗栗縣消防局" },
+    { code: "0112", name: "彰化縣消防局" },
+    { code: "0113", name: "南投縣消防局" },
+    { code: "0114", name: "雲林縣消防局" },
+    { code: "0115", name: "嘉義縣消防局" },
+    { code: "0116", name: "屏東縣消防局" },
+    { code: "0117", name: "宜蘭縣消防局" },
+    { code: "0118", name: "花蓮縣消防局" },
+    { code: "0119", name: "台東縣消防局" },
+    { code: "0120", name: "澎湖縣消防局" },
+    { code: "0121", name: "金門縣消防局" },
+    { code: "0122", name: "連江縣消防局" },
+  ],
+  "02": [
+    // 衛生機關
+    { code: "0201", name: "台北市衛生局" },
+    { code: "0202", name: "新北市衛生局" },
+    { code: "0203", name: "桃園市衛生局" },
+    { code: "0204", name: "台中市衛生局" },
+    { code: "0205", name: "台南市衛生局" },
+    { code: "0206", name: "高雄市衛生局" },
+    { code: "0207", name: "基隆市衛生局" },
+    { code: "0208", name: "新竹市衛生局" },
+    { code: "0209", name: "嘉義市衛生局" },
+    { code: "0210", name: "新竹縣衛生局" },
+    { code: "0211", name: "苗栗縣衛生局" },
+    { code: "0212", name: "彰化縣衛生局" },
+    { code: "0213", name: "南投縣衛生局" },
+    { code: "0214", name: "雲林縣衛生局" },
+    { code: "0215", name: "嘉義縣衛生局" },
+    { code: "0216", name: "屏東縣衛生局" },
+    { code: "0217", name: "宜蘭縣衛生局" },
+    { code: "0218", name: "花蓮縣衛生局" },
+    { code: "0219", name: "台東縣衛生局" },
+    { code: "0220", name: "澎湖縣衛生局" },
+    { code: "0221", name: "金門縣衛生局" },
+    { code: "0222", name: "連江縣衛生局" },
+  ],
+  "03": [
+    // 醫療機構
+    { code: "0301", name: "台大醫院" },
+    { code: "0302", name: "台北榮民總醫院" },
+    { code: "0303", name: "三軍總醫院" },
+    { code: "0304", name: "台北長庚醫院" },
+    { code: "0305", name: "馬偕醫院" },
+    { code: "0306", name: "新光醫院" },
+    { code: "0307", name: "亞東醫院" },
+    { code: "0308", name: "中國醫藥大學附設醫院" },
+    { code: "0309", name: "台中榮民總醫院" },
+    { code: "0310", name: "彰化基督教醫院" },
+    { code: "0311", name: "成大醫院" },
+    { code: "0312", name: "台南奇美醫院" },
+    { code: "0313", name: "高雄長庚醫院" },
+    { code: "0314", name: "高雄榮民總醫院" },
+    { code: "0315", name: "高雄醫學大學附設醫院" },
+  ],
+  "04": [
+    // 民間救護團體
+    { code: "0401", name: "中華民國紅十字會總會" },
+    { code: "0402", name: "慈濟基金會" },
+    { code: "0403", name: "中華民國消防協會" },
+    { code: "0404", name: "台灣緊急救護發展協會" },
+  ],
 };
 
 // ==================== 縣市資料 ====================
@@ -128,7 +154,6 @@ const CountyData = {
 const RegionalData = {
   // 區域列表
   regions: [
-    { code: "00", name: "台灣" },
     { code: "01", name: "台北區" },
     { code: "02", name: "北區" },
     { code: "03", name: "中區" },
@@ -474,7 +499,7 @@ const CommonDataUtils = {
   getREMOCByCounty: function (countyCode) {
     if (!countyCode) return null;
     return REMOCData.remocInfo.find((remoc) =>
-      remoc.counties.includes(countyCode)
+      remoc.counties.includes(countyCode),
     );
   },
 };
@@ -488,5 +513,8 @@ if (typeof window !== "undefined") {
   window.DisasterData = DisasterData;
   window.EventData = EventData;
   window.MedicalData = MedicalData;
+  window.ActivityTypeData = ActivityTypeData;
+  window.ActivityWorkTypeData = ActivityWorkTypeData;
+  window.ActivityStatusData = ActivityStatusData;
   window.CommonDataUtils = CommonDataUtils;
 }
