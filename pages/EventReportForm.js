@@ -42,27 +42,38 @@ const EventReportForm = {
               <h4 class="modal-title" id="reportModalLabel">${
                 mode === "add" ? "新增" : mode === "edit" ? "編輯" : "檢閱"
               } 事件</h4>
+              <br/>
+             
               <button type="button" class="close" data-dismiss="modal" aria-label="關閉">
                 <span aria-hidden="true">&times;</span>
               </button>
               <div class="auto-info">
                 <small class="text-muted">
-               
                   <div id="createTimeDisplay">建立日期：${
                     mode === "add"
                       ? new Date().toISOString().slice(0, 16).replace("T", " ")
                       : data && data.CREATE_TIME
-                      ? new Date(data.CREATE_TIME)
-                          .toISOString()
-                          .slice(0, 16)
-                          .replace("T", " ")
-                      : new Date().toISOString().slice(0, 16).replace("T", " ")
+                        ? new Date(data.CREATE_TIME)
+                            .toISOString()
+                            .slice(0, 16)
+                            .replace("T", " ")
+                        : new Date()
+                            .toISOString()
+                            .slice(0, 16)
+                            .replace("T", " ")
                   }</div>
                 </small>
               </div>
             </div>
-            
-            <div class="modal-body">
+            <div class="modal-actions">
+              <button type="button" class="btn btn-danger" onclick="handleCancel()">關閉</button>
+              ${
+                mode !== "view"
+                  ? `<button type="button" class="btn btn-success" onclick="handleSubmit()">儲存</button>`
+                  : ""
+              }
+            </div>
+            <div class="modal-body" >
             <form id="${formId}">
               <!-- 基本通報資訊 -->
               <div class="form-section">
@@ -100,9 +111,9 @@ const EventReportForm = {
                               data && data.REGION
                                 ? data.REGION
                                 : typeof remocInfo !== "undefined" &&
-                                  remocInfo.name
-                                ? remocInfo.name
-                                : ""
+                                    remocInfo.name
+                                  ? remocInfo.name
+                                  : ""
                             }" readonly />
                         </div>
                     </div>
@@ -189,7 +200,7 @@ const EventReportForm = {
                     </div>
                     <div class="col-md-6">
                       <div class="form-group">
-                        <label>📝 處置作為概述</label>
+                        <label>處置作為概述</label>
                         <textarea class="form-control" name="ACTION_SUMMARY" placeholder="請敘述 REMOC 目前處置進度。" ${
                           mode === "view" ? "readonly" : ""
                         } style="height: 50px;"></textarea>
@@ -201,40 +212,45 @@ const EventReportForm = {
 
               <!-- 事故發生地 -->
               <div class="form-section">
-                <div class="section-title">📍事故發生地</div>             
-                  <div class="section-content">
-                    <div id="locationList">
-                      <div class="dynamic-item">
-                        <div class="form-group">
-                          <label class="required">縣市 (鄉鎮市區)</label>
-                          <input type="text" class="form-control location-city" placeholder="如：新北市板橋區" ${
-                            mode === "view" ? "readonly" : "required"
-                          } />
-                          <div class="error-message">請輸入縣市</div>
-                        </div>
-                        <div class="form-group">
-                          <label>詳細發生地</label>
-                          <input type="text" class="form-control location-detail" placeholder="如：文化路二段XX號前" ${
-                            mode === "view" ? "readonly" : ""
-                          } />
-                        </div>
-                        <div class="form-group">
-                          <label>&nbsp;</label>
-                          ${
-                            mode !== "view"
-                              ? '<button type="button" class="btn-remove-location" title="移除" style="color:#d9534f;display:flex;align-items:center;" onclick="removeLocationItem(this)"><i class="fa fa-trash fa-lg"></i></button>'
-                              : ""
-                          }
+                <div class="section-title">📍事故發生地</div>
+                <div class="section-content">
+                  <div class="row align-items-center">
+                    <div class="col-sm-10">
+                      <div id="locationList">
+                        <div class="dynamic-item">
+                          <div class="form-group">
+                            <label class="required">縣市 (鄉鎮市區)</label>
+                            <input type="text" class="form-control location-city" placeholder="如：新北市板橋區" ${
+                              mode === "view" ? "readonly" : "required"
+                            } />
+                            <div class="error-message">請輸入縣市</div>
+                          </div>
+                          <div class="form-group">
+                            <label>詳細發生地</label>
+                            <input type="text" class="form-control location-detail" placeholder="如：文化路二段XX號前" ${
+                              mode === "view" ? "readonly" : ""
+                            } />
+                          </div>
+                          <div class="form-group">
+                            <label>&nbsp;</label>
+                            ${
+                              mode !== "view"
+                                ? '<button type="button" class="btn-remove-location" title="移除" style="color:#d9534f;display:flex;align-items:center;" onclick="removeLocationItem(this)"><i class="fa fa-trash fa-lg"></i></button>'
+                                : ""
+                            }
+                          </div>
                         </div>
                       </div>
                     </div>
-                    ${
-                      mode !== "view"
-                        ? '<button type="button" class="btn btn-primary btn-add-location" style="margin-top:10px;" onclick="addLocationItem()">＋ 新增發生地</button>'
-                        : ""
-                    }
+                      <div class="col-sm-2 ">
+                      ${
+                        mode !== "view"
+                          ? '<button type="button" class="btn btn-primary btn-add-location w-100 " style="margin-top:35px;" onclick="addLocationItem()">＋ 新增發生地</button>'
+                          : ""
+                      }
+                    </div>
                   </div>
-           
+                </div>
               </div>
 
               <!-- 簡訊/電話通報數 -->
@@ -307,10 +323,7 @@ const EventReportForm = {
                       </div>
                     </div>
                     
-                    <!-- 傷亡統計 -->
-                    <div class="stats-container">
-                   
-                  </div>
+                 
                 </div>
               </div>
 
@@ -405,23 +418,11 @@ const EventReportForm = {
                 mode === "add"
                   ? new Date().toISOString()
                   : data && data.CREATE_TIME
-                  ? data.CREATE_TIME
-                  : new Date().toISOString()
+                    ? data.CREATE_TIME
+                    : new Date().toISOString()
               }" />
               
             </form>
-          </div>
-
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" onclick="handleCancel()">${
-                mode !== "view" ? "取消" : "關閉"
-              }</button>
-              ${
-                mode !== "view"
-                  ? `<button type="button" class="btn btn-success" onclick="handleSubmit()">儲存</button>`
-                  : ""
-              }
-            </div>
           </div>
         </div>
       </div>
@@ -464,7 +465,7 @@ const EventReportForm = {
 
     // 載入災害屬性選項 (radio button)
     const disasterAttrRadioGroup = document.getElementById(
-      "disasterAttrRadioGroup"
+      "disasterAttrRadioGroup",
     );
     if (disasterAttrRadioGroup) {
       let attributes = [];
@@ -486,7 +487,7 @@ const EventReportForm = {
               self.mode === "view" ? "disabled" : ""
             } required onchange="updateDisasterTypesRadio(this)"> ${
               attr.name
-            }</label>`
+            }</label>`,
         )
         .join("");
     }
@@ -494,13 +495,13 @@ const EventReportForm = {
     // 初始化事件來源時間為當前時間
     if (this.mode === "add") {
       const sourceTimeHidden = document.querySelector(
-        'input[name="SOURCE_TIME"]'
+        'input[name="SOURCE_TIME"]',
       );
       const sourceDateInput = document.querySelector(
-        'input[name="SOURCE_TIME_DATE"]'
+        'input[name="SOURCE_TIME_DATE"]',
       );
       const sourceTimeInput = document.querySelector(
-        'input[name="SOURCE_TIME_TIME"]'
+        'input[name="SOURCE_TIME_TIME"]',
       );
       if (sourceTimeHidden && sourceDateInput && sourceTimeInput) {
         const now = new Date();
@@ -572,7 +573,7 @@ const EventReportForm = {
       disasterAttrSelect.addEventListener("change", function () {
         const attrValue = this.value;
         const typeSelect = document.querySelector(
-          'select[name="DISASTER_TYPE"]'
+          'select[name="DISASTER_TYPE"]',
         );
 
         if (!typeSelect) return;
@@ -595,7 +596,7 @@ const EventReportForm = {
           types = DisasterData.disasterType[attrValue];
         } else {
           console.warn(
-            "無法載入災害種類資料，請確認 CommonData.js 是否正確載入"
+            "無法載入災害種類資料，請確認 CommonData.js 是否正確載入",
           );
         }
 
@@ -777,7 +778,7 @@ const EventReportForm = {
 
     // 收集基本欄位
     $(
-      "#EventReportForm input, #EventReportForm select, #EventReportForm textarea"
+      "#EventReportForm input, #EventReportForm select, #EventReportForm textarea",
     ).each(function () {
       const $field = $(this);
       const name = $field.attr("name");
@@ -906,7 +907,7 @@ function updateDisasterTypesRadio(radio) {
 function updateDisasterTypes(attrSelect) {
   const attrCode = attrSelect.value;
   const typeSelect = attrSelect.form.querySelector(
-    'select[name="DISASTER_TYPE"]'
+    'select[name="DISASTER_TYPE"]',
   );
 
   // 清空現有選項
@@ -1015,7 +1016,7 @@ function handleSubmit() {
   // 收集發生地點資料
   const locations = [];
   const locationItems = document.querySelectorAll(
-    "#locationList .dynamic-item"
+    "#locationList .dynamic-item",
   );
   locationItems.forEach((item) => {
     const city = item.querySelector(".location-city").value.trim();
@@ -1052,7 +1053,7 @@ function handleCancel() {
         if (r) {
           EventReportForm.close();
         }
-      }
+      },
     );
   } else {
     EventReportForm.close();
@@ -1089,24 +1090,24 @@ function calculateTriageTotals() {
 function calculateEMCTotals() {
   // 計算送醫總數 (T1-T5)
   const triage1 = parseInt(
-    document.querySelector('[name="EMC_TRIAGE1"]')?.value || 0
+    document.querySelector('[name="EMC_TRIAGE1"]')?.value || 0,
   );
   const triage2 = parseInt(
-    document.querySelector('[name="EMC_TRIAGE2"]')?.value || 0
+    document.querySelector('[name="EMC_TRIAGE2"]')?.value || 0,
   );
   const triage3 = parseInt(
-    document.querySelector('[name="EMC_TRIAGE3"]')?.value || 0
+    document.querySelector('[name="EMC_TRIAGE3"]')?.value || 0,
   );
   const triage4 = parseInt(
-    document.querySelector('[name="EMC_TRIAGE4"]')?.value || 0
+    document.querySelector('[name="EMC_TRIAGE4"]')?.value || 0,
   );
   const triage5 = parseInt(
-    document.querySelector('[name="EMC_TRIAGE5"]')?.value || 0
+    document.querySelector('[name="EMC_TRIAGE5"]')?.value || 0,
   );
 
   const totalAdmitted = triage1 + triage2 + triage3 + triage4 + triage5;
   const totalAdmittedInput = document.querySelector(
-    '[name="EMC_TOTAL_ADMITTED"]'
+    '[name="EMC_TOTAL_ADMITTED"]',
   );
   if (totalAdmittedInput) {
     totalAdmittedInput.value = totalAdmitted;
