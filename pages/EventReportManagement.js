@@ -218,8 +218,9 @@ const EventReportManagementPage = {
             </div>
             <div class="row search-btns">
               <div class="col-md-12">
-                ${ButtonComponent.search()} ${ButtonComponent.clear()}
-                 ${ButtonComponent.exportLightPurple()}
+                ${ButtonComponent.search()} 
+                ${ButtonComponent.clear()}
+                ${ButtonComponent.btnImport("btnImport", "匯出")}
               </div>
             </div>
           </form>
@@ -250,11 +251,13 @@ const EventReportManagementPage = {
                     <span id="ResultText" style="color: #5cb85c; font-weight: bold"></span>
                   </div>
                   <div class="btn-toolbar" style="margin-bottom: 10px;">
-                    ${ButtonComponent.add("btnAdd", "新增")}
-                    ${ButtonComponent.edit("btnEdit", "修改")}
-                    ${ButtonComponent.view("btnView", "檢視")}
+                    <div class="btn-group">
+                      ${ButtonComponent.add("btnAdd", "新增")}
+                      ${ButtonComponent.edit("btnEdit", "修改")}
+                      ${ButtonComponent.view("btnView", "檢視")}
+                    </div>
                     ${ButtonComponent.delete("btnDelete", "刪除")}
-                    ${ButtonComponent.exportLightPurple("btnExportLightPurple")}
+                    ${ButtonComponent.btnImport("btnImport", "匯出")}
                   </div>
                   <!-- EasyUI DataGrid -->
                 <!-- EasyUI DataGrid -->
@@ -475,21 +478,11 @@ const EventReportManagementPage = {
             {
               field: "REGION_LABEL",
               title: "區域",
-              width: 80,
+              width: 60,
               align: "center",
               rowspan: 2,
               formatter: function (value, row, index) {
-                if (typeof utils !== "undefined" && row.COUNTY_LABEL) {
-                  // 依照範例資料 COUNTY_LABEL 取得對應 code
-                  var county =
-                    typeof CountyData !== "undefined" &&
-                    CountyData.counties.find(
-                      (c) => c.name === row.COUNTY_LABEL,
-                    );
-                  var code = county ? county.code : "";
-                  return utils.getRegionByCounty(code) || "";
-                }
-                return "";
+                return value || "";
               },
             },
             {

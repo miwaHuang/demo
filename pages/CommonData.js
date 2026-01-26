@@ -1,3 +1,24 @@
+// 實施方式
+const ActivityImplementTypeData = [
+  { code: "training", name: "組訓" },
+  { code: "education", name: "教育訓練" },
+  { code: "drill", name: "演習/評核" },
+  { code: "seminar", name: "研討會/協調會" },
+  { code: "other", name: "其他" },
+];
+
+// 取得實施方式名稱
+function getActivityImplementTypeName(code) {
+  if (!code) return "";
+  var arr =
+    typeof window !== "undefined" && window.ActivityImplementTypeData
+      ? window.ActivityImplementTypeData
+      : ActivityImplementTypeData;
+  var item = arr.find(function (d) {
+    return d.code === code;
+  });
+  return item ? item.name : code;
+}
 // ==================== 訊息來源資料 ====================
 const MessageSourceData = [
   { code: "EMS", name: "EMS" },
@@ -17,29 +38,62 @@ const DepartmentData = {
 };
 
 // ==================== 活動管理用資料 ====================
+
+// 活動類別
 const ActivityTypeData = [
-  { code: "綜合", name: "綜合" },
-  { code: "緊急醫療", name: "緊急醫療" },
-  { code: "DMAT", name: "DMAT" },
-  { code: "毒化災", name: "毒化災" },
-  { code: "輻傷", name: "輻傷" },
-  { code: "其他", name: "其他" },
+  { code: "general", name: "綜合" },
+  { code: "emergency", name: "緊急醫療" },
+  { code: "dmat", name: "DMAT" },
+  { code: "chemical", name: "毒化災" },
+  { code: "radiation", name: "輻傷" },
+  { code: "other", name: "其他" },
 ];
 
+// 活動工作類別
 const ActivityWorkTypeData = [
-  { code: "議約事項", name: "議約事項" },
-  { code: "主辦任務", name: "主辦任務" },
-  { code: "品質提昇", name: "品質提昇" },
-  { code: "共同任務", name: "共同任務" },
-  { code: "其他", name: "其他" },
+  { code: "contract", name: "議約事項" },
+  { code: "host", name: "主辦任務" },
+  { code: "quality", name: "品質提昇" },
+  { code: "joint", name: "共同任務" },
+  { code: "other", name: "其他" },
 ];
 
+// 活動辦理進度
 const ActivityStatusData = [
-  { code: "預計", name: "預計" },
-  { code: "確認", name: "確認" },
-  { code: "延期", name: "延期" },
-  { code: "完成", name: "完成" },
+  { code: "planned", name: "預計" },
+  { code: "confirmed", name: "確認" },
+  { code: "postponed", name: "延期" },
+  { code: "completed", name: "完成" },
 ];
+
+// 文件狀態
+const DocumentStatusData = [
+  { code: "preparing", name: "準備中" },
+  { code: "agenda", name: "議程" },
+  { code: "organizing", name: "整理中" },
+  { code: "completed", name: "完成" },
+];
+
+// 辦理方式
+const ActivityHandleTypeData = [
+  { code: "host", name: "主辦" },
+  { code: "cohost", name: "合辦" },
+  { code: "assist", name: "協辦" },
+  { code: "participate", name: "參加" },
+];
+
+// 取得辦理方式名稱
+function getActivityHandleTypeName(code) {
+  if (!code) return "";
+  var arr =
+    typeof window !== "undefined" && window.ActivityHandleTypeData
+      ? window.ActivityHandleTypeData
+      : ActivityHandleTypeData;
+  var item = arr.find(function (d) {
+    return d.code === code;
+  });
+  return item ? item.name : code;
+}
 
 // ==================== 開案單位資料 ====================
 
@@ -516,5 +570,10 @@ if (typeof window !== "undefined") {
   window.ActivityTypeData = ActivityTypeData;
   window.ActivityWorkTypeData = ActivityWorkTypeData;
   window.ActivityStatusData = ActivityStatusData;
+  window.DocumentStatusData = DocumentStatusData;
+  window.ActivityHandleTypeData = ActivityHandleTypeData;
+  window.ActivityImplementTypeData = ActivityImplementTypeData;
+  window.getActivityHandleTypeName = getActivityHandleTypeName;
+  window.getActivityImplementTypeName = getActivityImplementTypeName;
   window.CommonDataUtils = CommonDataUtils;
 }

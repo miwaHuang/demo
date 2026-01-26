@@ -72,11 +72,11 @@ const ActivityInfoManagementPage = {
             <div class="row search-content">
               <div class="col-md-12">
                 <div class="form-horizontal">
-                     <!-- 活動名稱 -->
+                     <!-- 預訂執行事項 -->
                       <div class="form-group">
-                        <label class="col-sm-5 control-label">活動名稱</label>
+                        <label class="col-sm-5 control-label">預訂執行事項</label>
                         <div class="col-sm-7">
-                          <input type="text" class="form-control" id="Q_ACTIVITY_NAME" name="Q_ACTIVITY_NAME" placeholder="請輸入活動名稱">
+                          <input type="text" class="form-control" id="Q_PLANNED_ACTION" name="Q_PLANNED_ACTION" placeholder="請輸入預訂執行事項">
                         </div>
                       </div>
                       <!-- 區域 -->
@@ -115,7 +115,7 @@ const ActivityInfoManagementPage = {
                         <div class="col-sm-7">
                           <select class="form-control" id="Q_ACTIVITY_STATUS" name="Q_ACTIVITY_STATUS">
                             <option value="">全部</option>
-                            ${utils.generateOptions(window.ActivityStatusData)}
+                            ${window.ActivityStatusData ? window.ActivityStatusData.map((s) => `<option value="${s.code}" ${s.code === "postponed" ? "selected" : ""}>${s.name}</option>`).join("") : ""}
                           </select>
                         </div>
                       </div>                  
@@ -159,6 +159,17 @@ const ActivityInfoManagementPage = {
                           </select>
                         </div>
                       </div>
+
+                      <!-- 文件狀態 -->
+                      <div class="form-group">
+                        <label class="col-sm-5 control-label">文件狀態</label>
+                        <div class="col-sm-7">
+                          <select class="form-control" id="Q_DOCUMENT_STATUS" name="Q_DOCUMENT_STATUS">
+                            <option value="">全部</option>
+                            ${window.DocumentStatusData ? window.DocumentStatusData.map((d) => `<option value="${d.code}">${d.name}</option>`).join("") : ""}
+                          </select>
+                        </div>
+                      </div>
                 </div>
               </div>
             </div>
@@ -166,7 +177,7 @@ const ActivityInfoManagementPage = {
               <div class="col-md-12">
                 ${ButtonComponent.search()} 
                 ${ButtonComponent.clear()}
-                ${ButtonComponent.exportLightPurple()}
+                ${ButtonComponent.btnImport("btnImport", "匯出")}
               </div>
             </div>
           </form>
@@ -197,15 +208,19 @@ const ActivityInfoManagementPage = {
                     <span id="ResultText" style="color: #5cb85c; font-weight: bold"></span>
                   </div>
                   <div class="btn-toolbar" style="margin-bottom: 10px;">
-                    ${ButtonComponent.add("btnAdd", "新增")}
-                    ${ButtonComponent.edit("btnEdit", "修改")}
-                    ${ButtonComponent.view("btnView", "檢視")}
+                  <div class="btn-group">
+                      ${ButtonComponent.add("btnAdd", "新增")}
+                      ${ButtonComponent.edit("btnEdit", "修改")}
+                      ${ButtonComponent.view("btnView", "檢視")}
+                    </div>
                     ${ButtonComponent.delete("btnDelete", "刪除")}
-                    ${ButtonComponent.exportLightPurple("btnExportLightPurple")}
+                    ${ButtonComponent.btnImport("btnbtnImport", "匯出")}
                   </div>
                   <!-- EasyUI DataGrid -->
                 <!-- EasyUI DataGrid -->
-                  <table id="${tableId}" class="EMSDataGrid"></table>
+                  <div style="height:100%">
+                    <table id="${tableId}" class="EMSDataGrid"></table>
+                  </div>
                 </div>
               </div>
             </div>
@@ -308,15 +323,23 @@ const ActivityInfoManagementPage = {
     this.allData = sampleData;
 
     // 更新查詢結果
-    // 種類
-    const disasterStats = {};
+    // 實施方式統計
+    const implementStats = {};
     sampleData.forEach((item) => {
-      const disasterType = item.DISASTER_TYPE || "未分類";
-      disasterStats[disasterType] = (disasterStats[disasterType] || 0) + 1;
+      const implementTypeCode = item.implementType;
+      const implementTypeData = window.ActivityImplementTypeData || [];
+      const implementTypeItem = implementTypeData.find(
+        (d) => d.code === implementTypeCode,
+      );
+      const implementTypeName = implementTypeItem
+        ? implementTypeItem.name
+        : implementTypeCode || "未分類";
+      implementStats[implementTypeName] =
+        (implementStats[implementTypeName] || 0) + 1;
     });
 
     // 建立類統計文字
-    const statsText = Object.entries(disasterStats)
+    const statsText = Object.entries(implementStats)
       .map(([type, count]) => `${type}${count}筆`)
       .join("、");
 
@@ -365,17 +388,39 @@ const ActivityInfoManagementPage = {
         frozenColumns: [
           [
             {
-              field: "DISASTER_TYPE",
-              title: "種類",
-              width: 80,
+              field: "activityDate",
+              title: "活動日期",
+              width: 150,
               align: "center",
               rowspan: 2,
+              formatter: function (value, row, index) {
+                const start = row.activityDateStart;
+                const end = row.activityDateEnd;
+                if (!start || !end) return "";
+                // 顯示 yy-MM-dd ~ yy-MM-dd
+                const displayStart = start.slice(2);
+                const displayEnd = end.slice(2);
+                const display = displayStart + "至" + displayEnd;
+                // tooltip 顯示 yyyy-MM-dd ~ yyyy-MM-dd
+                const tooltip = start + "至" + end;
+                return '<span title="' + tooltip + '">' + display + "</span>";
+              },
             },
             {
-              field: "DISASTER_NAME",
-              title: "災害名稱",
+              field: "REGION_LABEL",
+              title: "區域",
+              width: 60,
+              align: "center",
+              rowspan: 2,
+              formatter: function (value, row, index) {
+                return value || "";
+              },
+            },
+            {
+              field: "plannedAction",
+              title: "執行事項",
               width: 210,
-              align: "center", // 表頭置中
+              align: "center",
               rowspan: 2,
               formatter: function (value, row, index) {
                 if (!value) return "";
@@ -394,26 +439,100 @@ const ActivityInfoManagementPage = {
         columns: [
           [
             {
-              field: "REGION_LABEL",
-              title: "區域",
-              width: 80,
+              field: "implementType",
+              title: "實施方式",
+              width: 100,
+              align: "center",
+              rowspan: 2,
+              formatter: function (value) {
+                return window.getActivityImplementTypeName
+                  ? window.getActivityImplementTypeName(value)
+                  : value;
+              },
+            },
+            {
+              field: "workType",
+              title: "工作類別",
+              width: 100,
               align: "center",
               rowspan: 2,
               formatter: function (value, row, index) {
-                if (typeof utils !== "undefined" && row.COUNTY_LABEL) {
-                  // 依照範例資料 COUNTY_LABEL 取得對應 code
-                  var county =
-                    typeof CountyData !== "undefined" &&
-                    CountyData.counties.find(
-                      (c) => c.name === row.COUNTY_LABEL,
-                    );
-                  var code = county ? county.code : "";
-                  return utils.getRegionByCounty(code) || "";
-                }
-                return "";
+                var arr = window.ActivityWorkTypeData || [];
+                var item = arr.find(function (d) {
+                  return d.code === value;
+                });
+                return item ? item.name : value;
               },
             },
-
+            {
+              field: "activityType",
+              title: "活動類別",
+              width: 100,
+              align: "center",
+              rowspan: 2,
+              formatter: function (value) {
+                var arr = window.ActivityTypeData || [];
+                var item = arr.find(function (d) {
+                  return d.code === value;
+                });
+                return item ? item.name : value;
+              },
+            },
+            {
+              field: "handleType",
+              title: "辦理方式",
+              width: 100,
+              align: "center",
+              rowspan: 2,
+              formatter: function (value) {
+                return window.getActivityHandleTypeName
+                  ? window.getActivityHandleTypeName(value)
+                  : value;
+              },
+            },
+            {
+              field: "activityStatus",
+              title: "活動辦理進度",
+              width: 120,
+              align: "center",
+              rowspan: 2,
+              formatter: function (value, row, index) {
+                var arr = window.ActivityStatusData || [];
+                var item = arr.find(function (d) {
+                  return d.code === value;
+                });
+                return item ? item.name : value;
+              },
+            },
+            {
+              field: "isInternational",
+              title: "國際活動",
+              width: 100,
+              align: "center",
+              rowspan: 2,
+              formatter: function (v) {
+                return v === 1 ? "是" : "否";
+              },
+            },
+            {
+              field: "venue",
+              title: "舉辦地點",
+              width: 120,
+              align: "center",
+              rowspan: 2,
+              formatter: function (value, row, index) {
+                if (!value) return "";
+                // 內容靠左顯示，超出寬度顯示省略號，tooltip顯示完整內容
+                return (
+                  '<div style="text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="' +
+                  value +
+                  '">' +
+                  value +
+                  "</div>"
+                );
+              },
+            },
+            { title: "實際辦理時間", colspan: 2, align: "center" },
             {
               field: "IS_DELETED",
               title: "是否<br/>刪除",
@@ -431,6 +550,46 @@ const ActivityInfoManagementPage = {
                 }
               },
             },
+            {
+              field: "contactName",
+              title: "聯絡人員",
+              width: 100,
+              align: "center",
+              rowspan: 2,
+              formatter: function (value, row, index) {
+                const contactPhone = row.CONTACT_PHONE || "";
+                const titleText =
+                  value + (contactPhone ? " / " + contactPhone : "");
+                return '<span title="' + titleText + '">' + value + "</span>";
+              },
+            },
+            {
+              field: "documentStatus",
+              title: "文件狀態",
+              width: 80,
+              align: "center",
+              rowspan: 2,
+              formatter: function (value, row, index) {
+                var arr = window.DocumentStatusData || [];
+                var item = arr.find(function (d) {
+                  return d.code === value;
+                });
+                return item ? item.name : value;
+              },
+            },
+          ],
+          [
+            {
+              field: "actualDays",
+              title: "天",
+              width: 60,
+              align: "center",
+              formatter: function (value) {
+                const num = parseFloat(value);
+                return num % 1 === 0 ? num.toFixed(0) : num.toFixed(1);
+              },
+            },
+            { field: "actualHours", title: "小時", width: 60, align: "center" },
           ],
         ],
         onSelect: function (index, row) {
@@ -467,8 +626,8 @@ const ActivityInfoManagementPage = {
           console.log("準備載入分頁資料，參數:", param);
 
           // 攔截分頁參數並手動處理資料載入
-          if (EventReportManagementPage.allData && param.page && param.rows) {
-            const allData = EventReportManagementPage.allData;
+          if (ActivityInfoManagementPage.allData && param.page && param.rows) {
+            const allData = ActivityInfoManagementPage.allData;
             const pageNumber = param.page;
             const pageSize = param.rows;
 
@@ -499,7 +658,7 @@ const ActivityInfoManagementPage = {
         onChangePageSize: function (pageSize) {
           console.log(`更改每頁筆數為: ${pageSize}`);
           const table = $(this);
-          const allData = EventReportManagementPage.allData || [];
+          const allData = ActivityInfoManagementPage.allData || [];
 
           // 計算新的資料
           const newData = {
@@ -527,7 +686,7 @@ const ActivityInfoManagementPage = {
         onSelectPage: function (pageNumber, pageSize) {
           console.log(`切換到第 ${pageNumber} 頁，每頁 ${pageSize} 筆`);
           const table = $(this);
-          const allData = EventReportManagementPage.allData || [];
+          const allData = ActivityInfoManagementPage.allData || [];
 
           // 計算起始和結束位置
           const start = (pageNumber - 1) * pageSize;
@@ -573,7 +732,85 @@ const ActivityInfoManagementPage = {
 
   // 生成範例資料
   generateSampleData: function () {
-    return [];
+    const sampleData = [];
+    const workTypes = window.ActivityWorkTypeData || [];
+    const handleTypes = window.ActivityHandleTypeData || [];
+    const activityTypes = window.ActivityTypeData || [];
+    const implementTypes = window.ActivityImplementTypeData || [];
+    const activityStatuses = window.ActivityStatusData || [];
+    const regions = window.RegionalData ? window.RegionalData.regions : [];
+
+    for (let i = 1; i <= 20; i++) {
+      const randomDate = new Date(
+        2024,
+        Math.floor(Math.random() * 12),
+        Math.floor(Math.random() * 28) + 1,
+      );
+      const startDate = randomDate;
+      const endDate = new Date(startDate);
+      endDate.setDate(startDate.getDate() + Math.floor(Math.random() * 10) + 1);
+
+      const formattedStart = `${startDate.getFullYear()}-${String(startDate.getMonth() + 1).padStart(2, "0")}-${String(startDate.getDate()).padStart(2, "0")}`;
+      const formattedEnd = `${endDate.getFullYear()}-${String(endDate.getMonth() + 1).padStart(2, "0")}-${String(endDate.getDate()).padStart(2, "0")}`;
+
+      const workType =
+        workTypes.length > 0
+          ? workTypes[Math.floor(Math.random() * workTypes.length)].code
+          : "WT" + i;
+      const handleType =
+        handleTypes.length > 0
+          ? handleTypes[Math.floor(Math.random() * handleTypes.length)].code
+          : "HT" + i;
+      const activityType =
+        activityTypes.length > 0
+          ? activityTypes[Math.floor(Math.random() * activityTypes.length)].code
+          : "AT" + i;
+      const implementType =
+        implementTypes.length > 0
+          ? implementTypes[Math.floor(Math.random() * implementTypes.length)]
+              .code
+          : "IT" + i;
+      const activityStatus =
+        activityStatuses.length > 0
+          ? activityStatuses[
+              Math.floor(Math.random() * activityStatuses.length)
+            ].code
+          : "AS" + i;
+      const region =
+        regions.length > 0
+          ? regions[Math.floor(Math.random() * regions.length)].name
+          : ["北部", "中部", "南部", "東部"][Math.floor(Math.random() * 4)];
+
+      const isDeleted = i <= 2 ? "Y" : "N";
+      const deleteReason = isDeleted === "Y" ? "測試資料" : null;
+
+      sampleData.push({
+        activityDate: formattedStart, // 保留原有欄位
+        activityDateStart: formattedStart,
+        activityDateEnd: formattedEnd,
+        plannedAction: `預訂執行事項 ${i}`,
+        COUNTY_LABEL: region,
+        REGION_LABEL: region,
+        workType: workType,
+        handleType: handleType,
+        activityType: activityType,
+        implementType: implementType,
+        activityStatus: activityStatus,
+        isInternational: Math.random() > 0.5 ? 1 : 0,
+        venue: `舉辦地點 ${i}`,
+        actualDays: ((Math.floor(Math.random() * 20) + 1) * 0.5).toFixed(1),
+        actualHours: Math.floor(Math.random() * 24) + 1,
+        IS_DELETED: isDeleted,
+        DELETE_REASON: deleteReason,
+        contactName: `聯絡人${i}`,
+        CONTACT_PHONE: `091234567${i}`,
+        documentStatus: ["preparing", "agenda", "organizing", "completed"][
+          Math.floor(Math.random() * 4)
+        ],
+      });
+    }
+
+    return sampleData;
   },
 
   // 清除表單
@@ -605,35 +842,35 @@ const ActivityInfoManagementPage = {
       return `${year}-${month}-${day}`;
     };
 
-    $("#Q_HAPPEN_TIME_S").val(formatDate(firstDay));
-    $("#Q_HAPPEN_TIME_E").val(formatDate(today));
+    $("#Q_ACTIVITY_DATE_S").val(formatDate(firstDay));
+    $("#Q_ACTIVITY_DATE_E").val(formatDate(today));
   },
 
-  // 動態載入 EventReportForm
-  loadEventReportForm: function (callback) {
-    if (typeof EventReportForm !== "undefined") {
+  // 動態載入 ActivityInfoForm
+  loadActivityInfoForm: function (callback) {
+    if (typeof ActivityInfoForm !== "undefined") {
       // 已載入，直接執行回調
       if (callback) callback();
       return;
     }
 
-    // 動態載入 EventReportForm.js
+    // 動態載入 ActivityInfoForm.js
     const script = document.createElement("script");
-    script.src = "pages/EventReportForm.js";
+    script.src = "pages/ActivityInfoForm.js";
     script.onload = function () {
       if (callback) callback();
     };
     script.onerror = function () {
-      $.messager.alert("錯誤", "無法載入事件表單元件", "error");
+      $.messager.alert("錯誤", "無法載入活動資訊表單元件", "error");
     };
     document.head.appendChild(script);
   },
 
   // CRUD 操作
   addRecord: function () {
-    // 載入 EventReportForm.js 並顯示新增表單
-    this.loadEventReportForm(() => {
-      EventReportForm.show("add");
+    // 載入 ActivityInfoForm.js 並顯示新增表單
+    this.loadActivityInfoForm(() => {
+      ActivityInfoForm.show("add");
     });
   },
 
@@ -645,9 +882,9 @@ const ActivityInfoManagementPage = {
       return;
     }
 
-    // 載入 EventReportForm.js 並顯示編輯表單
-    this.loadEventReportForm(() => {
-      EventReportForm.show("edit", selected);
+    // 載入 ActivityInfoForm.js 並顯示編輯表單
+    this.loadActivityInfoForm(() => {
+      ActivityInfoForm.show("edit", selected);
     });
   },
 
@@ -659,9 +896,9 @@ const ActivityInfoManagementPage = {
       return;
     }
 
-    // 載入 EventReportForm.js 並顯示檢視表單
-    this.loadEventReportForm(() => {
-      EventReportForm.show("view", selected);
+    // 載入 ActivityInfoForm.js 並顯示檢視表單
+    this.loadActivityInfoForm(() => {
+      ActivityInfoForm.show("view", selected);
     });
   },
 

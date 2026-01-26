@@ -40,8 +40,8 @@ const EventReportForm = {
           <div class="modal-content" style="height: 100%; overflow: auto;">
             <div class="modal-header">
               <h4 class="modal-title" id="reportModalLabel">${
-                mode === "add" ? "新增" : mode === "edit" ? "編輯" : "檢閱"
-              } 事件</h4>
+                mode === "add" ? "新增" : mode === "edit" ? "修改" : "檢視"
+              } 監看紀錄</h4>
               <br/>
              
               <button type="button" class="close" data-dismiss="modal" aria-label="關閉">
@@ -77,7 +77,7 @@ const EventReportForm = {
             <form id="${formId}">
               <!-- 基本通報資訊 -->
               <div class="form-section">
-                <div class="section-title">📍 基本通報資訊</div>
+                <div class="section-title"> 基本通報資訊</div>
                 <div class="section-content">
                   <div class="row">
                     
@@ -149,7 +149,7 @@ const EventReportForm = {
                  
                     <div class="col-md-2">
                       <div class="form-group">
-                        <label class="required">事件來源時間 (日期)</label>
+                        <label class="required">發生日期</label>
                         <input type="date" class="form-control" name="SOURCE_TIME_DATE" required ${
                           mode === "view" ? "readonly" : ""
                         } />
@@ -158,7 +158,7 @@ const EventReportForm = {
                     </div>
                      <div class="col-md-2">
                       <div class="form-group">
-                        <label class="required">事件來源時間 (時間)</label>
+                        <label class="required">發生時間 (時間)</label>
                         <input type="time" class="form-control" name="SOURCE_TIME_TIME" required ${
                           mode === "view" ? "readonly" : ""
                         } />                       
@@ -212,7 +212,7 @@ const EventReportForm = {
 
               <!-- 事故發生地 -->
               <div class="form-section">
-                <div class="section-title">📍事故發生地</div>
+                <div class="section-title">事故發生地</div>
                 <div class="section-content">
                   <div class="row align-items-center">
                     <div class="col-sm-10">
@@ -255,7 +255,7 @@ const EventReportForm = {
 
               <!-- 簡訊/電話通報數 -->
               <div class="form-section">
-                <div class="section-title"> 📍簡訊/電話通報數</div>
+                <div class="section-title"> 簡訊/電話通報數</div>
                 <div class="section-content">
                 
                     <div class="row">
@@ -329,7 +329,7 @@ const EventReportForm = {
 
               <!-- EMC 系統傷患統計 -->
               <div class="form-section">
-                <div class="section-title">📍${
+                <div class="section-title">${
                   data && data.MSG_SOURCE === "EMS"
                     ? "醫療檢傷人數"
                     : "事件傷亡人數"

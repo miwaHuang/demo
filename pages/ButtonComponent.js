@@ -2,12 +2,12 @@
 // 統一管理按鈕樣式和顏色
 
 const ButtonComponent = {
-  // 額外匯出顏色
-  exportLightPurple: function (id = "btnExportLightPurple") {
+  // 快捷方法 - 匯出按鈕
+  export: function (id = "btnExport") {
     return this.create({
       id: id,
       text: "匯出",
-      color: "exportLightPurple",
+      color: "info",
     });
   },
   // 按鈕顏色配置
@@ -19,7 +19,6 @@ const ButtonComponent = {
     danger: "btn-danger", // 紅色 - 危險/刪除
     default: "btn-default", // 灰白色 - 預設
     gray: "btn-gray", // 灰色 - 取消/清除
-    exportLightPurple: "btn-export-lightpurple", // 淺紫
   },
 
   // 生成按鈕 HTML
@@ -60,6 +59,15 @@ const ButtonComponent = {
 
   // 快捷方法 - 匯出按鈕
 
+  // 快捷方法 - 匯入按鈕
+  btnImport: function (id = "btnImport", text = "匯入") {
+    return this.create({
+      id: id,
+      text: text,
+      color: "info",
+    });
+  },
+
   // 快捷方法 - 新增按鈕
   add: function (id = "btnAdd", text = "新增") {
     return this.create({
@@ -74,7 +82,7 @@ const ButtonComponent = {
     return this.create({
       id: id,
       text: text,
-      color: "warning",
+      color: "primary",
       disabled: disabled,
     });
   },
@@ -84,7 +92,7 @@ const ButtonComponent = {
     return this.create({
       id: id,
       text: text,
-      color: "info",
+      color: "primary",
       disabled: disabled,
     });
   },
@@ -96,6 +104,15 @@ const ButtonComponent = {
       text: text,
       color: "danger",
       disabled: disabled,
+    });
+  },
+
+  // 快捷方法 - 通知按鈕
+  notify: function (id = "btnNotify") {
+    return this.create({
+      id: id,
+      text: "通知",
+      color: "warning",
     });
   },
 };
