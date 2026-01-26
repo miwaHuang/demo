@@ -441,7 +441,7 @@ const ActivityInfoManagementPage = {
             {
               field: "implementType",
               title: "實施方式",
-              width: 100,
+              width: 80,
               align: "center",
               rowspan: 2,
               formatter: function (value) {
@@ -453,7 +453,7 @@ const ActivityInfoManagementPage = {
             {
               field: "workType",
               title: "工作類別",
-              width: 100,
+              width: 80,
               align: "center",
               rowspan: 2,
               formatter: function (value, row, index) {
@@ -467,7 +467,7 @@ const ActivityInfoManagementPage = {
             {
               field: "activityType",
               title: "活動類別",
-              width: 100,
+              width: 80,
               align: "center",
               rowspan: 2,
               formatter: function (value) {
@@ -481,7 +481,7 @@ const ActivityInfoManagementPage = {
             {
               field: "handleType",
               title: "辦理方式",
-              width: 100,
+              width: 80,
               align: "center",
               rowspan: 2,
               formatter: function (value) {
@@ -492,8 +492,8 @@ const ActivityInfoManagementPage = {
             },
             {
               field: "activityStatus",
-              title: "活動辦理進度",
-              width: 120,
+              title: "辦理進度",
+              width: 80,
               align: "center",
               rowspan: 2,
               formatter: function (value, row, index) {
@@ -507,7 +507,7 @@ const ActivityInfoManagementPage = {
             {
               field: "isInternational",
               title: "國際活動",
-              width: 100,
+              width: 80,
               align: "center",
               rowspan: 2,
               formatter: function (v) {
@@ -929,7 +929,7 @@ const ActivityInfoManagementPage = {
         <div style="margin-left: 40px;">
           <div style="margin-bottom: 10px;">
             <span style="font-weight: bold; font-size: 16px;">確定要刪除此筆資料嗎？</span><br/>
-            災害名稱：${selected.DISASTER_NAME}<br/>
+            執行事項：${selected.plannedAction}<br/>
           </div>
           <div style="margin-bottom: 15px;">
             <label for="deleteReason" style="display: inline-block; width: 85px; vertical-align: top; white-space: nowrap;"><span style="color: red;">*</span><strong>刪除理由：</strong></label>
