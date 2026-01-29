@@ -84,7 +84,7 @@
 
 /* 設定modal大小 */
 #reportModal .modal-body {
-  height: 88vh;
+  max-height: 88vh;
   overflow: auto;
   padding: 10px 20px;
 }
@@ -95,8 +95,8 @@
   margin-bottom: 10px;
   display: flex;
   align-items: center;
-  font-size: 1.1rem;
-  border-bottom: 2px solid #e8f4fd;
+  font-size: 1.2rem;
+  border-bottom: 2px solid #d7eaf7;
   padding-bottom: 2px;
 }
 
@@ -125,8 +125,8 @@
   border-color: #b3d7ff;
 }
 
-#reportModal .form-group label.required::after {
-  content: " *";
+#reportModal .form-group label.required::before {
+  content: "* ";
   color: #d9534f; /* Bootstrap danger */
 }
 
@@ -135,7 +135,7 @@
   background: #f8fbff;
   padding: 10px 15px 5px 15px;
   border-radius: 6px;
-  border: 1px solid #e8f4fd;
+  border: 2px solid #d7eaf7;
   margin-bottom: 10px;
 }
 

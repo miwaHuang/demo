@@ -89,6 +89,17 @@ const ActivityInfoManagementPage = {
                           </select>
                         </div>
                       </div>
+                      <!-- 實施方式 -->
+                      <div class="form-group">
+                        <label class="col-sm-5 control-label">實施方式</label>
+                        <div class="col-sm-7">
+                          <select class="form-control" id="Q_IMPLEMENT_TYPE" name="Q_IMPLEMENT_TYPE">
+                            <option value="">全部</option>
+                            ${utils.generateOptions(window.ActivityImplementTypeData)}
+                          </select>
+                        </div>
+                      </div>
+                      
                      <!-- 工作類別 -->
                       <div class="form-group">
                         <label class="col-sm-5 control-label">工作類別</label>
@@ -158,18 +169,7 @@ const ActivityInfoManagementPage = {
                             <option value="Y">是</option>
                           </select>
                         </div>
-                      </div>
-
-                      <!-- 文件狀態 -->
-                      <div class="form-group">
-                        <label class="col-sm-5 control-label">文件狀態</label>
-                        <div class="col-sm-7">
-                          <select class="form-control" id="Q_DOCUMENT_STATUS" name="Q_DOCUMENT_STATUS">
-                            <option value="">全部</option>
-                            ${window.DocumentStatusData ? window.DocumentStatusData.map((d) => `<option value="${d.code}">${d.name}</option>`).join("") : ""}
-                          </select>
-                        </div>
-                      </div>
+                      </div>                   
                 </div>
               </div>
             </div>
@@ -390,7 +390,7 @@ const ActivityInfoManagementPage = {
             {
               field: "activityDate",
               title: "活動日期",
-              width: 150,
+              width: 180,
               align: "center",
               rowspan: 2,
               formatter: function (value, row, index) {
@@ -398,9 +398,8 @@ const ActivityInfoManagementPage = {
                 const end = row.activityDateEnd;
                 if (!start || !end) return "";
                 // 顯示 yy-MM-dd ~ yy-MM-dd
-                const displayStart = start.slice(2);
-                const displayEnd = end.slice(2);
-                const display = displayStart + "至" + displayEnd;
+
+                const display = start + "~" + end;
                 // tooltip 顯示 yyyy-MM-dd ~ yyyy-MM-dd
                 const tooltip = start + "至" + end;
                 return '<span title="' + tooltip + '">' + display + "</span>";
@@ -409,7 +408,7 @@ const ActivityInfoManagementPage = {
             {
               field: "REGION_LABEL",
               title: "區域",
-              width: 60,
+              width: 70,
               align: "center",
               rowspan: 2,
               formatter: function (value, row, index) {
@@ -419,7 +418,7 @@ const ActivityInfoManagementPage = {
             {
               field: "plannedAction",
               title: "執行事項",
-              width: 210,
+              width: 220,
               align: "center",
               rowspan: 2,
               formatter: function (value, row, index) {
@@ -441,7 +440,7 @@ const ActivityInfoManagementPage = {
             {
               field: "implementType",
               title: "實施方式",
-              width: 80,
+              width: 100,
               align: "center",
               rowspan: 2,
               formatter: function (value) {
@@ -517,7 +516,7 @@ const ActivityInfoManagementPage = {
             {
               field: "venue",
               title: "舉辦地點",
-              width: 120,
+              width: 200,
               align: "center",
               rowspan: 2,
               formatter: function (value, row, index) {
@@ -533,23 +532,7 @@ const ActivityInfoManagementPage = {
               },
             },
             { title: "實際辦理時間", colspan: 2, align: "center" },
-            {
-              field: "IS_DELETED",
-              title: "是否<br/>刪除",
-              width: 55,
-              align: "center",
-              rowspan: 2,
-              formatter: function (value, row, index) {
-                if (value === "Y") {
-                  const reason = row.DELETE_REASON || "未提供原因";
-                  return (
-                    '<span style="color: red;" title="' + reason + '">是</span>'
-                  );
-                } else {
-                  return "<span>否</span>";
-                }
-              },
-            },
+
             {
               field: "contactName",
               title: "聯絡人員",
@@ -575,6 +558,23 @@ const ActivityInfoManagementPage = {
                   return d.code === value;
                 });
                 return item ? item.name : value;
+              },
+            },
+            {
+              field: "IS_DELETED",
+              title: "是否<br/>刪除",
+              width: 55,
+              align: "center",
+              rowspan: 2,
+              formatter: function (value, row, index) {
+                if (value === "Y") {
+                  const reason = row.DELETE_REASON || "未提供原因";
+                  return (
+                    '<span style="color: red;" title="' + reason + '">是</span>'
+                  );
+                } else {
+                  return "<span>否</span>";
+                }
               },
             },
           ],
@@ -911,16 +911,8 @@ const ActivityInfoManagementPage = {
       return;
     }
 
-    // 刪除理由選項
-    const deleteReasons = [
-      { value: "", text: "請選擇" },
-      { value: "data_duplicate", text: "資料重複" },
-      { value: "input_error", text: "輸入錯誤" },
-      { value: "test_data", text: "測試資料" },
-      { value: "system_error", text: "系統錯誤" },
-      { value: "cancelled_event", text: "事件取消" },
-      { value: "other", text: "其他原因" },
-    ];
+    // 使用 CommonData 的刪除理由選項
+    const deleteReasons = window.DeleteReasonData || [];
 
     // 建立 EasyUI 風格的對話框HTML
     const deleteReasonHtml = `
@@ -937,7 +929,7 @@ const ActivityInfoManagementPage = {
               ${deleteReasons
                 .map(
                   (reason) =>
-                    `<option value="${reason.value}">${reason.text}</option>`,
+                    `<option value="${reason.code}">${reason.name}</option>`,
                 )
                 .join("")}
             </select>

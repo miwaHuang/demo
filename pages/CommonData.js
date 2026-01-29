@@ -74,6 +74,16 @@ const DocumentStatusData = [
   { code: "completed", name: "完成" },
 ];
 
+// 刪除原因
+const DeleteReasonData = [
+  { code: "", name: "請選擇" },
+  { code: "data_duplicate", name: "資料重複" },
+  { code: "input_error", name: "輸入錯誤" },
+  { code: "test_data", name: "測試資料" },
+  { code: "system_error", name: "系統錯誤" },
+  { code: "other", name: "其他原因" },
+];
+
 // 辦理方式
 const ActivityHandleTypeData = [
   { code: "host", name: "主辦" },
@@ -571,6 +581,7 @@ if (typeof window !== "undefined") {
   window.ActivityWorkTypeData = ActivityWorkTypeData;
   window.ActivityStatusData = ActivityStatusData;
   window.DocumentStatusData = DocumentStatusData;
+  window.DeleteReasonData = DeleteReasonData;
   window.ActivityHandleTypeData = ActivityHandleTypeData;
   window.ActivityImplementTypeData = ActivityImplementTypeData;
   window.getActivityHandleTypeName = getActivityHandleTypeName;
