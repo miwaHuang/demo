@@ -40,11 +40,12 @@ const ButtonComponent = {
   },
 
   // 快捷方法 - 查詢按鈕
-  search: function (id = "btnSearch") {
+  search: function (id = "btnSearch", text = "查詢", disabled = false) {
     return this.create({
       id: id,
-      text: "查詢",
+      text: text,
       color: "success",
+      disabled: disabled,
     });
   },
 
@@ -108,11 +109,12 @@ const ButtonComponent = {
   },
 
   // 快捷方法 - 通知按鈕
-  notify: function (id = "btnNotify") {
+  notify: function (id = "btnNotify", text = "通知", disabled = false) {
     return this.create({
       id: id,
-      text: "通知",
+      text: text,
       color: "warning",
+      disabled: disabled,
     });
   },
 };

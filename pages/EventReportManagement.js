@@ -255,9 +255,18 @@ const EventReportManagementPage = {
                       ${ButtonComponent.add("btnAdd", "新增")}
                       ${ButtonComponent.edit("btnEdit", "修改")}
                       ${ButtonComponent.view("btnView", "檢視")}
+                      ${ButtonComponent.notify("btnNotify", "審查")}
+                      ${ButtonComponent.delete("btnDelete", "刪除")}
                     </div>
-                    ${ButtonComponent.delete("btnDelete", "刪除")}
+                    ${ButtonComponent.search("btnSearch", "傷病患查詢")}
+                    <div class="btn-group">
                     ${ButtonComponent.btnImport("btnImport", "匯出")}
+                      ${ButtonComponent.btnImport("btnImport", "匯入")}
+                    </div>
+                    <div class="btn-group">
+                      ${ButtonComponent.add("btnNotify", "信件通知")}
+                      ${ButtonComponent.add("btnNotify", "信件設定")}
+                    </div>    
                   </div>
                   <!-- EasyUI DataGrid -->
                 <!-- EasyUI DataGrid -->
@@ -754,11 +763,11 @@ const EventReportManagementPage = {
         },
         onUnselect: function (index, row) {
           // 取消選中時停用按鈕
-          $("#btnEdit, #btnView, #btnDelete").prop("disabled", true);
+          $("#btnEdit, #btnView, #btnDelete").prop("disabled", false);
         },
         onLoadSuccess: function (data) {
           // 停用編輯相關按鈕
-          $("#btnEdit, #btnView, #btnDelete").prop("disabled", true);
+          $("#btnEdit, #btnView, #btnDelete").prop("disabled", false);
 
           // 設置行號列標題為"項次"
           setTimeout(() => {
