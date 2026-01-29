@@ -83,8 +83,8 @@
                         id="Q_CASE_DATE_S"
                         maxlength="10"
                         name="Q_CASE_DATE_S"
-                        onblur="checknewQtime('Q_CASE_DATE_S','date')"
-                        onkeyup="newQtime('Q_CASE_DATE_S','date');"
+                        onblur="checknewQtime('Q_CASE_DATE_S', 'date')"
+                        onkeyup="newQtime('Q_CASE_DATE_S', 'date')"
                         type="text"
                         value="2025-12-13"
                         autocomplete="off"
@@ -99,8 +99,8 @@
                         id="Q_CASE_TIME_S"
                         maxlength="8"
                         name="Q_CASE_TIME_S"
-                        onblur="checknewQtime('Q_CASE_TIME_S','time')"
-                        onkeyup="newQtime('Q_CASE_TIME_S','time');"
+                        onblur="checknewQtime('Q_CASE_TIME_S', 'time')"
+                        onkeyup="newQtime('Q_CASE_TIME_S', 'time')"
                         type="text"
                         value="00:00:00"
                         autocomplete="off"
@@ -124,8 +124,8 @@
                         id="Q_CASE_DATE_E"
                         maxlength="10"
                         name="Q_CASE_DATE_E"
-                        onblur="checknewQtime('Q_CASE_DATE_E','date')"
-                        onkeyup="newQtime('Q_CASE_DATE_E','date');"
+                        onblur="checknewQtime('Q_CASE_DATE_E', 'date')"
+                        onkeyup="newQtime('Q_CASE_DATE_E', 'date')"
                         type="text"
                         value="2026-01-13"
                         autocomplete="off"
@@ -140,8 +140,8 @@
                         id="Q_CASE_TIME_E"
                         maxlength="8"
                         name="Q_CASE_TIME_E"
-                        onblur="checknewQtime('Q_CASE_TIME_E','time')"
-                        onkeyup="newQtime('Q_CASE_TIME_E','time');"
+                        onblur="checknewQtime('Q_CASE_TIME_E', 'time')"
+                        onkeyup="newQtime('Q_CASE_TIME_E', 'time')"
                         type="text"
                         value="23:59:59"
                         autocomplete="off"
@@ -854,7 +854,7 @@
             class="btn btn-success"
             onclick="CreateEMCase()"
           >
-            確認
+            儲存
           </button>
           <button
             type="button"
@@ -946,7 +946,7 @@
                               maxlength="5"
                               name="CASE_TIME"
                               onblur="checknewtime()"
-                              onkeyup="newtime();"
+                              onkeyup="newtime()"
                               style="width: 100%"
                               type="text"
                               value=""
@@ -1972,7 +1972,7 @@
 
                 EMS_ReloadSelect(
                   "/Common/getCountyTownList" + "?CountyID=" + CountyID,
-                  "CALLER_TOWN"
+                  "CALLER_TOWN",
                 );
               });
 
@@ -2122,7 +2122,7 @@
                         form
                           .find("#ACCIDENT_AREA")
                           .find("option:selected")
-                          .text()
+                          .text(),
                       );
                   }
                 });
@@ -2144,7 +2144,7 @@
                 "/MED1100/Ambulance",
                 function () {
                   setAmbulanceComplete(AmbulanceItemComp);
-                }
+                },
               );
             }
             function AddServiceItem() {
@@ -2153,7 +2153,7 @@
                 "/MED1100/ServiceCar",
                 function () {
                   setServiceComplete(ServiceItemComp);
-                }
+                },
               );
             }
             function AmbulanceItemComp(ambulance_data) {
@@ -2187,7 +2187,7 @@
               if (isItem) {
                 $.messager.alert(
                   "新增報案紀錄",
-                  "此筆資料已存在，不可重複新增"
+                  "此筆資料已存在，不可重複新增",
                 );
                 return;
               }
@@ -2212,7 +2212,7 @@
             }
             function DeleteAmbulanceItem() {
               var SelectRowIndex = EMS_getDataGridSelectRowIndex(
-                "Create_EMCaseAmbulance"
+                "Create_EMCaseAmbulance",
               );
 
               if (SelectRowIndex == -1) {
@@ -2226,7 +2226,7 @@
             }
             function DeleteServiceCarItem() {
               var SelectRowIndex = EMS_getDataGridSelectRowIndex(
-                "Create_EMCaseService"
+                "Create_EMCaseService",
               );
 
               if (SelectRowIndex == -1) {
@@ -2253,22 +2253,22 @@
                     ConvertArray(
                       "AmbulanceList",
                       "Create_EMCaseAmbulance",
-                      TransData
+                      TransData,
                     );
                     ConvertArray(
                       "ServiceList",
                       "Create_EMCaseService",
-                      TransData
+                      TransData,
                     );
 
                     PageDataAjax(
                       true,
                       "/MED1100/Create",
                       TransData,
-                      CreateSuccess
+                      CreateSuccess,
                     );
                   }
-                }
+                },
               );
             }
             function CreatechkForm() {
@@ -2292,7 +2292,7 @@
                   "受理時間是" +
                     $.trim(form.find("#CASE_TIME").val()).substring(0, 5) +
                     "，大於救護車出勤通知時間" +
-                    DgNowRows[0].AMBULANCE_AMBU_INFORM_TIME
+                    DgNowRows[0].AMBULANCE_AMBU_INFORM_TIME,
                 );
                 return false;
               }
@@ -2336,7 +2336,7 @@
               ) {
                 $.messager.alert(
                   "新增報案紀錄",
-                  "請至少輸入一筆「救護車」或「服務車輛」派遣紀錄"
+                  "請至少輸入一筆「救護車」或「服務車輛」派遣紀錄",
                 );
                 return false;
               }
@@ -2732,7 +2732,7 @@
               "&DEPT_NO=" +
               "",
             "Q_AID_DEPT_NO",
-            ""
+            "",
           );
         }
       });
@@ -2978,7 +2978,7 @@
 
       EMS_OpenDialog(
         "EditDialog",
-        "/MED1100/Edit" + "?CASE_NO=" + SelectRow.EM_CASE_NO
+        "/MED1100/Edit" + "?CASE_NO=" + SelectRow.EM_CASE_NO,
       );
     }
     function OpenDeleteDialog() {
@@ -2995,7 +2995,7 @@
 
       EMS_OpenDialog(
         "DeleteDialog",
-        "/MED1100/Detail" + "?CASE_NO=" + SelectRow.EM_CASE_NO
+        "/MED1100/Detail" + "?CASE_NO=" + SelectRow.EM_CASE_NO,
       );
     }
     function OpenDetailDialog() {
@@ -3012,7 +3012,7 @@
 
       EMS_OpenDialog(
         "DetailDialog",
-        "/MED1100/Detail" + "?CASE_NO=" + SelectRow.EM_CASE_NO
+        "/MED1100/Detail" + "?CASE_NO=" + SelectRow.EM_CASE_NO,
       );
     }
     function OpenAIDCase() {
@@ -3035,7 +3035,7 @@
           "&CASE_DATE_S=" +
           form.find("#Q_CASE_DATE_S").val() +
           "&CASE_DATE_E=" +
-          form.find("#Q_CASE_DATE_E").val()
+          form.find("#Q_CASE_DATE_E").val(),
       );
     }
     function BackAIDCase() {
@@ -3063,18 +3063,18 @@
               {
                 name: "__RequestVerificationToken",
                 value: $(
-                  '#FormSearch input[name="__RequestVerificationToken"]'
+                  '#FormSearch input[name="__RequestVerificationToken"]',
                 ).val(),
-              }
+              },
             );
             PageDataAjax(
               true,
               "/MED1100/EMCaseUnlock",
               TransData,
-              CaseUnLockSuccess
+              CaseUnLockSuccess,
             );
           }
-        }
+        },
       );
     }
     function CaseUnLockSuccess(response) {
@@ -3090,7 +3090,7 @@
         true,
         "/MED1100/JsonListOutputExcel",
         "FormSearch",
-        EMS_OutputFile_Success
+        EMS_OutputFile_Success,
       );
     }
   </script>

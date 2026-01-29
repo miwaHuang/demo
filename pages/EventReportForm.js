@@ -66,12 +66,12 @@ const EventReportForm = {
               </div>
             </div>
             <div class="modal-actions">
-              <button type="button" class="btn btn-danger" onclick="handleCancel()">關閉</button>
-              ${
-                mode !== "view"
-                  ? `<button type="button" class="btn btn-success" onclick="handleSubmit()">儲存</button>`
-                  : ""
-              }
+            ${
+              mode !== "view"
+                ? `<button type="button" class="btn btn-success" onclick="handleSubmit()">儲存</button>`
+                : ""
+            }
+            <button type="button" class="btn btn-danger" onclick="handleCancel()">關閉</button>
             </div>
             <div class="modal-body" >
             <form id="${formId}">
