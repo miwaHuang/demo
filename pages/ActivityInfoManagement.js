@@ -72,11 +72,11 @@ const ActivityInfoManagementPage = {
             <div class="row search-content">
               <div class="col-md-12">
                 <div class="form-horizontal">
-                     <!-- 預訂執行事項 -->
+                     <!-- 執行事項 -->
                       <div class="form-group">
-                        <label class="col-sm-5 control-label">預訂執行事項</label>
+                        <label class="col-sm-5 control-label">執行事項</label>
                         <div class="col-sm-7">
-                          <input type="text" class="form-control" id="Q_PLANNED_ACTION" name="Q_PLANNED_ACTION" placeholder="請輸入預訂執行事項">
+                          <input type="text" class="form-control" id="Q_PLANNED_ACTION" name="Q_PLANNED_ACTION" placeholder="請輸入執行事項">
                         </div>
                       </div>
                       <!-- 區域 -->
@@ -531,21 +531,7 @@ const ActivityInfoManagementPage = {
                 );
               },
             },
-            { title: "實際辦理時間", colspan: 2, align: "center" },
-
-            {
-              field: "contactName",
-              title: "聯絡人員",
-              width: 100,
-              align: "center",
-              rowspan: 2,
-              formatter: function (value, row, index) {
-                const contactPhone = row.CONTACT_PHONE || "";
-                const titleText =
-                  value + (contactPhone ? " / " + contactPhone : "");
-                return '<span title="' + titleText + '">' + value + "</span>";
-              },
-            },
+            { title: "辦理時間", colspan: 2, align: "center" },
             {
               field: "documentStatus",
               title: "文件狀態",
@@ -560,6 +546,20 @@ const ActivityInfoManagementPage = {
                 return item ? item.name : value;
               },
             },
+            {
+              field: "contactName",
+              title: "聯絡人員",
+              width: 100,
+              align: "center",
+              rowspan: 2,
+              formatter: function (value, row, index) {
+                const contactPhone = row.CONTACT_PHONE || "";
+                const titleText =
+                  value + (contactPhone ? " / " + contactPhone : "");
+                return '<span title="' + titleText + '">' + value + "</span>";
+              },
+            },
+
             {
               field: "IS_DELETED",
               title: "是否<br/>刪除",
@@ -788,7 +788,7 @@ const ActivityInfoManagementPage = {
         activityDate: formattedStart, // 保留原有欄位
         activityDateStart: formattedStart,
         activityDateEnd: formattedEnd,
-        plannedAction: `預訂執行事項 ${i}`,
+        plannedAction: `執行事項 ${i}`,
         COUNTY_LABEL: region,
         REGION_LABEL: region,
         workType: workType,
@@ -911,7 +911,7 @@ const ActivityInfoManagementPage = {
       return;
     }
 
-    // 使用 CommonData 的刪除理由選項
+    // 使用 CommonData 的刪除原因選項
     const deleteReasons = window.DeleteReasonData || [];
 
     // 建立 EasyUI 風格的對話框HTML
@@ -924,7 +924,7 @@ const ActivityInfoManagementPage = {
             執行事項：${selected.plannedAction}<br/>
           </div>
           <div style="margin-bottom: 15px;">
-            <label for="deleteReason" style="display: inline-block; width: 85px; vertical-align: top; white-space: nowrap;"><span style="color: red;">*</span><strong>刪除理由：</strong></label>
+            <label for="deleteReason" style="display: inline-block; width: 85px; vertical-align: top; white-space: nowrap;"><span style="color: red;">*</span><strong>刪除原因：</strong></label>
             <select id="deleteReason" class="textbox-text" style="width: 220px; padding: 5px; border: 1px solid #ccc; display: inline-block;" required>
               ${deleteReasons
                 .map(
@@ -1021,7 +1021,7 @@ const ActivityInfoManagementPage = {
         $("#deleteReason").css("border-color", "#ff4444");
         $.messager.alert(
           "提示",
-          "刪除理由為必填項目，請選擇刪除理由！",
+          "刪除原因為必填項目，請選擇刪除原因！",
           "warning",
         );
         return;

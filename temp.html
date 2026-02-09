@@ -346,7 +346,7 @@ this.tableId = tableId; return /*html*/ `
   載入 EventReportForm.js 並顯示檢視表單 this.loadEventReportForm(() => {
   EventReportForm.show("view", selected); }); }, deleteRecord: function () {
   const self = this; const $table = $(`#${this.tableId}`); const selected =
-  $table.datagrid("getSelected"); if (!selected) { return; } // 刪除理由選項
+  $table.datagrid("getSelected"); if (!selected) { return; } // 刪除原因選項
   const deleteReasons = [ { value: "", text: "請選擇" }, { value:
   "data_duplicate", text: "資料重複" }, { value: "input_error", text: "輸入錯誤"
   }, { value: "test_data", text: "測試資料" }, { value: "system_error", text:
@@ -371,7 +371,7 @@ this.tableId = tableId; return /*html*/ `
             vertical-align: top;
             white-space: nowrap;
           "
-          ><span style="color: red">*</span><strong>刪除理由：</strong></label
+          ><span style="color: red">*</span><strong>刪除原因：</strong></label
         >
         <select
           id="deleteReason"
@@ -471,7 +471,7 @@ this.tableId = tableId; return /*html*/ `
   $("#otherReasonText").css("border-color", "#ccc"); if (!selectedReason ||
   selectedReason === "") { // 高亮必填欄位
   $("#deleteReason").css("border-color", "#ff4444"); $.messager.alert( "提示",
-  "刪除理由為必填項目，請選擇刪除理由！", "warning", ); return; } //
+  "刪除原因為必填項目，請選擇刪除原因！", "warning", ); return; } //
   如果選擇其他原因，檢查文字輸入 if (selectedReason === "other" &&
   !otherReasonText) { $("#otherReasonText").css("border-color", "#ff4444");
   $.messager.alert("提示", "請輸入其他原因！", "warning");

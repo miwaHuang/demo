@@ -46,7 +46,24 @@ const EventReportForm = {
              
               <button type="button" class="close" data-dismiss="modal" aria-label="關閉">
                 <span aria-hidden="true">&times;</span>
-              </button>             
+              </button>         
+                <div class="auto-info">
+                <small class="text-muted">
+                  <div id="createTimeDisplay">建立日期：${
+                    mode === "add"
+                      ? new Date().toISOString().slice(0, 16).replace("T", " ")
+                      : data && data.CREATE_TIME
+                        ? new Date(data.CREATE_TIME)
+                            .toISOString()
+                            .slice(0, 16)
+                            .replace("T", " ")
+                        : new Date()
+                            .toISOString()
+                            .slice(0, 16)
+                            .replace("T", " ")
+                  }</div>
+                </small>
+              </div>    
             </div>
             <div class="modal-actions">
             ${
@@ -55,6 +72,7 @@ const EventReportForm = {
                 : ""
             }
             <button type="button" class="btn btn-danger" onclick="handleCancel()">關閉</button>
+            
             </div>
             <div class="modal-body" >
             <form id="${formId}">
@@ -408,6 +426,45 @@ const EventReportForm = {
                 </div>
               </div>
               
+              <!-- 刪除資訊 -->
+              ${
+                mode === "view" && data && data.IS_DELETED === "Y"
+                  ? `
+              <div class="form-section">
+                <div class="section-title">刪除資訊</div>
+                <div class="section-content">
+                  <div class="row">
+                    <div class="col-md-4">
+                      <div class="form-group">
+                        <label>是否刪除</label>
+                        <select class="form-control" name="IS_DELETED" ${disabledAttr}>
+                          <option value="N" ${data && data.IS_DELETED === "N" ? "selected" : ""}>否</option>
+                          <option value="Y" ${data && data.IS_DELETED === "Y" ? "selected" : ""}>是</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div class="col-md-4">
+                      <div class="form-group">
+                        <label>刪除原因</label>
+                        <select class="form-control" name="DELETE_REASON" ${disabledAttr}>
+                          <option value="">請選擇</option>
+                          ${window.DeleteReasonData ? window.DeleteReasonData.map((d) => `<option value="${d.code}" ${data && data.deleteReason === d.code ? "selected" : ""}>${d.name}</option>`).join("") : ""}
+                        </select>
+                      </div>
+                    </div>
+                    <div class="col-md-4" id="otherReasonContainer" style="display: none;">
+                      <div class="form-group">
+                        <label>其他原因</label>
+                        <input type="text" class="form-control" name="OTHER_REASON" placeholder="請輸入其他原因" ${readonlyAttr} />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              `
+                  : ""
+              }
+              
               <!-- 隱藏欄位 -->
               <input type="hidden" name="REMOC_CODE" value="${
                 remocInfo.code
@@ -629,6 +686,20 @@ const EventReportForm = {
 
     // 初始計算總計
     calculateEMCTriageTotal();
+
+    // 綁定刪除相關事件
+    $(document).on(
+      "change",
+      "#reportModal select[name='DELETE_REASON']",
+      function () {
+        const deleteReason = $(this).val();
+        if (deleteReason === "other") {
+          $("#otherReasonContainer").show();
+        } else {
+          $("#otherReasonContainer").hide();
+        }
+      },
+    );
   },
 
   // 載入資料到表單
@@ -703,6 +774,18 @@ const EventReportForm = {
           $("#DISASTER_TYPE").val(data.DISASTER_TYPE);
         }
       }, 100);
+    }
+
+    // 載入刪除資訊
+    $('[name="IS_DELETED"]').val(data.IS_DELETED || "N");
+    $('[name="DELETE_REASON"]').val(
+      data.DELETE_REASON || data.deleteReason || "",
+    );
+    $('[name="OTHER_REASON"]').val(data.OTHER_REASON || data.otherReason || "");
+
+    // 如果刪除原因是其他，顯示其他原因欄位
+    if (data.DELETE_REASON === "other") {
+      $("#otherReasonContainer").show();
     }
   },
 

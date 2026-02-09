@@ -74,7 +74,7 @@ const ActivityInfoForm = {
                     <div class="col-md-4">
                       <div class="form-group">
                         <label class="required">預定執行事項</label>
-                        <input type="text" class="form-control" name="PLANNED_ACTION" placeholder="請輸入執行事項" required ${plannedReadonlyAttr} />
+                        <input type="text" class="form-control" name="PLANNED_ACTION" placeholder="請輸入執行事項" required ${readonlyAttr}/>
                         <div class="error-message">請輸入執行事項</div>
                       </div>
                     </div>
@@ -90,28 +90,28 @@ const ActivityInfoForm = {
                     <div class="col-md-2">
                       <div class="form-group">
                         <label class="required">活動日期(起)</label>
-                        <input type="date" class="form-control" name="ACTIVITY_DATE_S" required ${plannedReadonlyAttr} />
+                        <input type="date" class="form-control" name="ACTIVITY_DATE_S" required ${readonlyAttr}/>
                         <div class="error-message">請選擇活動日期(起)</div>
                       </div>
                     </div>
                     <div class="col-md-2">
                       <div class="form-group">
                         <label class="required">活動日期(迄)</label>
-                        <input type="date" class="form-control" name="ACTIVITY_DATE_E" required ${plannedReadonlyAttr} />
+                        <input type="date" class="form-control" name="ACTIVITY_DATE_E" required ${readonlyAttr} />
                         <div class="error-message">請選擇活動日期(迄)</div>
                       </div>
                     </div>
                      <div class="col-md-1">
                       <div class="form-group">
                         <label class="required">辦理天數</label>
-                        <input type="number" step="0.5" class="form-control" name="PLANNED_DAYS" value="0" min="0" required ${plannedReadonlyAttr} />
+                        <input type="number" step="0.5" class="form-control" name="PLANNED_DAYS" value="0" min="0" required ${readonlyAttr}/>
                         <div class="error-message">請輸入活動辦理天數</div>
                       </div>
                     </div>
                     <div class="col-md-1">
                       <div class="form-group">
                         <label class="required">辦理時數</label>
-                        <input type="number" step="1" class="form-control" name="PLANNED_HOURS" value="0" min="0" required ${plannedReadonlyAttr} />
+                        <input type="number" step="1" class="form-control" name="PLANNED_HOURS" value="0" min="0" required ${readonlyAttr}/>
                         <div class="error-message">請輸入活動辦理時數</div>
                       </div>
                     </div>
@@ -120,7 +120,7 @@ const ActivityInfoForm = {
                     <div class="col-md-4">
                       <div class="form-group">
                         <label class="required">舉辦地點</label>
-                        <input type="text" class="form-control" name="VENUE" placeholder="請輸入舉辦地點" required ${plannedReadonlyAttr} />
+                        <input type="text" class="form-control" name="VENUE" placeholder="請輸入舉辦地點" required ${readonlyAttr}/>
                         <div class="error-message">請輸入舉辦地點</div>
                       </div>
                     </div>         
@@ -174,19 +174,13 @@ const ActivityInfoForm = {
                         <label class="required">國際活動</label>
                         <select class="form-control" name="IS_INTERNATIONAL" required ${disabledAttr}>
                           <option value="">請選擇</option>
-                          <option value="0" ${data && data.isInternational === 0 ? "selected" : ""}>否</option>
                           <option value="1" ${data && data.isInternational === 1 ? "selected" : ""}>是</option>
+                          <option value="0" ${data && data.isInternational === 0 ? "selected" : ""}>否</option>
                         </select>
                         <div class="error-message">請選擇是否為國際活動</div>
                       </div>
-                    </div>
-                      <div class="col-md-4">
-                      <div class="form-group">
-                        <label>備註</label>
-                        <input type="text" class="form-control" name="REMARKS" placeholder="請輸入備註" ${readonlyAttr} />
-                      </div>
-                    </div>
-                    <div class="col-md-2">
+                    </div>                  
+                    <div class="col-md-3">
                       <div class="form-group">
                         <label class="required">聯絡人員</label>
                         <input type="text" class="form-control" name="CONTACT_NAME" placeholder="請輸入聯絡人員" required ${readonlyAttr} />
@@ -198,6 +192,12 @@ const ActivityInfoForm = {
                         <label class="required">連絡電話</label>
                         <input type="text" class="form-control" name="CONTACT_PHONE" placeholder="請輸入連絡電話" required ${readonlyAttr} />
                         <div class="error-message">請輸入連絡電話</div>
+                      </div>
+                    </div>
+                    <div class="col-md-4">
+                      <div class="form-group">
+                        <label>備註</label>
+                        <textarea class="form-control" name="REMARKS" placeholder="請輸入備註" ${readonlyAttr} style="height: 50px;"></textarea>
                       </div>
                     </div>
                   
@@ -305,11 +305,10 @@ const ActivityInfoForm = {
                         <input type="number" class="form-control personnel-count" name="NON_MEDICAL_COUNT" value="0" min="0" ${readonlyAttr} />
                       </div>
                       <div class="form-group">
-                        <label>參與人數小計</label>
+                        <label>人員類別人數小計</label>
                         <input type="number" class="form-control" name="MEDICAL_TOTAL" value="0" readonly />
                       </div>
-                    </div>
-             
+                    </div>            
 
                   <!-- 單位類別 -->
                 
@@ -340,7 +339,7 @@ const ActivityInfoForm = {
                         <input type="number" class="form-control personnel-count" name="OTHER_UNIT_COUNT" value="0" min="0" ${readonlyAttr} />
                       </div>
                       <div class="form-group">
-                        <label>參與人數小計</label>
+                        <label>單位人數小計</label>
                         <input type="number" class="form-control" name="UNIT_TOTAL" value="0" readonly />
                       </div>
                     </div>
@@ -358,7 +357,7 @@ const ActivityInfoForm = {
                         <input type="number" class="form-control personnel-count" name="FEMALE_COUNT" value="0" min="0" ${readonlyAttr} />
                       </div>
                       <div class="form-group">
-                        <label>參與人數小計</label>
+                        <label>性別人數小計</label>
                         <input type="number" class="form-control" name="GENDER_TOTAL" value="0" readonly />
                       </div>
                     </div>
@@ -368,7 +367,7 @@ const ActivityInfoForm = {
 
               <!-- 刪除資訊 -->
               ${
-                mode === "edit" || (data && data.IS_DELETED === "Y")
+                mode === "view" && data && data.IS_DELETED === "Y"
                   ? `
               <div class="form-section">
                 <div class="section-title">刪除資訊</div>
@@ -395,7 +394,7 @@ const ActivityInfoForm = {
                     <div class="col-md-4" id="otherReasonContainer" style="display: none;">
                       <div class="form-group">
                         <label>其他原因</label>
-                        <input type="text" class="form-control" name="OTHER_REASON" placeholder="請輸入其他原因" ${readonlyAttr} />
+                        <input type="text" class="form-control" name="OTHER_REASON" placeholder="請輸入其他原因" readonly />
                       </div>
                     </div>
                   </div>

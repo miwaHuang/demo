@@ -546,7 +546,10 @@ const EventReportManagementPage = {
               rowspan: 2,
               formatter: function (value, row, index) {
                 if (value === "Y") {
-                  const reason = row.DELETE_REASON || "未提供原因";
+                  let reason = row.DELETE_REASON || "未提供原因";
+                  if (row.DELETE_REASON === "other" && row.OTHER_REASON) {
+                    reason = row.OTHER_REASON;
+                  }
                   return (
                     '<span style="color: red;" title="' + reason + '">是</span>'
                   );
@@ -1581,7 +1584,7 @@ const EventReportManagementPage = {
       return;
     }
 
-    // 刪除理由選項
+    // 刪除原因選項
     const deleteReasons = [
       { value: "", text: "請選擇" },
       { value: "data_duplicate", text: "資料重複" },
@@ -1602,7 +1605,7 @@ const EventReportManagementPage = {
             災害名稱：${selected.DISASTER_NAME}<br/>
           </div>
           <div style="margin-bottom: 15px;">
-            <label for="deleteReason" style="display: inline-block; width: 85px; vertical-align: top; white-space: nowrap;"><span style="color: red;">*</span><strong>刪除理由：</strong></label>
+            <label for="deleteReason" style="display: inline-block; width: 85px; vertical-align: top; white-space: nowrap;"><span style="color: red;">*</span><strong>刪除原因：</strong></label>
             <select id="deleteReason" class="textbox-text" style="width: 220px; padding: 5px; border: 1px solid #ccc; display: inline-block;" required>
               ${deleteReasons
                 .map(
@@ -1699,7 +1702,7 @@ const EventReportManagementPage = {
         $("#deleteReason").css("border-color", "#ff4444");
         $.messager.alert(
           "提示",
-          "刪除理由為必填項目，請選擇刪除理由！",
+          "刪除原因為必填項目，請選擇刪除原因！",
           "warning",
         );
         return;
