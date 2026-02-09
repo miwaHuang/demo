@@ -93,9 +93,9 @@ const EventReportManagementPage = {
 
                       <!-- 名稱 -->
                       <div class="form-group">
-                        <label class="col-sm-5 control-label">災害名稱</label>
+                        <label class="col-sm-5 control-label">事件名稱</label>
                         <div class="col-sm-7">
-                          <input type="text" class="form-control" id="Q_EVENT_NAME" name="Q_EVENT_NAME" placeholder="請輸入災害名稱">
+                          <input type="text" class="form-control" id="Q_EVENT_NAME" name="Q_EVENT_NAME" placeholder="請輸入事件名稱">
                         </div>
                       </div>
 
@@ -455,7 +455,7 @@ const EventReportManagementPage = {
             },
             {
               field: "DISASTER_NAME",
-              title: "災害名稱",
+              title: "事件名稱",
               width: 210,
               align: "center", // 表頭置中
               rowspan: 2,
@@ -493,7 +493,7 @@ const EventReportManagementPage = {
               rowspan: 2,
             },
             {
-              title: "事件",
+              title: "訊息",
               colspan: 2,
             },
             {
@@ -565,7 +565,7 @@ const EventReportManagementPage = {
             },
             {
               field: "MSG_CREATE_TIME",
-              title: "建立日期",
+              title: "日期",
               width: 100,
               align: "center",
               formatter: function (value, row, index) {

@@ -69,14 +69,14 @@ const EmergencyPatientReportPage = {
                   </div>
                   <!-- 災害名稱 -->
                   <div class="form-group">
-                    <label class="col-sm-5 control-label">災害名稱</label>
+                    <label class="col-sm-5 control-label">事件名稱</label>
                     <div class="col-sm-7">
                       <input
                         type="text"
                         class="form-control"
                         id="Q_DISASTER_NAME"
                         name="Q_DISASTER_NAME"
-                        placeholder="災害名稱(可打關鍵字)"
+                        placeholder="事件名稱(可打關鍵字)"
                         autocomplete="off"
                       />
                     </div>
@@ -91,7 +91,7 @@ const EmergencyPatientReportPage = {
                         name="Q_DISASTER_TYPE_ATTR"
                       >
                         ${CommonDataUtils.generateOptions(
-                          DisasterData.disasterTypeAttr
+                          DisasterData.disasterTypeAttr,
                         )}
                       </select>
                     </div>
@@ -158,7 +158,7 @@ const EmergencyPatientReportPage = {
                         name="Q_DEPT_CODE"
                       >
                         ${CommonDataUtils.generateOptions(
-                          DepartmentData.deptTypes
+                          DepartmentData.deptTypes,
                         )}
                       </select>
                     </div>
@@ -335,7 +335,7 @@ const EmergencyPatientReportPage = {
   DatePickerInit: function () {
     const $content = $("#EmergencyPatientReportContent");
     const $dateInputs = $content.find(
-      'input[type="text"][data-type="date"]:not([date-inited])'
+      'input[type="text"][data-type="date"]:not([date-inited])',
     );
 
     if ($dateInputs.length > 0) {
@@ -424,11 +424,11 @@ const EmergencyPatientReportPage = {
     // 更新查詢時間
     const now = new Date();
     const timeStr = `${now.getFullYear()}年${String(
-      now.getMonth() + 1
+      now.getMonth() + 1,
     ).padStart(2, "0")}月${String(now.getDate()).padStart(2, "0")}日 ${String(
-      now.getHours()
+      now.getHours(),
     ).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}:${String(
-      now.getSeconds()
+      now.getSeconds(),
     ).padStart(2, "0")}`;
     $("#ResultTime").text(timeStr);
 
@@ -480,13 +480,13 @@ const EmergencyPatientReportPage = {
             },
             {
               field: "DISASTER_NO_LABEL",
-              title: "災害編號",
+              title: "事件編號",
               width: 130,
               align: "center",
             },
             {
               field: "DISASTER_NAME",
-              title: "災害名稱",
+              title: "事件名稱",
               width: 300,
               align: "left",
               formatter: function (value, row) {
@@ -681,7 +681,7 @@ const EmergencyPatientReportPage = {
   // CRUD 操作
   addRecord: function () {
     alert(
-      "新增傷患通報功能（待實作）\n\n此功能將開啟新增視窗，輸入傷患詳細資料。"
+      "新增傷患通報功能（待實作）\n\n此功能將開啟新增視窗，輸入傷患詳細資料。",
     );
   },
 
@@ -693,7 +693,7 @@ const EmergencyPatientReportPage = {
         "修改傷患通報\n\n災害名稱：" +
           selected.DISASTER_NAME +
           "\n災害編號：" +
-          selected.DISASTER_NO_LABEL
+          selected.DISASTER_NO_LABEL,
       );
     }
   },
@@ -708,7 +708,7 @@ const EmergencyPatientReportPage = {
           "\n災害編號：" +
           selected.DISASTER_NO_LABEL +
           "\n傷患人數：" +
-          selected.PATIENT_COUNT
+          selected.PATIENT_COUNT,
       );
     }
   },
@@ -722,7 +722,7 @@ const EmergencyPatientReportPage = {
           "確定要刪除此傷患通報嗎？\n\n災害名稱：" +
             selected.DISASTER_NAME +
             "\n災害編號：" +
-            selected.DISASTER_NO_LABEL
+            selected.DISASTER_NO_LABEL,
         )
       ) {
         alert("刪除功能（待實作）\n\n實際系統將呼叫後端 API 刪除資料。");
@@ -737,7 +737,7 @@ const EmergencyPatientReportPage = {
     const queryText = $("#QueryText").text();
     alert(
       "資料匯出功能（待實作）\n\n將匯出符合以下條件的資料：\n" +
-        (queryText || "全部資料")
+        (queryText || "全部資料"),
     );
   },
 
@@ -761,7 +761,7 @@ const EmergencyPatientReportPage = {
       CommonDataUtils.reloadCascadingDropdown(
         attrValue,
         "Q_DISASTER_TYPE",
-        DisasterData.disasterType
+        DisasterData.disasterType,
       );
     });
 
@@ -771,7 +771,7 @@ const EmergencyPatientReportPage = {
       CommonDataUtils.reloadCascadingDropdown(
         deptCode,
         "Q_DEPT_NO",
-        DepartmentData.departments
+        DepartmentData.departments,
       );
     });
 
@@ -781,7 +781,7 @@ const EmergencyPatientReportPage = {
       CommonDataUtils.reloadCascadingDropdown(
         countyCode,
         "Q_AID_DEPT_NO",
-        MedicalData.aidDepartments
+        MedicalData.aidDepartments,
       );
     });
 

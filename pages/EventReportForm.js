@@ -46,24 +46,7 @@ const EventReportForm = {
              
               <button type="button" class="close" data-dismiss="modal" aria-label="關閉">
                 <span aria-hidden="true">&times;</span>
-              </button>
-              <div class="auto-info">
-                <small class="text-muted">
-                  <div id="createTimeDisplay">建立日期：${
-                    mode === "add"
-                      ? new Date().toISOString().slice(0, 16).replace("T", " ")
-                      : data && data.CREATE_TIME
-                        ? new Date(data.CREATE_TIME)
-                            .toISOString()
-                            .slice(0, 16)
-                            .replace("T", " ")
-                        : new Date()
-                            .toISOString()
-                            .slice(0, 16)
-                            .replace("T", " ")
-                  }</div>
-                </small>
-              </div>
+              </button>             
             </div>
             <div class="modal-actions">
             ${
@@ -117,37 +100,7 @@ const EventReportForm = {
                             }" readonly />
                         </div>
                     </div>
-                    <div class="col-md-2">
-                      <div class="form-group">
-                        <label class="required">監看人員</label>
-                        <input type="text" class="form-control" name="REPORTER" placeholder="請輸入姓名" required ${
-                          mode === "view" ? "readonly" : ""
-                        } />
-                        <div class="error-message">請輸入監看人員</div>
-                      </div>
-                    </div>
-                    <div class="col-md-2">
-                      <div class="form-group">
-                        <label class="required">連絡電話</label>
-                        <input type="tel" class="form-control" name="CONTACT_PHONE" placeholder="請輸入電話號碼" required ${
-                          mode === "view" ? "readonly" : ""
-                        } />
-                        <div class="error-message">請輸入連絡電話</div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="row">
-                    <div class="col-md-3">
-                      <div class="form-group">
-                        <label class="required">事件來源</label>
-                        <input type="text" class="form-control" name="SOURCE_TYPE" placeholder="請輸入事件來源" required ${
-                          mode === "view" ? "readonly" : ""
-                        } />
-                        <div class="error-message">請輸入事件來源</div>
-                      </div>
-                    </div>
-                 
-                    <div class="col-md-2">
+                      <div class="col-md-2">
                       <div class="form-group">
                         <label class="required">發生日期</label>
                         <input type="date" class="form-control" name="SOURCE_TIME_DATE" required ${
@@ -158,13 +111,16 @@ const EventReportForm = {
                     </div>
                      <div class="col-md-2">
                       <div class="form-group">
-                        <label class="required">發生時間 (時間)</label>
+                        <label class="required">發生時間</label>
                         <input type="time" class="form-control" name="SOURCE_TIME_TIME" required ${
                           mode === "view" ? "readonly" : ""
                         } />                       
                         <div class="error-message">請選擇時間</div>
                       </div>
                     </div>
+                 
+                  </div>
+                  <div class="row">
                     <div class="col-md-2">
                       <div class="form-group">
                         <label class="required">災害屬性</label>
@@ -185,11 +141,38 @@ const EventReportForm = {
                         </select>
                         <div class="error-message">請選擇災害種類</div>
                       </div>
-                    </div>     
+                    </div>    
+                    <div class="col-md-3">
+                      <div class="form-group">
+                        <label class="required">訊息來源</label>
+                        <input type="text" class="form-control" name="SOURCE_TYPE" placeholder="請輸入事件來源" required ${
+                          mode === "view" ? "readonly" : ""
+                        } />
+                        <div class="error-message">請輸入訊息來源</div>
+                      </div>
+                    </div> 
+                    <div class="col-md-2">
+                      <div class="form-group">
+                        <label class="required">訊息來源日期</label>
+                        <input type="date" class="form-control" name="SOURCE_TIME_DATE_NEW" required ${
+                          mode === "view" ? "readonly" : ""
+                        } />
+                        <div class="error-message">請選擇日期</div>
+                      </div>
+                    </div>
+                     <div class="col-md-2">
+                      <div class="form-group">
+                        <label class="required">訊息來源時間</label>
+                        <input type="time" class="form-control" name="SOURCE_TIME_TIME_NEW" required ${
+                          mode === "view" ? "readonly" : ""
+                        } />                       
+                        <div class="error-message">請選擇時間</div>
+                      </div>
+                    </div>
                   </div>
                   
                   <div class="row">
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                       <div class="form-group">
                         <label class="required">事件摘要</label>
                         <textarea class="form-control" name="INCIDENT_SUMMARY" placeholder="請簡述事件概要，包含時間、地點、原因、影響範圍等關鍵資訊..." required ${
@@ -198,12 +181,30 @@ const EventReportForm = {
                         <div class="error-message">請輸入事件摘要</div>
                       </div>
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                       <div class="form-group">
                         <label>處置作為概述</label>
                         <textarea class="form-control" name="ACTION_SUMMARY" placeholder="請敘述 REMOC 目前處置進度。" ${
                           mode === "view" ? "readonly" : ""
                         } style="height: 50px;"></textarea>
+                      </div>
+                    </div>
+                       <div class="col-md-2">
+                      <div class="form-group">
+                        <label class="required">監看人員</label>
+                        <input type="text" class="form-control" name="REPORTER" placeholder="請輸入姓名" required ${
+                          mode === "view" ? "readonly" : ""
+                        } />
+                        <div class="error-message">請輸入監看人員</div>
+                      </div>
+                    </div>
+                    <div class="col-md-2">
+                      <div class="form-group">
+                        <label class="required">連絡電話</label>
+                        <input type="tel" class="form-control" name="CONTACT_PHONE" placeholder="請輸入電話號碼" required ${
+                          mode === "view" ? "readonly" : ""
+                        } />
+                        <div class="error-message">請輸入連絡電話</div>
                       </div>
                     </div>
                   </div>
@@ -619,6 +620,11 @@ const EventReportForm = {
     if (this.mode === "add") {
       const now = new Date();
       $("#MESSAGE_TIME").val(now.toISOString().slice(0, 16));
+      // 初始化消息來源時間為當前時間
+      const dateStr = now.toISOString().split("T")[0];
+      const timeStr = now.toTimeString().slice(0, 5);
+      $('[name="SOURCE_TIME_DATE_NEW"]').val(dateStr);
+      $('[name="SOURCE_TIME_TIME_NEW"]').val(timeStr);
     }
 
     // 初始計算總計
@@ -658,6 +664,12 @@ const EventReportForm = {
         $('[name="SOURCE_TIME_DATE"]').val(dateStr);
         $('[name="SOURCE_TIME_TIME"]').val(timeStr);
       }
+    }
+
+    // 載入消息來源時間
+    if (data.SOURCE_TIME_NEW_DATE && data.SOURCE_TIME_NEW_TIME) {
+      $('[name="SOURCE_TIME_DATE_NEW"]').val(data.SOURCE_TIME_NEW_DATE);
+      $('[name="SOURCE_TIME_TIME_NEW"]').val(data.SOURCE_TIME_NEW_TIME);
     }
 
     // 載入傷亡統計
