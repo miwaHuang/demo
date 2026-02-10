@@ -179,32 +179,26 @@ const EventMonitoringStatisticsPage = {
                         <span id="ResultTimeTab2" style="color: #666"></span>
                       </div>
                     </div>
-                    <div style="margin-bottom: 5px">
-                      查詢結果：
-                      <span id="ResultTextTab2" style="color: #5cb85c; font-weight: bold"></span>
-                    </div>
                     <!-- 災類統計表格 -->
                     <table id="DisasterTypeStatsTable" class="EMSDataGrid"></table>
                   </div>
                 </div>
 
-                <!-- Tab 3: 趨勢圖表 -->
+                <!-- Tab 3: 地區統計 -->
                 <div role="tabpanel" class="tab-pane" id="tab3">
                   <div class="col-sm-12">
-                    <h4>趨勢圖表</h4>
-                    <div class="row">
-                      <div class="col-md-12">
-                        <div class="panel panel-warning">
-                          <div class="panel-heading">
-                            <h5 class="panel-title">事件趨勢圖</h5>
-                          </div>
-                          <div class="panel-body">
-                            <!-- 趨勢圖表內容已移除 -->
-                            <p class="text-muted">趨勢圖表功能開發中...</p>
-                          </div>
-                        </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                      <div>
+                        查詢條件：
+                        <span id="QueryConditionTab3" style="color: #337ab7"></span>
+                      </div>
+                      <div>
+                        查詢時間：
+                        <span id="ResultTimeTab3" style="color: #666"></span>
                       </div>
                     </div>
+                    <!-- 地區統計表格 -->
+                    <table id="RegionStatsTable" class="EMSDataGrid"></table>
                   </div>
                 </div>
               </div>
@@ -288,6 +282,15 @@ const EventMonitoringStatisticsPage = {
         }
       }
 
+      // 如果切換到 tab3，載入地區統計
+      if (targetId === "#tab3") {
+        if (typeof self.loadRegionStats === "function") {
+          self.loadRegionStats();
+        } else {
+          console.error("loadRegionStats not found on self", self);
+        }
+      }
+
       // 確保查詢列表始終可見
       $(".subpage-box").show();
       $(".tab-struct.form-abs-left").show();
@@ -363,6 +366,11 @@ const EventMonitoringStatisticsPage = {
     // 如果當前在 tab2，重新載入災類統計
     if ($("#tab2").hasClass("active")) {
       this.loadDisasterTypeStats();
+    }
+
+    // 如果當前在 tab3，重新載入地區統計
+    if ($("#tab3").hasClass("active")) {
+      this.loadRegionStats();
     }
   },
 
@@ -442,7 +450,23 @@ const EventMonitoringStatisticsPage = {
     $("#QueryConditionTab2").text($("#QueryCondition").text());
     $("#ResultTimeTab2").text($("#ResultTime").text());
 
-    // 災類名稱映射 - 使用 CommonData.js 中的資料
+    // 確保 currentData 存在
+    if (!this.currentData) {
+      this.currentData = [];
+    }
+
+    // 統計災類
+    const stats = {};
+    let total = this.currentData.length;
+    this.currentData.forEach((item) => {
+      const type = item.disasterType;
+      if (!stats[type]) {
+        stats[type] = 0;
+      }
+      stats[type]++;
+    });
+
+    // 獲取災害種類名稱映射
     const disasterTypeMap = {};
     if (window.DisasterData && window.DisasterData.disasterType) {
       Object.values(window.DisasterData.disasterType).forEach((category) => {
@@ -452,36 +476,18 @@ const EventMonitoringStatisticsPage = {
       });
     }
 
-    // 確保 currentData 存在
-    if (!this.currentData) {
-      this.currentData = [];
-    }
-
-    // 統計災類
-    const stats = {};
-    let total = 0;
-    this.currentData.forEach((item) => {
-      const type = item.disasterType;
-      if (!stats[type]) {
-        stats[type] = 0;
-      }
-      stats[type]++;
-      total++;
-    });
-
-    // 轉換為表格資料
-    const tableData = Object.keys(stats).map((type) => {
-      const count = stats[type];
-      const percentage = total > 0 ? Math.round((count / total) * 100) : 0;
-      return {
-        disasterType: disasterTypeMap[type] || type,
-        count: count,
-        percentage: percentage + "%",
-      };
-    });
-
-    // 設定查詢結果
-    $("#ResultTextTab2").text(`共 ${tableData.length} 種災害類型`);
+    // 轉換為表格資料 - 只顯示有資料的災害種類
+    const tableData = Object.keys(stats)
+      .filter((code) => stats[code] > 0)
+      .map((code) => {
+        const count = stats[code];
+        const percentage = total > 0 ? Math.round((count / total) * 100) : 0;
+        return {
+          disasterType: disasterTypeMap[code] || code,
+          count: count,
+          percentage: percentage + "%",
+        };
+      });
 
     // 初始化表格
     $("#DisasterTypeStatsTable").datagrid({
@@ -495,6 +501,73 @@ const EventMonitoringStatisticsPage = {
           {
             field: "disasterType",
             title: "災害種類",
+            width: 200,
+            align: "center",
+          },
+          {
+            field: "count",
+            title: "件數",
+            width: 100,
+            align: "center",
+          },
+          {
+            field: "percentage",
+            title: "百分比",
+            width: 100,
+            align: "center",
+          },
+        ],
+      ],
+    });
+  },
+
+  // 載入地區統計
+  loadRegionStats: function () {
+    // 複製查詢條件和時間到 tab3
+    $("#QueryConditionTab3").text($("#QueryCondition").text());
+    $("#ResultTimeTab3").text($("#ResultTime").text());
+
+    // 確保 currentData 存在
+    if (!this.currentData) {
+      this.currentData = [];
+    }
+
+    // 統計發生地點
+    const stats = {};
+    let total = this.currentData.length;
+    this.currentData.forEach((item) => {
+      const location = item.location;
+      if (!stats[location]) {
+        stats[location] = 0;
+      }
+      stats[location]++;
+    });
+
+    // 轉換為表格資料 - 只顯示有資料的發生地點
+    const tableData = Object.keys(stats)
+      .filter((location) => stats[location] > 0)
+      .map((location) => {
+        const count = stats[location];
+        const percentage = total > 0 ? Math.round((count / total) * 100) : 0;
+        return {
+          location: location,
+          count: count,
+          percentage: percentage + "%",
+        };
+      });
+
+    // 初始化表格
+    $("#RegionStatsTable").datagrid({
+      data: tableData,
+      fit: true,
+      fitColumns: true,
+      singleSelect: true,
+      rownumbers: true,
+      columns: [
+        [
+          {
+            field: "location",
+            title: "災害地區",
             width: 200,
             align: "center",
           },
@@ -697,6 +770,24 @@ const EventMonitoringStatisticsPage = {
             String(now.getMinutes()).padStart(2, "0");
           $("#ResultTime").text(queryTime);
         }
+
+        // 設置行號列標題為"項次"
+        setTimeout(() => {
+          const $panel = $table.datagrid("getPanel");
+          const $headerRownumber = $panel
+            .find(".datagrid-header .datagrid-header-rownumber")
+            .first();
+
+          if ($headerRownumber.length > 0) {
+            const $cell = $headerRownumber.find(".datagrid-cell").first();
+            const $target = $cell.length > 0 ? $cell : $headerRownumber;
+
+            $target.empty().text("項次").css({
+              "text-align": "center",
+              "font-weight": "normal",
+            });
+          }
+        }, 50);
       },
     });
   },
