@@ -48,16 +48,46 @@ const EventMonitoringStatisticsPage = {
           </li>
         </ul>
         <div class="tab-content" style="padding: 15px 5px !important">
-          <form id="FormSearch" class="tab-pane active">
+          <form id="FormSearch" class="active">
             <div class="row search-content">
               <div class="col-md-12">
                 <div class="form-horizontal">
+                      <!-- 區域 -->
+                      <div class="form-group">
+                        <label class="col-sm-5 control-label">區域</label>
+                        <div class="col-sm-7">
+                          <select class="form-control" id="searchRegion">
+                            <option value="">全部</option>
+                            ${
+                              window.RegionalData
+                                ? window.RegionalData.regions
+                                    .map(
+                                      (region) =>
+                                        `<option value="${region.code}">${region.name}</option>`,
+                                    )
+                                    .join("")
+                                : ""
+                            }
+                          </select>
+                        </div>
+                      </div>
+
+                      <!-- 月份 -->
+                      <div class="form-group">
+                        <label class="col-sm-5 control-label">月份</label>
+                        <div class="col-sm-7">
+                          <input type="month" class="form-control" id="searchYearMonth" value="2024-01">
+                        </div>
+                      </div>
                 </div>
               </div>
             </div>
             <div class="row search-btns">
               <div class="col-md-12">
-              </div>
+                ${ButtonComponent.search()} 
+                ${ButtonComponent.clear()}
+                ${ButtonComponent.btnImport("btnImport", "匯入")}
+
             </div>
           </form>
         </div>
@@ -110,49 +140,51 @@ const EventMonitoringStatisticsPage = {
               </ul>
 
               <!-- Tab 內容 -->
-              <div class="tab-content" style="display:flex;flex-direction:column;width:100%;height:100%">
+              <div id="MEDA300RemindCont" class="tab-content" style="display:flex;flex-direction:column;width:100%;height:100%">
                 <!-- Tab 1: 事件統計表 -->
                 <div role="tabpanel" class="tab-pane active" id="tab1">
                   <div class="col-sm-12">
-                    <div>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                      <div>
+                        查詢條件：
+                        <span id="QueryCondition" style="color: #337ab7"></span>
+                      </div>
+                      <div>
+                        查詢時間：
+                        <span id="ResultTime" style="color: #666"></span>
+                      </div>
+                    </div>
+                    <div style="margin-bottom: 5px">
                       查詢結果：
                       <span id="ResultText" style="color: #5cb85c; font-weight: bold"></span>
                     </div>
-                    <div style="margin-bottom: 15px">
-                      查詢時間：
-                      <span id="ResultTime" style="color: #666"></span>
+                    <div class="btn-toolbar" style="margin-bottom: 10px;">
+                      ${ButtonComponent.btnImport("btnExport", "匯出")}
                     </div>
                     <!-- EasyUI DataGrid -->
                     <table id="${tableId}" class="EMSDataGrid"></table>
                   </div>
                 </div>
 
-                <!-- Tab 2: 處理分析 -->
+                <!-- Tab 2: 災類統計 -->
                 <div role="tabpanel" class="tab-pane" id="tab2">
                   <div class="col-sm-12">
-                    <h4>處理分析</h4>
-                    <div class="row">
-                      <div class="col-md-6">
-                        <div class="panel panel-info">
-                          <div class="panel-heading">
-                            <h5 class="panel-title">處理狀態分佈</h5>
-                          </div>
-                          <div class="panel-body">
-                            <canvas id="statusChart" width="300" height="200"></canvas>
-                          </div>
-                        </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                      <div>
+                        查詢條件：
+                        <span id="QueryConditionTab2" style="color: #337ab7"></span>
                       </div>
-                      <div class="col-md-6">
-                        <div class="panel panel-success">
-                          <div class="panel-heading">
-                            <h5 class="panel-title">響應時間分析</h5>
-                          </div>
-                          <div class="panel-body">
-                            <canvas id="responseTimeChart" width="300" height="200"></canvas>
-                          </div>
-                        </div>
+                      <div>
+                        查詢時間：
+                        <span id="ResultTimeTab2" style="color: #666"></span>
                       </div>
                     </div>
+                    <div style="margin-bottom: 5px">
+                      查詢結果：
+                      <span id="ResultTextTab2" style="color: #5cb85c; font-weight: bold"></span>
+                    </div>
+                    <!-- 災類統計表格 -->
+                    <table id="DisasterTypeStatsTable" class="EMSDataGrid"></table>
                   </div>
                 </div>
 
@@ -167,7 +199,8 @@ const EventMonitoringStatisticsPage = {
                             <h5 class="panel-title">事件趨勢圖</h5>
                           </div>
                           <div class="panel-body">
-                            <canvas id="trendChart" width="600" height="300"></canvas>
+                            <!-- 趨勢圖表內容已移除 -->
+                            <p class="text-muted">趨勢圖表功能開發中...</p>
                           </div>
                         </div>
                       </div>
@@ -187,8 +220,8 @@ const EventMonitoringStatisticsPage = {
   init: function () {
     this.BootTabsStructEvent();
     this.loadData();
-    this.initCharts();
     this.initTabEvents();
+    this.initSearchEvents();
   },
 
   // 初始化可收合面板事件
@@ -218,6 +251,7 @@ const EventMonitoringStatisticsPage = {
   initTabEvents: function () {
     const $content = $("#EventMonitoringStatisticsContent");
     const $tabItems = $content.find(".TAB_item a");
+    const self = window.EventMonitoringStatisticsPage;
 
     $tabItems.on("click", function (e) {
       e.preventDefault();
@@ -244,143 +278,323 @@ const EventMonitoringStatisticsPage = {
       const targetId = $(this).attr("href");
       $content.find(".tab-pane").removeClass("active");
       $content.find(targetId).addClass("active");
+
+      // 如果切換到 tab2，載入災類統計
+      if (targetId === "#tab2") {
+        if (typeof self.loadDisasterTypeStats === "function") {
+          self.loadDisasterTypeStats();
+        } else {
+          console.error("loadDisasterTypeStats not found on self", self);
+        }
+      }
+
+      // 確保查詢列表始終可見
+      $(".subpage-box").show();
+      $(".tab-struct.form-abs-left").show();
     });
   },
-  initCharts: function () {
-    // 處理狀態分佈圖 - 使用簡單的HTML顯示
-    const statusContainer = document.getElementById("statusChart");
-    if (statusContainer) {
-      statusContainer.innerHTML = `
-        <div class="chart-container">
-          <div class="chart-item">
-            <span class="chart-label">已完成</span>
-            <div class="progress">
-              <div class="progress-bar progress-bar-success" style="width: 45%">45%</div>
-            </div>
-          </div>
-          <div class="chart-item">
-            <span class="chart-label">處理中</span>
-            <div class="progress">
-              <div class="progress-bar progress-bar-warning" style="width: 25%">25%</div>
-            </div>
-          </div>
-          <div class="chart-item">
-            <span class="chart-label">待處理</span>
-            <div class="progress">
-              <div class="progress-bar progress-bar-danger" style="width: 30%">30%</div>
-            </div>
-          </div>
-        </div>
-      `;
-    }
 
-    // 響應時間分析圖 - 使用簡單的條形圖
-    const responseTimeContainer = document.getElementById("responseTimeChart");
-    if (responseTimeContainer) {
-      responseTimeContainer.innerHTML = `
-        <div class="chart-container">
-          <div class="chart-item">
-            <span class="chart-label">0-5分鐘</span>
-            <div class="progress">
-              <div class="progress-bar progress-bar-info" style="width: 24%">12件</div>
-            </div>
-          </div>
-          <div class="chart-item">
-            <span class="chart-label">5-10分鐘</span>
-            <div class="progress">
-              <div class="progress-bar progress-bar-info" style="width: 50%">25件</div>
-            </div>
-          </div>
-          <div class="chart-item">
-            <span class="chart-label">10-15分鐘</span>
-            <div class="progress">
-              <div class="progress-bar progress-bar-info" style="width: 36%">18件</div>
-            </div>
-          </div>
-          <div class="chart-item">
-            <span class="chart-label">15-30分鐘</span>
-            <div class="progress">
-              <div class="progress-bar progress-bar-info" style="width: 16%">8件</div>
-            </div>
-          </div>
-          <div class="chart-item">
-            <span class="chart-label">30分鐘以上</span>
-            <div class="progress">
-              <div class="progress-bar progress-bar-info" style="width: 6%">3件</div>
-            </div>
-          </div>
-        </div>
-      `;
-    }
+  // 初始化查詢事件
+  initSearchEvents: function () {
+    const self = this;
 
-    // 事件趨勢圖 - 使用簡單的表格顯示
-    const trendContainer = document.getElementById("trendChart");
-    if (trendContainer) {
-      trendContainer.innerHTML = `
-        <table class="table table-striped">
-          <thead>
-            <tr>
-              <th>月份</th>
-              <th>事件數量</th>
-              <th>趨勢</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr><td>1月</td><td>15</td><td><span class="text-muted">-</span></td></tr>
-            <tr><td>2月</td><td>22</td><td><i class="fa fa-arrow-up text-success"></i></td></tr>
-            <tr><td>3月</td><td>18</td><td><i class="fa fa-arrow-down text-danger"></i></td></tr>
-            <tr><td>4月</td><td>25</td><td><i class="fa fa-arrow-up text-success"></i></td></tr>
-            <tr><td>5月</td><td>30</td><td><i class="fa fa-arrow-up text-success"></i></td></tr>
-            <tr><td>6月</td><td>28</td><td><i class="fa fa-arrow-down text-danger"></i></td></tr>
-            <tr><td>7月</td><td>35</td><td><i class="fa fa-arrow-up text-success"></i></td></tr>
-            <tr><td>8月</td><td>32</td><td><i class="fa fa-arrow-down text-danger"></i></td></tr>
-            <tr><td>9月</td><td>28</td><td><i class="fa fa-arrow-down text-danger"></i></td></tr>
-            <tr><td>10月</td><td>24</td><td><i class="fa fa-arrow-down text-danger"></i></td></tr>
-            <tr><td>11月</td><td>20</td><td><i class="fa fa-arrow-down text-danger"></i></td></tr>
-            <tr><td>12月</td><td>18</td><td><i class="fa fa-arrow-down text-danger"></i></td></tr>
-          </tbody>
-        </table>
-      `;
+    // 查詢按鈕事件
+    $("#btnSearch").on("click", function () {
+      self.performSearch();
+    });
+
+    // 清除按鈕事件
+    $("#btnClear").on("click", function () {
+      $("#searchRegion").val("");
+      $("#searchYearMonth").val("2024-01");
+      self.loadData();
+      $("#QueryCondition").text("全部資料");
+    });
+
+    // 匯出按鈕事件
+    $("#btnExport").on("click", function () {
+      self.exportData();
+    });
+
+    // 匯入按鈕事件 - 移除動作
+    // $("#btnImport").on("click", function () {
+    //   self.importData();
+    // });
+  },
+
+  // 執行查詢
+  performSearch: function () {
+    const region = $("#searchRegion").val();
+    const yearMonth = $("#searchYearMonth").val();
+
+    // 記錄查詢時間
+    const now = new Date();
+    const queryTime =
+      now.getFullYear() +
+      "-" +
+      String(now.getMonth() + 1).padStart(2, "0") +
+      "-" +
+      String(now.getDate()).padStart(2, "0") +
+      " " +
+      String(now.getHours()).padStart(2, "0") +
+      ":" +
+      String(now.getMinutes()).padStart(2, "0");
+
+    // 更新查詢條件顯示
+    let conditionText = "";
+    if (region && window.RegionalData) {
+      const regionName =
+        window.RegionalData.regions.find((r) => r.code === region)?.name ||
+        region;
+      conditionText += `區域: ${regionName}`;
+    }
+    if (yearMonth) {
+      if (conditionText) conditionText += ", ";
+      conditionText += `月份: ${yearMonth}`;
+    }
+    if (!conditionText) conditionText = "全部資料";
+
+    $("#QueryCondition").text(conditionText);
+    $("#ResultTime").text(queryTime);
+
+    // 重新載入資料
+    this.loadData(region, yearMonth);
+
+    // 如果當前在 tab2，重新載入災類統計
+    if ($("#tab2").hasClass("active")) {
+      this.loadDisasterTypeStats();
     }
   },
-  loadData: function () {
+
+  // 匯出資料
+  exportData: function () {
+    const $table = $(`#${this.tableId}`);
+    const data = $table.datagrid("getData");
+
+    if (!data || !data.rows || data.rows.length === 0) {
+      alert("沒有資料可匯出");
+      return;
+    }
+
+    // 建立CSV內容
+    const headers = [
+      "發生時間",
+      "發生地點",
+      "事件名稱",
+      "事件摘要",
+      "傷亡人數",
+    ];
+    let csvContent = headers.join(",") + "\n";
+
+    data.rows.forEach((row) => {
+      const rowData = [
+        row.occurrenceTime || "",
+        row.location || "",
+        row.eventName || "",
+        row.summary || "",
+        row.casualties || 0,
+      ];
+      csvContent += rowData.map((field) => `"${field}"`).join(",") + "\n";
+    });
+
+    // 下載CSV檔案
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    link.setAttribute("href", url);
+    link.setAttribute(
+      "download",
+      `事件監控統計表_${new Date().toISOString().split("T")[0]}.csv`,
+    );
+    link.style.visibility = "hidden";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  },
+
+  // 匯入資料
+  importData: function () {
+    // 建立隱藏的檔案輸入元素
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = ".csv,.xlsx,.xls";
+    input.style.display = "none";
+
+    input.onchange = function (e) {
+      const file = e.target.files[0];
+      if (file) {
+        // 這裡可以添加檔案處理邏輯
+        alert(
+          `已選擇檔案: ${file.name}\n檔案大小: ${(file.size / 1024).toFixed(2)} KB\n\n匯入功能開發中...`,
+        );
+      }
+    };
+
+    // 觸發檔案選擇對話框
+    document.body.appendChild(input);
+    input.click();
+    document.body.removeChild(input);
+  },
+
+  // 載入災類統計
+  loadDisasterTypeStats: function () {
+    // 複製查詢條件和時間到 tab2
+    $("#QueryConditionTab2").text($("#QueryCondition").text());
+    $("#ResultTimeTab2").text($("#ResultTime").text());
+
+    // 災類名稱映射 - 使用 CommonData.js 中的資料
+    const disasterTypeMap = {};
+    if (window.DisasterData && window.DisasterData.disasterType) {
+      Object.values(window.DisasterData.disasterType).forEach((category) => {
+        category.forEach((item) => {
+          disasterTypeMap[item.code] = item.name;
+        });
+      });
+    }
+
+    // 確保 currentData 存在
+    if (!this.currentData) {
+      this.currentData = [];
+    }
+
+    // 統計災類
+    const stats = {};
+    let total = 0;
+    this.currentData.forEach((item) => {
+      const type = item.disasterType;
+      if (!stats[type]) {
+        stats[type] = 0;
+      }
+      stats[type]++;
+      total++;
+    });
+
+    // 轉換為表格資料
+    const tableData = Object.keys(stats).map((type) => {
+      const count = stats[type];
+      const percentage = total > 0 ? Math.round((count / total) * 100) : 0;
+      return {
+        disasterType: disasterTypeMap[type] || type,
+        count: count,
+        percentage: percentage + "%",
+      };
+    });
+
+    // 設定查詢結果
+    $("#ResultTextTab2").text(`共 ${tableData.length} 種災害類型`);
+
+    // 初始化表格
+    $("#DisasterTypeStatsTable").datagrid({
+      data: tableData,
+      fit: true,
+      fitColumns: true,
+      singleSelect: true,
+      rownumbers: true,
+      columns: [
+        [
+          {
+            field: "disasterType",
+            title: "災害種類",
+            width: 200,
+            align: "center",
+          },
+          {
+            field: "count",
+            title: "件數",
+            width: 100,
+            align: "center",
+          },
+          {
+            field: "percentage",
+            title: "百分比",
+            width: 100,
+            align: "center",
+          },
+        ],
+      ],
+    });
+  },
+  loadData: function (regionFilter, yearMonthFilter) {
     const $table = $(`#${this.tableId}`);
     const startTime = new Date().getTime();
 
     // 模擬資料載入
-    const mockData = [
+    let mockData = [
       {
-        eventId: "EVT001",
-        eventType: "火災",
-        location: "台北市中山區",
-        status: "已完成",
-        reportTime: "2024-01-15 14:30",
-        responseTime: "2024-01-15 14:45",
-        responseDuration: 15,
-        result: "成功",
+        eventName: "中山區火災事件",
+        occurrenceTime: "2024-01-15 14:30:00",
+        location: "台北市",
+        region: "01", // 台北區
+        summary: "中山區某大樓發生火災，已控制火勢",
+        disasterType: "F", // 火災
+        casualties: 0,
       },
       {
-        eventId: "EVT002",
-        eventType: "交通事故",
-        location: "新北市板橋區",
-        status: "處理中",
-        reportTime: "2024-01-15 16:20",
-        responseTime: "2024-01-15 16:35",
-        responseDuration: 15,
-        result: "進行中",
+        eventName: "板橋交通事故",
+        occurrenceTime: "2024-01-15 16:20:00",
+        location: "新北市",
+        region: "01", // 台北區
+        summary: "板橋區發生嚴重交通事故，多車相撞",
+        disasterType: "C", // 陸上交通事故
+        casualties: 3,
       },
       {
-        eventId: "EVT003",
-        eventType: "醫療緊急",
-        location: "台中市西區",
-        status: "已完成",
-        reportTime: "2024-01-15 18:10",
-        responseTime: "2024-01-15 18:18",
-        responseDuration: 8,
-        result: "成功",
+        eventName: "西區醫療緊急事件",
+        occurrenceTime: "2024-01-15 18:10:00",
+        location: "台中市",
+        region: "03", // 中區
+        summary: "台中西區發生醫療緊急事件，患者心臟驟停",
+        disasterType: "H", // 社會矚目事件
+        casualties: 1,
       },
-      // 更多模擬資料...
+      {
+        eventName: "桃園工業管線災害",
+        occurrenceTime: "2024-01-16 09:45:00",
+        location: "桃園市",
+        region: "02", // 北區
+        summary: "桃園中壢工業區發生管線破裂，造成局部停水",
+        disasterType: "M", // 工業管線災害
+        casualties: 0,
+      },
+      {
+        eventName: "高雄水災事件",
+        occurrenceTime: "2024-01-16 15:30:00",
+        location: "高雄市",
+        region: "05", // 高屏區
+        summary: "高雄三民區因豪雨造成積水災害",
+        disasterType: "W", // 水災
+        casualties: 2,
+      },
     ];
+
+    // 應用篩選條件
+    if (regionFilter) {
+      mockData = mockData.filter((item) => item.region === regionFilter);
+    }
+
+    if (yearMonthFilter) {
+      mockData = mockData.filter((item) => {
+        const itemDate = new Date(item.occurrenceTime);
+        const itemYearMonth = `${itemDate.getFullYear()}-${String(itemDate.getMonth() + 1).padStart(2, "0")}`;
+        return itemYearMonth === yearMonthFilter;
+      });
+    }
+
+    // 保存當前資料供災類統計使用
+    this.currentData = mockData;
+
+    // 初始化 EasyUI DataGrid
+    if (regionFilter) {
+      mockData = mockData.filter((item) => item.region === regionFilter);
+    }
+
+    if (yearMonthFilter) {
+      mockData = mockData.filter((item) => {
+        const itemDate = new Date(item.occurrenceTime);
+        const itemYearMonth = `${itemDate.getFullYear()}-${String(itemDate.getMonth() + 1).padStart(2, "0")}`;
+        return itemYearMonth === yearMonthFilter;
+      });
+    }
 
     // 初始化 EasyUI DataGrid
     $table.datagrid({
@@ -393,66 +607,52 @@ const EventMonitoringStatisticsPage = {
       pageSize: 20,
       columns: [
         [
-          { field: "eventId", title: "事件編號", width: 100, align: "center" },
           {
-            field: "eventType",
-            title: "事件類型",
-            width: 100,
-            align: "center",
-          },
-          { field: "location", title: "發生地點", width: 150, align: "left" },
-          {
-            field: "status",
-            title: "處理狀態",
-            width: 100,
+            field: "occurrenceTime",
+            title: "發生時間",
+            width: 150,
             align: "center",
             formatter: function (value) {
-              switch (value) {
-                case "已完成":
-                  return '<span style="color: green;">已完成</span>';
-                case "處理中":
-                  return '<span style="color: orange;">處理中</span>';
-                case "待處理":
-                  return '<span style="color: red;">待處理</span>';
-                default:
-                  return value;
-              }
+              if (!value) return "";
+              const date = new Date(value);
+              return (
+                date.getFullYear() +
+                "-" +
+                String(date.getMonth() + 1).padStart(2, "0") +
+                "-" +
+                String(date.getDate()).padStart(2, "0") +
+                " " +
+                String(date.getHours()).padStart(2, "0") +
+                ":" +
+                String(date.getMinutes()).padStart(2, "0")
+              );
             },
           },
           {
-            field: "reportTime",
-            title: "通報時間",
-            width: 150,
-            align: "center",
-          },
-          {
-            field: "responseTime",
-            title: "響應時間",
-            width: 150,
-            align: "center",
-          },
-          {
-            field: "responseDuration",
-            title: "響應時間(分鐘)",
+            field: "location",
+            title: "發生地點",
             width: 120,
             align: "center",
           },
           {
-            field: "result",
-            title: "處理結果",
+            field: "eventName",
+            title: "事件名稱",
+            width: 200,
+            align: "left",
+          },
+          {
+            field: "summary",
+            title: "事件摘要",
+            width: 300,
+            align: "left",
+          },
+          {
+            field: "casualties",
+            title: "傷亡人數",
             width: 100,
             align: "center",
             formatter: function (value) {
-              switch (value) {
-                case "成功":
-                  return '<span style="color: green;">成功</span>';
-                case "失敗":
-                  return '<span style="color: red;">失敗</span>';
-                case "進行中":
-                  return '<span style="color: blue;">進行中</span>';
-                default:
-                  return value;
-              }
+              return value > 0 ? `<span >${value}</span>` : "0";
             },
           },
         ],
@@ -462,7 +662,41 @@ const EventMonitoringStatisticsPage = {
         const duration = endTime - startTime;
 
         $("#ResultText").text(`共 ${data.total || data.rows.length} 筆資料`);
-        $("#ResultTime").text(`${duration} ms`);
+
+        // 初始化查詢條件顯示（只在第一次載入時）
+        if (!$("#QueryCondition").text()) {
+          const region = $("#searchRegion").val();
+          const yearMonth = $("#searchYearMonth").val();
+          let conditionText = "";
+          if (region && window.RegionalData) {
+            const regionName =
+              window.RegionalData.regions.find((r) => r.code === region)
+                ?.name || region;
+            conditionText += `區域: ${regionName}`;
+          }
+          if (yearMonth) {
+            if (conditionText) conditionText += ", ";
+            conditionText += `月份: ${yearMonth}`;
+          }
+          if (!conditionText) conditionText = "全部資料";
+          $("#QueryCondition").text(conditionText);
+        }
+
+        // 初始化查詢時間顯示（只在第一次載入時）
+        if (!$("#ResultTime").text()) {
+          const now = new Date();
+          const queryTime =
+            now.getFullYear() +
+            "-" +
+            String(now.getMonth() + 1).padStart(2, "0") +
+            "-" +
+            String(now.getDate()).padStart(2, "0") +
+            " " +
+            String(now.getHours()).padStart(2, "0") +
+            ":" +
+            String(now.getMinutes()).padStart(2, "0");
+          $("#ResultTime").text(queryTime);
+        }
       },
     });
   },
