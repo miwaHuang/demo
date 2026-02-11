@@ -57,7 +57,6 @@ const EventMonitoringStatisticsPage = {
                         <label class="col-sm-5 control-label">區域</label>
                         <div class="col-sm-7">
                           <select class="form-control" id="searchRegion">
-                            <option value="">全部</option>
                             ${
                               window.RegionalData
                                 ? window.RegionalData.regions
@@ -86,7 +85,7 @@ const EventMonitoringStatisticsPage = {
               <div class="col-md-12">
                 ${ButtonComponent.search()} 
                 ${ButtonComponent.clear()}
-                ${ButtonComponent.btnImport("btnImport", "匯入")}
+                ${ButtonComponent.btnImport("btnImport", "匯出")}
 
             </div>
           </form>
@@ -201,6 +200,24 @@ const EventMonitoringStatisticsPage = {
                     <table id="RegionStatsTable" class="EMSDataGrid"></table>
                   </div>
                 </div>
+
+                <!-- Tab 4: 災害與發生地點比較 -->
+                <div role="tabpanel" class="tab-pane" id="tab4">
+                  <div class="col-sm-12">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                      <div>
+                        查詢條件：
+                        <span id="QueryConditionTab4" style="color: #337ab7"></span>
+                      </div>
+                      <div>
+                        查詢時間：
+                        <span id="ResultTimeTab4" style="color: #666"></span>
+                      </div>
+                    </div>
+                    <!-- 災害與發生地點比較表格 -->
+                    <table id="DisasterLocationComparisonTable" class="EMSDataGrid"></table>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -213,7 +230,13 @@ const EventMonitoringStatisticsPage = {
   // 初始化頁面
   init: function () {
     this.BootTabsStructEvent();
-    this.loadData();
+    // 設置預設區域為第一筆
+    if (window.RegionalData && window.RegionalData.regions.length > 0) {
+      $("#searchRegion").val(window.RegionalData.regions[0].code);
+      this.loadData(window.RegionalData.regions[0].code);
+    } else {
+      this.loadData();
+    }
     this.initTabEvents();
     this.initSearchEvents();
   },
@@ -291,6 +314,18 @@ const EventMonitoringStatisticsPage = {
         }
       }
 
+      // 如果切換到 tab4，載入災害與發生地點比較
+      if (targetId === "#tab4") {
+        if (typeof self.loadDisasterLocationComparison === "function") {
+          self.loadDisasterLocationComparison();
+        } else {
+          console.error(
+            "loadDisasterLocationComparison not found on self",
+            self,
+          );
+        }
+      }
+
       // 確保查詢列表始終可見
       $(".subpage-box").show();
       $(".tab-struct.form-abs-left").show();
@@ -308,10 +343,20 @@ const EventMonitoringStatisticsPage = {
 
     // 清除按鈕事件
     $("#btnClear").on("click", function () {
-      $("#searchRegion").val("");
-      $("#searchYearMonth").val("2024-01");
-      self.loadData();
-      $("#QueryCondition").text("全部資料");
+      // 設置為第一筆區域
+      if (window.RegionalData && window.RegionalData.regions.length > 0) {
+        $("#searchRegion").val(window.RegionalData.regions[0].code);
+        $("#searchYearMonth").val("2024-01");
+        self.loadData(window.RegionalData.regions[0].code);
+        $("#QueryCondition").text(
+          `區域: ${window.RegionalData.regions[0].name}`,
+        );
+      } else {
+        $("#searchRegion").val("");
+        $("#searchYearMonth").val("2024-01");
+        self.loadData();
+        $("#QueryCondition").text("全部資料");
+      }
     });
 
     // 匯出按鈕事件
@@ -327,8 +372,18 @@ const EventMonitoringStatisticsPage = {
 
   // 執行查詢
   performSearch: function () {
-    const region = $("#searchRegion").val();
+    let region = $("#searchRegion").val();
     const yearMonth = $("#searchYearMonth").val();
+
+    // 如果沒有選取區域，預設為第一筆
+    if (
+      !region &&
+      window.RegionalData &&
+      window.RegionalData.regions.length > 0
+    ) {
+      region = window.RegionalData.regions[0].code;
+      $("#searchRegion").val(region);
+    }
 
     // 記錄查詢時間
     const now = new Date();
@@ -371,6 +426,11 @@ const EventMonitoringStatisticsPage = {
     // 如果當前在 tab3，重新載入地區統計
     if ($("#tab3").hasClass("active")) {
       this.loadRegionStats();
+    }
+
+    // 如果當前在 tab4，重新載入災害與發生地點比較
+    if ($("#tab4").hasClass("active")) {
+      this.loadDisasterLocationComparison();
     }
   },
 
@@ -518,6 +578,25 @@ const EventMonitoringStatisticsPage = {
           },
         ],
       ],
+      onLoadSuccess: function () {
+        // 設置行號列標題為"項次"
+        setTimeout(() => {
+          const $panel = $("#DisasterTypeStatsTable").datagrid("getPanel");
+          const $headerRownumber = $panel
+            .find(".datagrid-header .datagrid-header-rownumber")
+            .first();
+
+          if ($headerRownumber.length > 0) {
+            const $cell = $headerRownumber.find(".datagrid-cell").first();
+            const $target = $cell.length > 0 ? $cell : $headerRownumber;
+
+            $target.empty().text("項次").css({
+              "text-align": "center",
+              "font-weight": "normal",
+            });
+          }
+        }, 50);
+      },
     });
   },
 
@@ -544,17 +623,63 @@ const EventMonitoringStatisticsPage = {
     });
 
     // 轉換為表格資料 - 只顯示有資料的發生地點
-    const tableData = Object.keys(stats)
-      .filter((location) => stats[location] > 0)
-      .map((location) => {
-        const count = stats[location];
-        const percentage = total > 0 ? Math.round((count / total) * 100) : 0;
-        return {
-          location: location,
-          count: count,
-          percentage: percentage + "%",
-        };
+    let locationKeys = Object.keys(stats).filter(
+      (location) => stats[location] > 0,
+    );
+
+    // 按countyByRegion排序地點
+    if (
+      window.RegionalData &&
+      window.RegionalData.countyByRegion &&
+      window.RegionalData.regions
+    ) {
+      // 建立縣市到區域的映射
+      const countyToRegion = {};
+      Object.keys(window.RegionalData.countyByRegion).forEach((regionCode) => {
+        window.RegionalData.countyByRegion[regionCode].forEach((county) => {
+          countyToRegion[county.name] = regionCode;
+        });
       });
+
+      // 建立區域順序映射
+      const regionOrder = {};
+      window.RegionalData.regions.forEach((region, index) => {
+        regionOrder[region.code] = index;
+      });
+
+      // 自定義排序
+      locationKeys.sort((a, b) => {
+        const regionA = countyToRegion[a] || "99";
+        const regionB = countyToRegion[b] || "99";
+        const orderA =
+          regionOrder[regionA] !== undefined ? regionOrder[regionA] : 999;
+        const orderB =
+          regionOrder[regionB] !== undefined ? regionOrder[regionB] : 999;
+
+        if (orderA !== orderB) {
+          return orderA - orderB;
+        }
+
+        // 同區域內，按countyByRegion中的順序
+        const counties = window.RegionalData.countyByRegion[regionA] || [];
+        const indexA = counties.findIndex((c) => c.name === a);
+        const indexB = counties.findIndex((c) => c.name === b);
+        return indexA - indexB;
+      });
+    } else {
+      // 如果沒有RegionalData，按字母順序排序
+      locationKeys.sort();
+    }
+
+    const tableData = locationKeys.map((location) => {
+      const count = stats[location];
+      const percentage = total > 0 ? Math.round((count / total) * 100) : 0;
+      return {
+        location: location,
+        count: count,
+        percentage: percentage + "%",
+      };
+    });
 
     // 初始化表格
     $("#RegionStatsTable").datagrid({
@@ -585,6 +710,177 @@ const EventMonitoringStatisticsPage = {
           },
         ],
       ],
+      onLoadSuccess: function () {
+        // 設置行號列標題為"項次"
+        setTimeout(() => {
+          const $panel = $("#RegionStatsTable").datagrid("getPanel");
+          const $headerRownumber = $panel
+            .find(".datagrid-header .datagrid-header-rownumber")
+            .first();
+
+          if ($headerRownumber.length > 0) {
+            const $cell = $headerRownumber.find(".datagrid-cell").first();
+            const $target = $cell.length > 0 ? $cell : $headerRownumber;
+
+            $target.empty().text("項次").css({
+              "text-align": "center",
+              "font-weight": "normal",
+            });
+          }
+        }, 50);
+      },
+    });
+  },
+
+  // 載入災害與發生地點比較
+  loadDisasterLocationComparison: function () {
+    // 複製查詢條件和時間到 tab4
+    $("#QueryConditionTab4").text($("#QueryCondition").text());
+    $("#ResultTimeTab4").text($("#ResultTime").text());
+
+    // 確保 currentData 存在
+    if (!this.currentData) {
+      this.currentData = [];
+    }
+
+    // 獲取所有災害種類和地點
+    const disasterTypes = new Set();
+    const locations = new Set();
+
+    this.currentData.forEach((item) => {
+      disasterTypes.add(item.disasterType);
+      locations.add(item.location);
+    });
+
+    // 轉換為陣列並排序
+    const disasterTypeList = Array.from(disasterTypes).sort();
+    let locationList = Array.from(locations);
+
+    // 按countyByRegion排序地點
+    if (
+      window.RegionalData &&
+      window.RegionalData.countyByRegion &&
+      window.RegionalData.regions
+    ) {
+      // 建立縣市到區域的映射
+      const countyToRegion = {};
+      Object.keys(window.RegionalData.countyByRegion).forEach((regionCode) => {
+        window.RegionalData.countyByRegion[regionCode].forEach((county) => {
+          countyToRegion[county.name] = regionCode;
+        });
+      });
+
+      // 建立區域順序映射
+      const regionOrder = {};
+      window.RegionalData.regions.forEach((region, index) => {
+        regionOrder[region.code] = index;
+      });
+
+      // 自定義排序
+      locationList.sort((a, b) => {
+        const regionA = countyToRegion[a] || "99";
+        const regionB = countyToRegion[b] || "99";
+        const orderA =
+          regionOrder[regionA] !== undefined ? regionOrder[regionA] : 999;
+        const orderB =
+          regionOrder[regionB] !== undefined ? regionOrder[regionB] : 999;
+
+        if (orderA !== orderB) {
+          return orderA - orderB;
+        }
+
+        // 同區域內，按countyByRegion中的順序
+        const counties = window.RegionalData.countyByRegion[regionA] || [];
+        const indexA = counties.findIndex((c) => c.name === a);
+        const indexB = counties.findIndex((c) => c.name === b);
+        return indexA - indexB;
+      });
+    } else {
+      // 如果沒有RegionalData，按字母順序排序
+      locationList.sort();
+    }
+
+    // 建立交叉統計資料
+    const stats = {};
+    this.currentData.forEach((item) => {
+      const key = `${item.location}_${item.disasterType}`;
+      if (!stats[key]) {
+        stats[key] = 0;
+      }
+      stats[key]++;
+    });
+
+    // 獲取災害種類名稱映射
+    const disasterTypeMap = {};
+    if (window.DisasterData && window.DisasterData.disasterType) {
+      Object.values(window.DisasterData.disasterType).forEach((category) => {
+        category.forEach((item) => {
+          disasterTypeMap[item.code] = item.name;
+        });
+      });
+    }
+
+    // 建立表格資料
+    const tableData = locationList.map((location) => {
+      const row = { location: location };
+      disasterTypeList.forEach((disasterType) => {
+        const key = `${location}_${disasterType}`;
+        row[disasterType] = stats[key] || 0;
+      });
+      return row;
+    });
+
+    // 建立表格欄位
+    const columns = [
+      {
+        field: "location",
+        title: "地點",
+        width: 120,
+        align: "center",
+      },
+    ];
+
+    disasterTypeList.forEach((disasterType) => {
+      columns.push({
+        field: disasterType,
+        title: disasterTypeMap[disasterType] || disasterType,
+        width: 100,
+        align: "center",
+        formatter: function (value) {
+          return value > 0 ? value : "-";
+        },
+      });
+    });
+
+    // 初始化表格
+    $("#DisasterLocationComparisonTable").datagrid({
+      data: tableData,
+      fit: true,
+      fitColumns: true,
+      singleSelect: true,
+      rownumbers: true,
+      columns: [columns],
+      onLoadSuccess: function () {
+        // 設置行號列標題為"項次"
+        setTimeout(() => {
+          const $panel = $("#DisasterLocationComparisonTable").datagrid(
+            "getPanel",
+          );
+          const $headerRownumber = $panel
+            .find(".datagrid-header .datagrid-header-rownumber")
+            .first();
+
+          if ($headerRownumber.length > 0) {
+            const $cell = $headerRownumber.find(".datagrid-cell").first();
+            const $target = $cell.length > 0 ? $cell : $headerRownumber;
+
+            $target.empty().text("項次").css({
+              "text-align": "center",
+              "font-weight": "normal",
+            });
+          }
+        }, 50);
+      },
     });
   },
   loadData: function (regionFilter, yearMonthFilter) {
@@ -738,14 +1034,21 @@ const EventMonitoringStatisticsPage = {
 
         // 初始化查詢條件顯示（只在第一次載入時）
         if (!$("#QueryCondition").text()) {
+          let conditionText = "";
           const region = $("#searchRegion").val();
           const yearMonth = $("#searchYearMonth").val();
-          let conditionText = "";
           if (region && window.RegionalData) {
             const regionName =
               window.RegionalData.regions.find((r) => r.code === region)
                 ?.name || region;
             conditionText += `區域: ${regionName}`;
+          } else if (
+            window.RegionalData &&
+            window.RegionalData.regions.length > 0
+          ) {
+            // 如果沒有選取區域，預設為第一筆
+            const defaultRegion = window.RegionalData.regions[0];
+            conditionText += `區域: ${defaultRegion.name}`;
           }
           if (yearMonth) {
             if (conditionText) conditionText += ", ";
