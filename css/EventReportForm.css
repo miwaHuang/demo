@@ -106,6 +106,7 @@
   margin-bottom: 6px;
   font-weight: 600;
   display: block;
+  position: relative;
 }
 
 /* 美化form-control focus效果 */
@@ -128,6 +129,8 @@
 #reportModal .form-group label.required::before {
   content: "* ";
   color: #d9534f; /* Bootstrap danger */
+  position: absolute;
+  left: -8px;
 }
 
 /* 動態發生地樣式 */

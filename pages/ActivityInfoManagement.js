@@ -125,8 +125,8 @@ const ActivityInfoManagementPage = {
                         <label class="col-sm-5 control-label">活動辦理進度</label>
                         <div class="col-sm-7">
                           <select class="form-control" id="Q_ACTIVITY_STATUS" name="Q_ACTIVITY_STATUS">
-                            <option value="">全部</option>
-                            ${window.ActivityStatusData ? window.ActivityStatusData.map((s) => `<option value="${s.code}" ${s.code === "postponed" ? "selected" : ""}>${s.name}</option>`).join("") : ""}
+                            <option value="" selected>全部</option>
+                            ${window.ActivityStatusData ? window.ActivityStatusData.map((s) => `<option value="${s.code}">${s.name}</option>`).join("") : ""}
                           </select>
                         </div>
                       </div>                  

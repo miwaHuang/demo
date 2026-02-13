@@ -283,25 +283,25 @@ const EventReportForm = {
                           <legend>簡訊通報數</legend>
                           <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;">
                             <div class="form-group">
-                              <label>衛福部</label>
+                              <label class="required">衛福部</label>
                               <input type="number" class="form-control" name="MOH_SMS" value="0" min="0" ${
                                 mode === "view" ? "readonly" : ""
                               } />
                             </div>
                             <div class="form-group">
-                              <label>衛生局</label>
+                              <label  class="required">衛生局</label>
                               <input type="number" class="form-control" name="LOCAL_SMS" value="0" min="0" ${
                                 mode === "view" ? "readonly" : ""
                               } />
                             </div>
                             <div class="form-group">
-                              <label>責任醫院</label>
+                              <label class="required">責任醫院</label>
                               <input type="number" class="form-control" name="HOSPITAL_SMS" value="0" min="0" ${
                                 mode === "view" ? "readonly" : ""
                               } />
                             </div>
                             <div class="form-group">
-                              <label>指揮中心</label>
+                              <label class="required">指揮中心</label>
                               <input type="number" class="form-control" name="COMMAND_SMS" value="0" min="0" ${
                                 mode === "view" ? "readonly" : ""
                               } />
@@ -314,25 +314,25 @@ const EventReportForm = {
                           <legend>電話通報數</legend>
                           <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;">
                             <div class="form-group">
-                              <label>衛福部</label>
+                              <label class="required">衛福部</label>
                               <input type="number" class="form-control" name="MOH_PHONE" value="0" min="0" ${
                                 mode === "view" ? "readonly" : ""
                               } />
                             </div>
                             <div class="form-group">
-                              <label>衛生局</label>
+                              <label class="required">衛生局</label>
                               <input type="number" class="form-control" name="LOCAL_PHONE" value="0" min="0" ${
                                 mode === "view" ? "readonly" : ""
                               } />
                             </div>
                             <div class="form-group">
-                              <label>責任醫院</label>
+                              <label class="required">責任醫院</label>
                               <input type="number" class="form-control" name="HOSPITAL_PHONE" value="0" min="0" ${
                                 mode === "view" ? "readonly" : ""
                               } />
                             </div>
                             <div class="form-group">
-                              <label>指揮中心</label>
+                              <label class="required">指揮中心</label>
                               <input type="number" class="form-control" name="COMMAND_PHONE" value="0" min="0" ${
                                 mode === "view" ? "readonly" : ""
                               } />
@@ -360,35 +360,35 @@ const EventReportForm = {
                     <!-- 醫療檢傷人數 -->
                     <div style="display: grid; grid-template-columns: repeat(8, 1fr); gap: 4px;">
                       <div class="form-group">
-                        <label>一級</label>
+                        <label >一級</label>
                         <input type="number" class="form-control emc-input" name="EMC_TRIAGE1" value="0" min="0" readonly />
                       </div>
                       <div class="form-group">
-                        <label>二級</label>
+                        <label >二級</label>
                         <input type="number" class="form-control emc-input" name="EMC_TRIAGE2" value="0" min="0" readonly />
                       </div>
                       <div class="form-group">
-                        <label>三級</label>
+                        <label >三級</label>
                         <input type="number" class="form-control emc-input" name="EMC_TRIAGE3" value="0" min="0" readonly />
                       </div>
                       <div class="form-group">
-                        <label>四級</label>
+                        <label >四級</label>
                         <input type="number" class="form-control emc-input" name="EMC_TRIAGE4" value="0" min="0" readonly />
                       </div>
                       <div class="form-group">
-                        <label>五級</label>
+                        <label >五級</label>
                         <input type="number" class="form-control emc-input" name="EMC_TRIAGE5" value="0" min="0" readonly />
                       </div>
                       <div class="form-group">
-                        <label>未填</label>
+                        <label >未填</label>
                         <input type="number" class="form-control emc-input" name="EMC_UNFILLED" value="0" min="0" readonly />
                       </div>
                       <div class="form-group">
-                        <label>總數</label>
+                        <label>檢傷總人數</label>
                         <input type="number" class="form-control" name="EMC_TOTAL_ADMITTED" value="0" min="0" readonly />
                       </div>
                       <div class="form-group">
-                        <label>死亡</label>
+                        <label >死亡</label>
                         <input type="number" class="form-control" name="EMC_TOTAL_DEATH" value="0" min="0" readonly />
                       </div>
                     </div>
@@ -398,7 +398,7 @@ const EventReportForm = {
                     <div class="row">
                       <div class="col-md-4">
                         <div class="form-group">
-                          <label style="color:var(--danger)">死亡</label>
+                          <label class="required" style="color:var(--danger)">死亡</label>
                           <input type="number" class="form-control" name="NEWS_DEATH" value="0" min="0" style="color:var(--danger)" ${
                             mode === "view" ? "readonly" : ""
                           } />
@@ -406,7 +406,7 @@ const EventReportForm = {
                       </div>
                       <div class="col-md-4">
                         <div class="form-group">
-                          <label>傷病</label>
+                          <label class="required">傷病</label>
                           <input type="number" class="form-control" name="NEWS_INJURY" value="0" min="0" ${
                             mode === "view" ? "readonly" : ""
                           } />
@@ -414,7 +414,7 @@ const EventReportForm = {
                       </div>
                       <div class="col-md-4">
                         <div class="form-group">
-                          <label>失蹤</label>
+                          <label class="required" >失蹤</label>
                           <input type="number" class="form-control" name="NEWS_MISSING" value="0" min="0" ${
                             mode === "view" ? "readonly" : ""
                           } />

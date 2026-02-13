@@ -201,6 +201,18 @@ const EventReportManagementPage = {
                         </div>
                       </div>
 
+                      <!-- 事件分級 -->
+                      <div class="form-group">
+                        <label class="col-sm-5 control-label">事件分級</label>
+                        <div class="col-sm-7">
+                          <select class="form-control" id="Q_EVENT_CATEGORY" name="Q_EVENT_CATEGORY">
+                            <option value="">全部監看事件(含應變)</option>
+                            <option value="MONITORING_ONLY">僅監看事件</option>
+                            <option value="RESPONSE">應變事件</option>
+                          </select>
+                        </div>
+                      </div>
+
                       <!-- 是否刪除 -->
                       <div class="form-group">
                         <label class="col-sm-5 control-label">是否刪除</label>
@@ -358,7 +370,19 @@ const EventReportManagementPage = {
     $("#QueryText").text(queryTextParts.join("、") || "無特定條件");
 
     // 模擬查詢資料（實際應該是 AJAX 呼叫）
-    const sampleData = this.generateSampleData();
+    let sampleData = this.generateSampleData();
+
+    // 根據事件分級篩選
+    if (formData.Q_EVENT_CATEGORY) {
+      if (formData.Q_EVENT_CATEGORY === "MONITORING_ONLY") {
+        // 僅監看事件：IS_EMERGENCY_RESPONSE = false
+        sampleData = sampleData.filter(item => item.IS_EMERGENCY_RESPONSE === false);
+      } else if (formData.Q_EVENT_CATEGORY === "RESPONSE") {
+        // 應變事件：IS_EMERGENCY_RESPONSE = true
+        sampleData = sampleData.filter(item => item.IS_EMERGENCY_RESPONSE === true);
+      }
+      // 全部監看事件(含應變)：不篩選，顯示所有資料
+    }
 
     // 儲存資料到實例變數中
     this.allData = sampleData;
@@ -497,13 +521,9 @@ const EventReportManagementPage = {
               colspan: 2,
             },
             {
-              title: "醫療檢傷人數",
-              colspan: 7,
-            },
-            {
               field: "DEATH_COUNT",
               title: "死亡",
-              width: 40,
+              width: 50,
               align: "center",
               rowspan: 2,
               formatter: function (value, row, index) {
@@ -512,6 +532,10 @@ const EventReportManagementPage = {
                 }
                 return "-";
               },
+            },
+            {
+              title: "醫療檢傷人數",
+              colspan: 7,
             },
             {
               title: "事件傷亡人數",
@@ -555,6 +579,20 @@ const EventReportManagementPage = {
                   );
                 } else {
                   return "<span>否</span>";
+                }
+              },
+            },
+            {
+              field: "IS_EMERGENCY_RESPONSE",
+              title: "事件<br/>分級",
+              width: 60,
+              align: "center",
+              rowspan: 2,
+              formatter: function (value, row, index) {
+                if (value === true) {
+                  return '<span style="color: red; font-weight: bold;">應變</span>';
+                } else {
+                  return '<span style="color: green;">監看</span>';
                 }
               },
             },
@@ -894,8 +932,9 @@ const EventReportManagementPage = {
     return [
       {
         COUNTY_LABEL: "台北市",
+        REGION_LABEL: "台北區",
         HAPPEN_TIME_LABEL: "2026-01-05 10:30",
-        DISASTER_TYPE: "地震",
+        DISASTER_TYPE: "震災（含土壤液化）",
         DISASTER_NO_LABEL: "E1150105-001",
         DISASTER_NAME: "台北市信義區規模6.2地震災害緊急救護應變事件處理",
         MSG_SOURCE: "EMS",
@@ -923,11 +962,13 @@ const EventReportManagementPage = {
         DELETE_REASON: "",
         REPORTER: "王小明",
         CONTACT_PHONE: "0912345678",
+        IS_EMERGENCY_RESPONSE: true,
       },
       {
         COUNTY_LABEL: "新北市",
+        REGION_LABEL: "台北區",
         HAPPEN_TIME_LABEL: "2026-01-04 15:45",
-        DISASTER_TYPE: "交通事故",
+        DISASTER_TYPE: "陸上交通事故",
         DISASTER_NO_LABEL: "C1150104-002",
         DISASTER_NAME: "新北市板橋區重大車禍事件",
         MSG_SOURCE: "消防局救護派遣系統",
@@ -955,13 +996,15 @@ const EventReportManagementPage = {
         DELETE_REASON: "資料重複",
         REPORTER: "林美玉",
         CONTACT_PHONE: "0987654321",
+        IS_EMERGENCY_RESPONSE: true,
       },
       {
         COUNTY_LABEL: "新北市",
+        REGION_LABEL: "台北區",
         HAPPEN_TIME_LABEL: "2026-01-04 15:45",
-        DISASTER_TYPE: "交通事故",
+        DISASTER_TYPE: "陸上交通事故",
         DISASTER_NO_LABEL: "C1150104-002",
-        DISASTER_NAME: "新北市板橋區重大車禍事件",
+        DISASTER_NAME: "新北市板橋區重大車禍事件123",
         MSG_SOURCE: "EMS",
         MSG_CREATE_TIME: "2026-01-04 15:50",
         TRIAGE_LEVEL_1: 1,
@@ -987,11 +1030,13 @@ const EventReportManagementPage = {
         DELETE_REASON: "資料重複",
         REPORTER: "張志強",
         CONTACT_PHONE: "0955123456",
+        IS_EMERGENCY_RESPONSE: true,
       },
       {
         COUNTY_LABEL: "台中市",
+        REGION_LABEL: "中區",
         HAPPEN_TIME_LABEL: "2026-01-03 09:00",
-        DISASTER_TYPE: "演習",
+        DISASTER_TYPE: "群眾聚集",
         DISASTER_NO_LABEL: "G1150103-001",
         DISASTER_NAME: "台中市大型活動救護演習",
         MSG_SOURCE: "消防局LINE",
@@ -1017,9 +1062,11 @@ const EventReportManagementPage = {
         COMMAND_PHONE: 0,
         REPORTER: "李大仁",
         CONTACT_PHONE: "0911223344",
+        IS_EMERGENCY_RESPONSE: false,
       },
       {
         COUNTY_LABEL: "高雄市",
+        REGION_LABEL: "高屏區",
         HAPPEN_TIME_LABEL: "2026-01-02 23:15",
         DISASTER_TYPE: "火災",
         DISASTER_NO_LABEL: "F1150102-003",
@@ -1049,9 +1096,11 @@ const EventReportManagementPage = {
         DELETE_REASON: "",
         REPORTER: "陳美華",
         CONTACT_PHONE: "0933445566",
+        IS_EMERGENCY_RESPONSE: true,
       },
       {
         COUNTY_LABEL: "桃園市",
+        REGION_LABEL: "北區",
         HAPPEN_TIME_LABEL: "2026-01-01 18:20",
         DISASTER_TYPE: "寒害",
         DISASTER_NO_LABEL: "R1150101-001",
@@ -1081,9 +1130,11 @@ const EventReportManagementPage = {
         DELETE_REASON: "",
         REPORTER: "吳俊賢",
         CONTACT_PHONE: "0977889900",
+        IS_EMERGENCY_RESPONSE: true,
       },
       {
         COUNTY_LABEL: "新竹市",
+        REGION_LABEL: "北區",
         HAPPEN_TIME_LABEL: "2025-12-30 08:45",
         DISASTER_TYPE: "火災",
         DISASTER_NO_LABEL: "F1141230-002",
@@ -1111,9 +1162,11 @@ const EventReportManagementPage = {
         COMMAND_PHONE: 1,
         REPORTER: "周怡君",
         CONTACT_PHONE: "0922113344",
+        IS_EMERGENCY_RESPONSE: true,
       },
       {
         COUNTY_LABEL: "金門縣",
+        REGION_LABEL: "台北區",
         HAPPEN_TIME_LABEL: "2026-01-12 14:00",
         DISASTER_TYPE: "火災",
         DISASTER_NO_LABEL: "F1150112-001",
@@ -1140,11 +1193,13 @@ const EventReportManagementPage = {
         HOSPITAL_PHONE: 1,
         COMMAND_PHONE: 1,
         REPORTER: "許志明",
+        IS_EMERGENCY_RESPONSE: false,
       },
       {
         COUNTY_LABEL: "嘉義市",
+        REGION_LABEL: "南區",
         HAPPEN_TIME_LABEL: "2025-12-28 16:20",
-        DISASTER_TYPE: "交通事故",
+        DISASTER_TYPE: "陸上交通事故",
         DISASTER_NO_LABEL: "C1141228-001",
         DISASTER_NAME: "嘉義市東區機車連環車禍",
         MSG_SOURCE: "EMS",
@@ -1169,9 +1224,11 @@ const EventReportManagementPage = {
         HOSPITAL_PHONE: 1,
         COMMAND_PHONE: 1,
         REPORTER: "黃子軒",
+        IS_EMERGENCY_RESPONSE: false,
       },
       {
         COUNTY_LABEL: "彰化縣",
+        REGION_LABEL: "中區",
         HAPPEN_TIME_LABEL: "2025-12-27 11:30",
         DISASTER_TYPE: "火災",
         DISASTER_NO_LABEL: "F1141227-002",
@@ -1198,11 +1255,13 @@ const EventReportManagementPage = {
         HOSPITAL_PHONE: 1,
         COMMAND_PHONE: 1,
         REPORTER: "簡佩珊",
+        IS_EMERGENCY_RESPONSE: false,
       },
       {
         COUNTY_LABEL: "苗栗縣",
+        REGION_LABEL: "北區",
         HAPPEN_TIME_LABEL: "2025-12-26 08:15",
-        DISASTER_TYPE: "地震",
+        DISASTER_TYPE: "震災（含土壤液化）",
         DISASTER_NO_LABEL: "E1141226-001",
         DISASTER_NAME: "苗栗縣頭份市地震災害",
         MSG_SOURCE: "EMS",
@@ -1227,11 +1286,13 @@ const EventReportManagementPage = {
         HOSPITAL_PHONE: 1,
         COMMAND_PHONE: 1,
         REPORTER: "林信宏",
+        IS_EMERGENCY_RESPONSE: false,
       },
       {
         COUNTY_LABEL: "花蓮縣",
+        REGION_LABEL: "東區",
         HAPPEN_TIME_LABEL: "2025-12-25 13:45",
-        DISASTER_TYPE: "交通事故",
+        DISASTER_TYPE: "陸上交通事故",
         DISASTER_NO_LABEL: "C1141225-003",
         DISASTER_NAME: "花蓮縣花蓮市遊覽車翻覆事故",
         MSG_SOURCE: "EMS",
@@ -1255,11 +1316,13 @@ const EventReportManagementPage = {
         BUREAU_PHONE: 2,
         HOSPITAL_PHONE: 2,
         COMMAND_PHONE: 2,
+        IS_EMERGENCY_RESPONSE: true,
       },
       {
         COUNTY_LABEL: "屏東縣",
+        REGION_LABEL: "高屏區",
         HAPPEN_TIME_LABEL: "2025-12-24 10:00",
-        DISASTER_TYPE: "演習",
+        DISASTER_TYPE: "群眾聚集",
         DISASTER_NO_LABEL: "G1141224-001",
         DISASTER_NAME: "屏東縣大規模災害演練",
         MSG_SOURCE: "網路新聞",
@@ -1283,9 +1346,11 @@ const EventReportManagementPage = {
         BUREAU_PHONE: 0,
         HOSPITAL_PHONE: 0,
         COMMAND_PHONE: 0,
+        IS_EMERGENCY_RESPONSE: false,
       },
       {
         COUNTY_LABEL: "台東縣",
+        REGION_LABEL: "東區",
         HAPPEN_TIME_LABEL: "2025-12-23 19:30",
         DISASTER_TYPE: "寒害",
         DISASTER_NO_LABEL: "R1141223-001",
@@ -1311,11 +1376,13 @@ const EventReportManagementPage = {
         BUREAU_PHONE: 1,
         HOSPITAL_PHONE: 1,
         COMMAND_PHONE: 1,
+        IS_EMERGENCY_RESPONSE: false,
       },
       {
         COUNTY_LABEL: "南投縣",
+        REGION_LABEL: "中區",
         HAPPEN_TIME_LABEL: "2025-12-22 14:50",
-        DISASTER_TYPE: "地震",
+        DISASTER_TYPE: "震災（含土壤液化）",
         DISASTER_NO_LABEL: "E1141222-002",
         DISASTER_NAME: "南投縣埔里鎮地震事件",
         MSG_SOURCE: "網路新聞",
@@ -1339,11 +1406,13 @@ const EventReportManagementPage = {
         BUREAU_PHONE: 1,
         HOSPITAL_PHONE: 1,
         COMMAND_PHONE: 1,
+        IS_EMERGENCY_RESPONSE: true,
       },
       {
         COUNTY_LABEL: "雲林縣",
+        REGION_LABEL: "南區",
         HAPPEN_TIME_LABEL: "2025-12-21 07:40",
-        DISASTER_TYPE: "交通事故",
+        DISASTER_TYPE: "陸上交通事故",
         DISASTER_NO_LABEL: "C1141221-001",
         DISASTER_NAME: "雲林縣斗六市重大車禍",
         MSG_SOURCE: "EMS",
@@ -1367,9 +1436,11 @@ const EventReportManagementPage = {
         BUREAU_PHONE: 1,
         HOSPITAL_PHONE: 1,
         COMMAND_PHONE: 1,
+        IS_EMERGENCY_RESPONSE: false,
       },
       {
         COUNTY_LABEL: "基隆市",
+        REGION_LABEL: "台北區",
         HAPPEN_TIME_LABEL: "2025-12-20 21:15",
         DISASTER_TYPE: "火災",
         DISASTER_NO_LABEL: "F1141220-003",
@@ -1395,11 +1466,13 @@ const EventReportManagementPage = {
         BUREAU_PHONE: 1,
         HOSPITAL_PHONE: 1,
         COMMAND_PHONE: 2,
+        IS_EMERGENCY_RESPONSE: true,
       },
       {
         COUNTY_LABEL: "新竹縣",
+        REGION_LABEL: "北區",
         HAPPEN_TIME_LABEL: "2025-12-19 09:30",
-        DISASTER_TYPE: "其他",
+        DISASTER_TYPE: "其他人為技術災害",
         DISASTER_NO_LABEL: "G1141219-002",
         DISASTER_NAME: "新竹縣竹北市緊急救護測試",
         MSG_SOURCE: "EMS",
@@ -1423,11 +1496,13 @@ const EventReportManagementPage = {
         BUREAU_PHONE: 0,
         HOSPITAL_PHONE: 0,
         COMMAND_PHONE: 0,
+        IS_EMERGENCY_RESPONSE: false,
       },
       {
         COUNTY_LABEL: "澎湖縣",
+        REGION_LABEL: "高屏區",
         HAPPEN_TIME_LABEL: "2025-12-18 15:20",
-        DISASTER_TYPE: "交通事故",
+        DISASTER_TYPE: "陸上交通事故",
         DISASTER_NO_LABEL: "C1141218-001",
         DISASTER_NAME: "澎湖縣馬公市港區交通事故",
         MSG_SOURCE: "網路新聞",
@@ -1451,11 +1526,13 @@ const EventReportManagementPage = {
         BUREAU_PHONE: 1,
         HOSPITAL_PHONE: 1,
         COMMAND_PHONE: 1,
+        IS_EMERGENCY_RESPONSE: false,
       },
       {
         COUNTY_LABEL: "台北市",
+        REGION_LABEL: "台北區",
         HAPPEN_TIME_LABEL: "2025-12-17 12:10",
-        DISASTER_TYPE: "地震",
+        DISASTER_TYPE: "震災（含土壤液化）",
         DISASTER_NO_LABEL: "E1141217-002",
         DISASTER_NAME: "台北市大安區地震",
         MSG_SOURCE: "EMS",
@@ -1479,6 +1556,7 @@ const EventReportManagementPage = {
         BUREAU_PHONE: 2,
         HOSPITAL_PHONE: 2,
         COMMAND_PHONE: 1,
+        IS_EMERGENCY_RESPONSE: true,
       },
     ];
   },

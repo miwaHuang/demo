@@ -57,6 +57,7 @@ const EventMonitoringStatisticsPage = {
                         <label class="col-sm-5 control-label">區域</label>
                         <div class="col-sm-7">
                           <select class="form-control" id="searchRegion">
+                            <option value="" selected>全部</option>
                             ${
                               window.RegionalData
                                 ? window.RegionalData.regions
@@ -123,9 +124,9 @@ const EventMonitoringStatisticsPage = {
                   </a>
                 </li>
                 <li class="TAB_item next">
-                  <a aria-expanded="false" data-toggle="tab" title="災害與發生地點比較" role="tab" id="TrendChartTab" href="#tab4">
+                  <a aria-expanded="false" data-toggle="tab" title="災類與發生地比較" role="tab" id="TrendChartTab" href="#tab4">
                     <span class="font-16 text">
-                      災害與發生地點比較
+                      災類與發生地比較
                     </span>
                   </a>
                 </li>
@@ -201,7 +202,7 @@ const EventMonitoringStatisticsPage = {
                   </div>
                 </div>
 
-                <!-- Tab 4: 災害與發生地點比較 -->
+                <!-- Tab 4: 災類與發生地區比較 -->
                 <div role="tabpanel" class="tab-pane" id="tab4">
                   <div class="col-sm-12">
                     <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -214,7 +215,7 @@ const EventMonitoringStatisticsPage = {
                         <span id="ResultTimeTab4" style="color: #666"></span>
                       </div>
                     </div>
-                    <!-- 災害與發生地點比較表格 -->
+                    <!-- 災類與發生地區比較表格 -->
                     <table id="DisasterLocationComparisonTable" class="EMSDataGrid"></table>
                   </div>
                 </div>
@@ -230,13 +231,9 @@ const EventMonitoringStatisticsPage = {
   // 初始化頁面
   init: function () {
     this.BootTabsStructEvent();
-    // 設置預設區域為第一筆
-    if (window.RegionalData && window.RegionalData.regions.length > 0) {
-      $("#searchRegion").val(window.RegionalData.regions[0].code);
-      this.loadData(window.RegionalData.regions[0].code);
-    } else {
-      this.loadData();
-    }
+    // 設置預設區域為全部
+    $("#searchRegion").val("");
+    this.loadData();
     this.initTabEvents();
     this.initSearchEvents();
   },
@@ -314,7 +311,7 @@ const EventMonitoringStatisticsPage = {
         }
       }
 
-      // 如果切換到 tab4，載入災害與發生地點比較
+      // 如果切換到 tab4，載入災類與發生地區比較
       if (targetId === "#tab4") {
         if (typeof self.loadDisasterLocationComparison === "function") {
           self.loadDisasterLocationComparison();
@@ -343,20 +340,11 @@ const EventMonitoringStatisticsPage = {
 
     // 清除按鈕事件
     $("#btnClear").on("click", function () {
-      // 設置為第一筆區域
-      if (window.RegionalData && window.RegionalData.regions.length > 0) {
-        $("#searchRegion").val(window.RegionalData.regions[0].code);
-        $("#searchYearMonth").val("2024-01");
-        self.loadData(window.RegionalData.regions[0].code);
-        $("#QueryCondition").text(
-          `區域: ${window.RegionalData.regions[0].name}`,
-        );
-      } else {
-        $("#searchRegion").val("");
-        $("#searchYearMonth").val("2024-01");
-        self.loadData();
-        $("#QueryCondition").text("全部資料");
-      }
+      // 設置為全部區域
+      $("#searchRegion").val("");
+      $("#searchYearMonth").val("2024-01");
+      self.loadData();
+      $("#QueryCondition").text("區域: 全部");
     });
 
     // 匯出按鈕事件
@@ -374,16 +362,6 @@ const EventMonitoringStatisticsPage = {
   performSearch: function () {
     let region = $("#searchRegion").val();
     const yearMonth = $("#searchYearMonth").val();
-
-    // 如果沒有選取區域，預設為第一筆
-    if (
-      !region &&
-      window.RegionalData &&
-      window.RegionalData.regions.length > 0
-    ) {
-      region = window.RegionalData.regions[0].code;
-      $("#searchRegion").val(region);
-    }
 
     // 記錄查詢時間
     const now = new Date();
@@ -405,6 +383,8 @@ const EventMonitoringStatisticsPage = {
         window.RegionalData.regions.find((r) => r.code === region)?.name ||
         region;
       conditionText += `區域: ${regionName}`;
+    } else {
+      conditionText += "區域: 全部";
     }
     if (yearMonth) {
       if (conditionText) conditionText += ", ";
@@ -428,7 +408,7 @@ const EventMonitoringStatisticsPage = {
       this.loadRegionStats();
     }
 
-    // 如果當前在 tab4，重新載入災害與發生地點比較
+    // 如果當前在 tab4，重新載入災類與發生地區比較
     if ($("#tab4").hasClass("active")) {
       this.loadDisasterLocationComparison();
     }
@@ -445,13 +425,7 @@ const EventMonitoringStatisticsPage = {
     }
 
     // 建立CSV內容
-    const headers = [
-      "發生時間",
-      "發生地點",
-      "事件名稱",
-      "事件摘要",
-      "傷亡人數",
-    ];
+    const headers = ["發生時間", "發生地", "事件名稱", "事件摘要", "傷亡人數"];
     let csvContent = headers.join(",") + "\n";
 
     data.rows.forEach((row) => {
@@ -692,7 +666,7 @@ const EventMonitoringStatisticsPage = {
         [
           {
             field: "location",
-            title: "災害地區",
+            title: "災害發生地",
             width: 200,
             align: "center",
           },
@@ -834,7 +808,7 @@ const EventMonitoringStatisticsPage = {
     const columns = [
       {
         field: "location",
-        title: "地點",
+        title: "發生地",
         width: 120,
         align: "center",
       },
@@ -953,19 +927,6 @@ const EventMonitoringStatisticsPage = {
     this.currentData = mockData;
 
     // 初始化 EasyUI DataGrid
-    if (regionFilter) {
-      mockData = mockData.filter((item) => item.region === regionFilter);
-    }
-
-    if (yearMonthFilter) {
-      mockData = mockData.filter((item) => {
-        const itemDate = new Date(item.occurrenceTime);
-        const itemYearMonth = `${itemDate.getFullYear()}-${String(itemDate.getMonth() + 1).padStart(2, "0")}`;
-        return itemYearMonth === yearMonthFilter;
-      });
-    }
-
-    // 初始化 EasyUI DataGrid
     $table.datagrid({
       data: mockData,
       fit: true,
@@ -976,6 +937,19 @@ const EventMonitoringStatisticsPage = {
       pageSize: 20,
       columns: [
         [
+          {
+            field: "region",
+            title: "區域",
+            width: 100,
+            align: "center",
+            formatter: function (value) {
+              if (!value || !window.RegionalData) return "";
+              const region = window.RegionalData.regions.find(
+                (r) => r.code === value,
+              );
+              return region ? region.name : value;
+            },
+          },
           {
             field: "occurrenceTime",
             title: "發生時間",
@@ -999,7 +973,7 @@ const EventMonitoringStatisticsPage = {
           },
           {
             field: "location",
-            title: "發生地點",
+            title: "發生地",
             width: 120,
             align: "center",
           },
@@ -1042,13 +1016,8 @@ const EventMonitoringStatisticsPage = {
               window.RegionalData.regions.find((r) => r.code === region)
                 ?.name || region;
             conditionText += `區域: ${regionName}`;
-          } else if (
-            window.RegionalData &&
-            window.RegionalData.regions.length > 0
-          ) {
-            // 如果沒有選取區域，預設為第一筆
-            const defaultRegion = window.RegionalData.regions[0];
-            conditionText += `區域: ${defaultRegion.name}`;
+          } else {
+            conditionText += "區域: 全部";
           }
           if (yearMonth) {
             if (conditionText) conditionText += ", ";
