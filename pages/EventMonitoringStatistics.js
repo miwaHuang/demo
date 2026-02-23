@@ -72,11 +72,19 @@ const EventMonitoringStatisticsPage = {
                         </div>
                       </div>
 
-                      <!-- 月份 -->
+                      <!-- 月份起 -->
                       <div class="form-group">
-                        <label class="col-sm-5 control-label">月份</label>
+                        <label class="col-sm-5 control-label">月份(起)</label>
                         <div class="col-sm-7">
-                          <input type="month" class="form-control" id="searchYearMonth" value="2024-01">
+                          <input type="month" class="form-control" id="searchYearMonthStart" value="2024-01">
+                        </div>
+                      </div>
+
+                      <!-- 月份迄 -->
+                      <div class="form-group">
+                        <label class="col-sm-5 control-label">月份(迄)</label>
+                        <div class="col-sm-7">
+                          <input type="month" class="form-control" id="searchYearMonthEnd" value="2024-01">
                         </div>
                       </div>
                 </div>
@@ -219,6 +227,24 @@ const EventMonitoringStatisticsPage = {
                     <table id="DisasterLocationComparisonTable" class="EMSDataGrid"></table>
                   </div>
                 </div>
+
+                <!-- Tab 5: 監看記錄 -->
+                <div role="tabpanel" class="tab-pane" id="tab5">
+                  <div class="col-sm-12">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                      <div>
+                        查詢條件：
+                        <span id="QueryConditionTab5" style="color: #337ab7"></span>
+                      </div>
+                      <div>
+                        查詢時間：
+                        <span id="ResultTimeTab5" style="color: #666"></span>
+                      </div>
+                    </div>
+                    <!-- 監看記錄表格 -->
+                    <table id="MonitoringRecordsTable" class="EMSDataGrid"></table>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -323,6 +349,15 @@ const EventMonitoringStatisticsPage = {
         }
       }
 
+      // 如果切換到 tab5，載入監看記錄
+      if (targetId === "#tab5") {
+        if (typeof self.loadMonitoringRecords === "function") {
+          self.loadMonitoringRecords();
+        } else {
+          console.error("loadMonitoringRecords not found on self", self);
+        }
+      }
+
       // 確保查詢列表始終可見
       $(".subpage-box").show();
       $(".tab-struct.form-abs-left").show();
@@ -342,7 +377,8 @@ const EventMonitoringStatisticsPage = {
     $("#btnClear").on("click", function () {
       // 設置為全部區域
       $("#searchRegion").val("");
-      $("#searchYearMonth").val("2024-01");
+      $("#searchYearMonthStart").val("2024-01");
+      $("#searchYearMonthEnd").val("2024-01");
       self.loadData();
       $("#QueryCondition").text("區域: 全部");
     });
@@ -361,7 +397,8 @@ const EventMonitoringStatisticsPage = {
   // 執行查詢
   performSearch: function () {
     let region = $("#searchRegion").val();
-    const yearMonth = $("#searchYearMonth").val();
+    const yearMonthStart = $("#searchYearMonthStart").val();
+    const yearMonthEnd = $("#searchYearMonthEnd").val();
 
     // 記錄查詢時間
     const now = new Date();
@@ -386,9 +423,15 @@ const EventMonitoringStatisticsPage = {
     } else {
       conditionText += "區域: 全部";
     }
-    if (yearMonth) {
+    if (yearMonthStart || yearMonthEnd) {
       if (conditionText) conditionText += ", ";
-      conditionText += `月份: ${yearMonth}`;
+      if (yearMonthStart && yearMonthEnd) {
+        conditionText += `月份: ${yearMonthStart} ~ ${yearMonthEnd}`;
+      } else if (yearMonthStart) {
+        conditionText += `月份: 自 ${yearMonthStart}`;
+      } else {
+        conditionText += `月份: 至 ${yearMonthEnd}`;
+      }
     }
     if (!conditionText) conditionText = "全部資料";
 
@@ -396,7 +439,7 @@ const EventMonitoringStatisticsPage = {
     $("#ResultTime").text(queryTime);
 
     // 重新載入資料
-    this.loadData(region, yearMonth);
+    this.loadData(region, yearMonthStart, yearMonthEnd);
 
     // 如果當前在 tab2，重新載入災類統計
     if ($("#tab2").hasClass("active")) {
@@ -411,6 +454,11 @@ const EventMonitoringStatisticsPage = {
     // 如果當前在 tab4，重新載入災類與發生地區比較
     if ($("#tab4").hasClass("active")) {
       this.loadDisasterLocationComparison();
+    }
+
+    // 如果當前在 tab5，重新載入監看記錄
+    if ($("#tab5").hasClass("active")) {
+      this.loadMonitoringRecords();
     }
   },
 
@@ -857,7 +905,136 @@ const EventMonitoringStatisticsPage = {
       },
     });
   },
-  loadData: function (regionFilter, yearMonthFilter) {
+
+  // 載入監看記錄
+  loadMonitoringRecords: function () {
+    const self = this;
+
+    if (!this.currentData || this.currentData.length === 0) {
+      console.warn("No data available for monitoring records");
+      $("#MonitoringRecordsTable").datagrid({
+        data: [],
+        columns: [[]],
+      });
+      return;
+    }
+
+    // 更新查詢條件和時間
+    const regionText = $("#searchRegion option:selected").text() || "全部";
+    const startMonth = $("#searchYearMonthStart").val();
+    const endMonth = $("#searchYearMonthEnd").val();
+    const queryCondition = `區域: ${regionText}、月份: ${startMonth} ~ ${endMonth}`;
+    const resultTime = new Date().toLocaleString("zh-TW", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+    });
+    $("#QueryConditionTab5").text(queryCondition);
+    $("#ResultTimeTab5").text(resultTime);
+
+    // 取得區域資料
+    const regions = window.RegionalData ? window.RegionalData.regions : [];
+
+    // 按區域分組統計
+    const regionStats = {};
+
+    // 初始化所有區域
+    regions.forEach((region) => {
+      regionStats[region.code] = {
+        regionCode: region.code,
+        regionName: region.name,
+        totalEvents: 0,
+        emergencyEvents: 0,
+        smsSent: 0,
+        phoneCalls: 0,
+      };
+    });
+
+    // 統計資料
+    this.currentData.forEach((item) => {
+      if (regionStats[item.region]) {
+        regionStats[item.region].totalEvents++;
+        if (item.isEmergencyEvent === true) {
+          regionStats[item.region].emergencyEvents++;
+        }
+        regionStats[item.region].smsSent += item.smsSent || 0;
+        regionStats[item.region].phoneCalls += item.phoneCalls || 0;
+      }
+    });
+
+    // 轉換為陣列並排序（按區域代碼）
+    const statsArray = Object.values(regionStats).sort((a, b) => {
+      return a.regionCode.localeCompare(b.regionCode);
+    });
+
+    // 初始化 DataGrid
+    $("#MonitoringRecordsTable").datagrid({
+      data: statsArray,
+      fit: true,
+      fitColumns: true,
+      singleSelect: true,
+      rownumbers: true,
+      pagination: false,
+      striped: true,
+      columns: [
+        [
+          {
+            field: "regionName",
+            title: "區域",
+            width: 100,
+            align: "center",
+          },
+          {
+            field: "totalEvents",
+            title: "監看事件數",
+            width: 100,
+            align: "center",
+          },
+          {
+            field: "emergencyEvents",
+            title: "應變事件數",
+            width: 100,
+            align: "center",
+          },
+          {
+            field: "smsSent",
+            title: "傳發簡訊次數",
+            width: 100,
+            align: "center",
+          },
+          {
+            field: "phoneCalls",
+            title: "電話通報次數",
+            width: 100,
+            align: "center",
+          },
+        ],
+      ],
+      onLoadSuccess: function () {
+        console.log("Monitoring records loaded");
+
+        // 修正項次標題
+        setTimeout(function () {
+          const $headerRownumber = $(".datagrid-header-rownumber").first();
+
+          if ($headerRownumber.length > 0) {
+            const $cell = $headerRownumber.find(".datagrid-cell").first();
+            const $target = $cell.length > 0 ? $cell : $headerRownumber;
+
+            $target.empty().text("項次").css({
+              "text-align": "center",
+              "font-weight": "normal",
+            });
+          }
+        }, 50);
+      },
+    });
+  },
+
+  loadData: function (regionFilter, yearMonthStartFilter, yearMonthEndFilter) {
     const $table = $(`#${this.tableId}`);
     const startTime = new Date().getTime();
 
@@ -871,6 +1048,9 @@ const EventMonitoringStatisticsPage = {
         summary: "中山區某大樓發生火災，已控制火勢",
         disasterType: "F", // 火災
         casualties: 0,
+        isEmergencyEvent: true,
+        smsSent: 8,
+        phoneCalls: 5,
       },
       {
         eventName: "板橋交通事故",
@@ -880,6 +1060,9 @@ const EventMonitoringStatisticsPage = {
         summary: "板橋區發生嚴重交通事故，多車相撞",
         disasterType: "C", // 陸上交通事故
         casualties: 3,
+        isEmergencyEvent: true,
+        smsSent: 12,
+        phoneCalls: 8,
       },
       {
         eventName: "西區醫療緊急事件",
@@ -889,6 +1072,9 @@ const EventMonitoringStatisticsPage = {
         summary: "台中西區發生醫療緊急事件，患者心臟驟停",
         disasterType: "H", // 社會矚目事件
         casualties: 1,
+        isEmergencyEvent: false,
+        smsSent: 4,
+        phoneCalls: 3,
       },
       {
         eventName: "桃園工業管線災害",
@@ -898,6 +1084,9 @@ const EventMonitoringStatisticsPage = {
         summary: "桃園中壢工業區發生管線破裂，造成局部停水",
         disasterType: "M", // 工業管線災害
         casualties: 0,
+        isEmergencyEvent: true,
+        smsSent: 10,
+        phoneCalls: 6,
       },
       {
         eventName: "高雄水災事件",
@@ -907,6 +1096,33 @@ const EventMonitoringStatisticsPage = {
         summary: "高雄三民區因豪雨造成積水災害",
         disasterType: "W", // 水災
         casualties: 2,
+        isEmergencyEvent: true,
+        smsSent: 15,
+        phoneCalls: 9,
+      },
+      {
+        eventName: "全國性重大事件",
+        occurrenceTime: "2024-01-17 10:00:00",
+        location: "台灣",
+        region: "01", // 台北區
+        summary: "全國性緊急應變事件通報",
+        disasterType: "H", // 社會矚目事件
+        casualties: 0,
+        isEmergencyEvent: true,
+        smsSent: 10,
+        phoneCalls: 8,
+      },
+      {
+        eventName: "全國性重大事件",
+        occurrenceTime: "2024-01-17 10:00:00",
+        location: "台灣",
+        region: "02", // 台北區
+        summary: "全國性緊急應變事件通報",
+        disasterType: "H", // 社會矚目事件
+        casualties: 1,
+        isEmergencyEvent: true,
+        smsSent: 20,
+        phoneCalls: 12,
       },
     ];
 
@@ -915,11 +1131,22 @@ const EventMonitoringStatisticsPage = {
       mockData = mockData.filter((item) => item.region === regionFilter);
     }
 
-    if (yearMonthFilter) {
+    if (yearMonthStartFilter || yearMonthEndFilter) {
       mockData = mockData.filter((item) => {
         const itemDate = new Date(item.occurrenceTime);
         const itemYearMonth = `${itemDate.getFullYear()}-${String(itemDate.getMonth() + 1).padStart(2, "0")}`;
-        return itemYearMonth === yearMonthFilter;
+
+        if (yearMonthStartFilter && yearMonthEndFilter) {
+          return (
+            itemYearMonth >= yearMonthStartFilter &&
+            itemYearMonth <= yearMonthEndFilter
+          );
+        } else if (yearMonthStartFilter) {
+          return itemYearMonth >= yearMonthStartFilter;
+        } else if (yearMonthEndFilter) {
+          return itemYearMonth <= yearMonthEndFilter;
+        }
+        return true;
       });
     }
 
@@ -1010,7 +1237,8 @@ const EventMonitoringStatisticsPage = {
         if (!$("#QueryCondition").text()) {
           let conditionText = "";
           const region = $("#searchRegion").val();
-          const yearMonth = $("#searchYearMonth").val();
+          const yearMonthStart = $("#searchYearMonthStart").val();
+          const yearMonthEnd = $("#searchYearMonthEnd").val();
           if (region && window.RegionalData) {
             const regionName =
               window.RegionalData.regions.find((r) => r.code === region)
@@ -1019,9 +1247,15 @@ const EventMonitoringStatisticsPage = {
           } else {
             conditionText += "區域: 全部";
           }
-          if (yearMonth) {
+          if (yearMonthStart || yearMonthEnd) {
             if (conditionText) conditionText += ", ";
-            conditionText += `月份: ${yearMonth}`;
+            if (yearMonthStart && yearMonthEnd) {
+              conditionText += `月份: ${yearMonthStart} ~ ${yearMonthEnd}`;
+            } else if (yearMonthStart) {
+              conditionText += `月份: 自 ${yearMonthStart}`;
+            } else {
+              conditionText += `月份: 至 ${yearMonthEnd}`;
+            }
           }
           if (!conditionText) conditionText = "全部資料";
           $("#QueryCondition").text(conditionText);
@@ -1049,6 +1283,134 @@ const EventMonitoringStatisticsPage = {
           const $headerRownumber = $panel
             .find(".datagrid-header .datagrid-header-rownumber")
             .first();
+
+          if ($headerRownumber.length > 0) {
+            const $cell = $headerRownumber.find(".datagrid-cell").first();
+            const $target = $cell.length > 0 ? $cell : $headerRownumber;
+
+            $target.empty().text("項次").css({
+              "text-align": "center",
+              "font-weight": "normal",
+            });
+          }
+        }, 50);
+      },
+    });
+  },
+
+  // 載入監看記錄
+  loadMonitoringRecords: function () {
+    const self = this;
+
+    if (!this.currentData || this.currentData.length === 0) {
+      console.warn("No data available for monitoring records");
+      $("#MonitoringRecordsTable").datagrid({
+        data: [],
+        columns: [[]],
+      });
+      return;
+    }
+
+    // 更新查詢條件和時間
+    const regionText = $("#searchRegion option:selected").text() || "全部";
+    const startMonth = $("#searchYearMonthStart").val();
+    const endMonth = $("#searchYearMonthEnd").val();
+    const queryCondition = `區域: ${regionText}、月份: ${startMonth} ~ ${endMonth}`;
+    const resultTime = new Date().toLocaleString("zh-TW", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+    });
+    $("#QueryConditionTab5").text(queryCondition);
+    $("#ResultTimeTab5").text(resultTime);
+
+    // 取得區域資料
+    const regions = window.RegionalData ? window.RegionalData.regions : [];
+
+    // 按區域分組統計
+    const regionStats = {};
+
+    // 初始化所有區域
+    regions.forEach((region) => {
+      regionStats[region.code] = {
+        regionCode: region.code,
+        regionName: region.name,
+        totalEvents: 0,
+        emergencyEvents: 0,
+        smsSent: 0,
+        phoneCalls: 0,
+      };
+    });
+
+    // 統計資料
+    this.currentData.forEach((item) => {
+      if (regionStats[item.region]) {
+        regionStats[item.region].totalEvents++;
+        if (item.isEmergencyEvent === true) {
+          regionStats[item.region].emergencyEvents++;
+        }
+        regionStats[item.region].smsSent += item.smsSent || 0;
+        regionStats[item.region].phoneCalls += item.phoneCalls || 0;
+      }
+    });
+
+    // 轉換為陣列並排序（按區域代碼）
+    const statsArray = Object.values(regionStats).sort((a, b) => {
+      return a.regionCode.localeCompare(b.regionCode);
+    });
+
+    // 初始化 DataGrid
+    $("#MonitoringRecordsTable").datagrid({
+      data: statsArray,
+      fit: true,
+      fitColumns: true,
+      singleSelect: true,
+      rownumbers: true,
+      pagination: false,
+      striped: true,
+      columns: [
+        [
+          {
+            field: "regionName",
+            title: "區域",
+            width: 100,
+            align: "center",
+          },
+          {
+            field: "totalEvents",
+            title: "監看事件數",
+            width: 100,
+            align: "center",
+          },
+          {
+            field: "emergencyEvents",
+            title: "應變事件數",
+            width: 100,
+            align: "center",
+          },
+          {
+            field: "smsSent",
+            title: "傳發簡訊次數",
+            width: 100,
+            align: "center",
+          },
+          {
+            field: "phoneCalls",
+            title: "電話通報次數",
+            width: 100,
+            align: "center",
+          },
+        ],
+      ],
+      onLoadSuccess: function () {
+        console.log("Monitoring records loaded");
+
+        // 修正項次標題
+        setTimeout(function () {
+          const $headerRownumber = $(".datagrid-header-rownumber").first();
 
           if ($headerRownumber.length > 0) {
             const $cell = $headerRownumber.find(".datagrid-cell").first();

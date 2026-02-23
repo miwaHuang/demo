@@ -95,7 +95,7 @@ const EventReportManagementPage = {
                       <div class="form-group">
                         <label class="col-sm-5 control-label">事件名稱</label>
                         <div class="col-sm-7">
-                          <input type="text" class="form-control" id="Q_EVENT_NAME" name="Q_EVENT_NAME" placeholder="請輸入事件名稱">
+                          <input type="text" class="form-control" id="Q_EVENT_NAME" name="Q_EVENT_NAME" placeholder="事件名稱關鍵字查詢">
                         </div>
                       </div>
 
@@ -186,9 +186,9 @@ const EventReportManagementPage = {
                         </div>
                       </div>
 
-                      <!--事件來源 -->
+                      <!--消息來源 -->
                       <div class="form-group">
-                        <label class="col-sm-5 control-label">事件來源</label>
+                        <label class="col-sm-5 control-label">消息來源</label>
                         <div class="col-sm-7">
                           <select class="form-control" id="Q_SOURCE" name="Q_SOURCE">
                             <option value="">全部</option>
@@ -328,6 +328,46 @@ const EventReportManagementPage = {
           $(".subpage-box").removeClass("subpage-box-block");
         }
       });
+    });
+  },
+
+  // 初始化區域與發生地級聯
+  initRegionLocationCascade: function () {
+    const $content = $("#EventReportManagementContent");
+    const $regionSelect = $content.find("#Q_REGION");
+    const $locationSelect = $content.find("#Q_LOCATION");
+
+    if ($regionSelect.length === 0 || $locationSelect.length === 0) {
+      return;
+    }
+
+    // 綁定區域變更事件
+    $regionSelect.on("change", function () {
+      const regionCode = $(this).val();
+      let countyOptions =
+        '<option value="">全部</option>\n<option value="TW">台灣</option>';
+
+      // 如果選擇了區域，顯示該區域對應的縣市
+      if (regionCode && RegionalData.countyByRegion[regionCode]) {
+        const counties = RegionalData.countyByRegion[regionCode];
+        countyOptions =
+          '<option value="">全部</option>\n<option value="TW">台灣</option>';
+        counties.forEach((county) => {
+          countyOptions += `<option value="${county.code}">${county.name}</option>`;
+        });
+      } else if (!regionCode) {
+        // 如果清空區域選擇，顯示所有縣市
+        countyOptions =
+          '<option value="">全部</option>\n<option value="TW">台灣</option>';
+        CountyData.counties.forEach((county) => {
+          countyOptions += `<option value="${county.code}">${county.name}</option>`;
+        });
+      }
+
+      // 更新發生地下拉選單
+      $locationSelect.html(countyOptions);
+      // 重置發生地選擇
+      $locationSelect.val("");
     });
   },
 
@@ -1855,6 +1895,9 @@ const EventReportManagementPage = {
 
     // 初始化可收合面板事件
     this.BootTabsStructEvent();
+
+    // 初始化區域與發生地級聯
+    this.initRegionLocationCascade();
 
     // 綁定災害屬性變更事件（級聯災害種類）
     $content.find("#Q_DISASTER_ATTR").on("change", function () {

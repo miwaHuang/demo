@@ -239,11 +239,11 @@ const EventReportForm = {
                     </div>
                     <div class="col-md-2">
                       <div class="form-group">
-                        <label class="required">連絡電話</label>
+                        <label class="required">聯絡電話</label>
                         <input type="tel" class="form-control" name="CONTACT_PHONE" placeholder="請輸入電話號碼" required ${
                           mode === "view" ? "readonly" : ""
                         } />
-                        <div class="error-message">請輸入連絡電話</div>
+                        <div class="error-message">請輸入</div>
                       </div>
                     </div>
                   </div>

@@ -76,7 +76,7 @@ const ActivityInfoManagementPage = {
                       <div class="form-group">
                         <label class="col-sm-5 control-label">執行事項</label>
                         <div class="col-sm-7">
-                          <input type="text" class="form-control" id="Q_PLANNED_ACTION" name="Q_PLANNED_ACTION" placeholder="請輸入執行事項">
+                          <input type="text" class="form-control" id="Q_PLANNED_ACTION" name="Q_PLANNED_ACTION" placeholder="執行事項關鍵字查詢">
                         </div>
                       </div>
                       <!-- 區域 -->
@@ -400,9 +400,7 @@ const ActivityInfoManagementPage = {
                 // 顯示 yy-MM-dd ~ yy-MM-dd
 
                 const display = start + "~" + end;
-                // tooltip 顯示 yyyy-MM-dd ~ yyyy-MM-dd
-                const tooltip = start + "至" + end;
-                return '<span title="' + tooltip + '">' + display + "</span>";
+                return '<span title="' + display + '">' + display + "</span>";
               },
             },
             {

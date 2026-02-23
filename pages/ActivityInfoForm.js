@@ -71,13 +71,6 @@ const ActivityInfoForm = {
                 <div class="section-content">
 
                   <div class="row">
-                    <div class="col-md-4">
-                      <div class="form-group">
-                        <label class="required">預定執行事項</label>
-                        <input type="text" class="form-control" name="PLANNED_ACTION" placeholder="請輸入執行事項" required ${readonlyAttr}/>
-                        <div class="error-message">請輸入執行事項</div>
-                      </div>
-                    </div>
                     <div class="col-md-2">
                       <div class="form-group">
                         <label>區域</label>
@@ -87,6 +80,13 @@ const ActivityInfoForm = {
                         </select>
                       </div>
                     </div>
+                    <div class="col-md-4">
+                      <div class="form-group">
+                        <label class="required">預定執行事項</label>
+                        <input type="text" class="form-control" name="PLANNED_ACTION" placeholder="請輸入執行事項" required ${readonlyAttr}/>
+                        <div class="error-message">請輸入執行事項</div>
+                      </div>
+                    </div>               
                     <div class="col-md-2">
                       <div class="form-group">
                         <label class="required">活動日期(起)</label>
@@ -183,15 +183,15 @@ const ActivityInfoForm = {
                     <div class="col-md-3">
                       <div class="form-group">
                         <label class="required">聯絡人員</label>
-                        <input type="text" class="form-control" name="CONTACT_NAME" placeholder="請輸入聯絡人員" required ${readonlyAttr} />
+                        <input type="text" class="form-control" name="CONTACT_NAME" placeholder="請輸入" required ${readonlyAttr} />
                         <div class="error-message">請輸入聯絡人員</div>
                       </div>
                     </div>
                     <div class="col-md-3">
                       <div class="form-group">
-                        <label class="required">連絡電話</label>
-                        <input type="text" class="form-control" name="CONTACT_PHONE" placeholder="請輸入連絡電話" required ${readonlyAttr} />
-                        <div class="error-message">請輸入連絡電話</div>
+                        <label class="required">聯絡電話</label>
+                        <input type="text" class="form-control" name="CONTACT_PHONE" placeholder="請輸入" required ${readonlyAttr} />
+                        <div class="error-message">請輸入</div>
                       </div>
                     </div>
                     <div class="col-md-4">
