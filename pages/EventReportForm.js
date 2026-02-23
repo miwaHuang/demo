@@ -81,31 +81,7 @@ const EventReportForm = {
                 <div class="section-title"> 基本通報資訊</div>
                 <div class="section-content">
                   <div class="row">
-                    
-                    <div class="col-md-2">
-                      <div class="form-group">
-                        <label class="required">EMS是否開案</label>
-                        <select class="form-control" name="IS_CASE_OPEN" required ${
-                          mode === "view" ? "disabled" : ""
-                        }>
-                          <option value="">請選擇</option>
-                          <option value="Y">是</option>
-                          <option value="N">否</option>
-                        </select>
-                        <div class="error-message">請選擇是否開案</div>
-                      </div>
-                      </div>
-                  
-                    <div class="col-md-4">
-                      <div class="form-group">
-                        <label class="required">事件名稱</label>
-                        <input type="text" class="form-control" name="INCIDENT_NAME" placeholder="例：台鐵XX號脫軌事故" required ${
-                          mode === "view" ? "readonly" : ""
-                        } />
-                        <div class="error-message">請輸入事件名稱</div>
-                      </div>
-                    </div>
-                      <div class="col-md-2">
+                   <div class="col-md-2">
                         <div class="form-group">
                             <label>區域</label>
                             <input type="text" class="form-control" name="REGION" value="${
@@ -118,7 +94,36 @@ const EventReportForm = {
                             }" readonly />
                         </div>
                     </div>
-                      <div class="col-md-2">
+                    
+                    <div class="col-md-2">
+                      <div class="form-group">
+                        <label class="required">EMS是否開案</label>
+                        <div style="display: flex; gap: 16px; align-items: center;">
+                          <label style="margin: 0;">
+                            <input type="radio" name="IS_CASE_OPEN" value="Y" ${
+                              mode === "view" ? "disabled" : ""
+                            } required /> 是
+                          </label>
+                          <label style="margin: 0;">
+                            <input type="radio" name="IS_CASE_OPEN" value="N" ${
+                              mode === "view" ? "disabled" : ""
+                            } required /> 否
+                          </label>
+                        </div>
+                        <div class="error-message">請選擇是否開案</div>
+                      </div>
+                    </div>
+                  
+                    <div class="col-md-4">
+                      <div class="form-group">
+                        <label class="required">事件名稱</label>
+                        <input type="text" class="form-control" name="INCIDENT_NAME" placeholder="例：台鐵XX號脫軌事故" required ${
+                          mode === "view" ? "readonly" : ""
+                        } />
+                        <div class="error-message">請輸入事件名稱</div>
+                      </div>
+                    </div>
+                    <div class="col-md-2">
                       <div class="form-group">
                         <label class="required">發生日期</label>
                         <input type="date" class="form-control" name="SOURCE_TIME_DATE" required ${
@@ -136,9 +141,24 @@ const EventReportForm = {
                         <div class="error-message">請選擇時間</div>
                       </div>
                     </div>
-                 
                   </div>
+
                   <div class="row">
+                    <div class="col-md-2">
+                      <div class="form-group">
+                        <label>事件分級</label>
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                          <label class="emergency-switch">
+                            <input type="checkbox" id="IS_EMERGENCY_EVENT" name="IS_EMERGENCY_EVENT" value="Y" ${
+                              mode === "view" ? "disabled" : ""
+                            } />
+                            <span class="slider"></span>
+                          </label>
+                          <span id="eventLevelLabel" style="min-width: 60px;">非應變事件</span>
+                        </div>
+                      </div>
+                    </div>
+
                     <div class="col-md-2">
                       <div class="form-group">
                         <label class="required">災害屬性</label>
@@ -148,9 +168,9 @@ const EventReportForm = {
                         <div class="error-message">請選擇災害屬性</div>
                       </div>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-4">
                       <div class="form-group">
-                        <label class="required">災害種類</label>
+                        <label class="required">EMS災害種類</label>
                         <select class="form-control" name="DISASTER_TYPE" required ${
                           mode === "view" ? "disabled" : ""
                         }>
@@ -159,8 +179,29 @@ const EventReportForm = {
                         </select>
                         <div class="error-message">請選擇災害種類</div>
                       </div>
-                    </div>    
-                    <div class="col-md-3">
+                    </div>
+                    <div class="col-md-4">
+                      <div class="form-group">
+                        <label class="required">災防會災害種類</label>
+                        <select class="form-control" name="DISASTER_PREVENTION_TYPE" required ${
+                          mode === "view" ? "disabled" : ""
+                        }>
+                          <option value="">請選擇</option>
+                          ${
+                            typeof DisasterPreventionData !== "undefined"
+                              ? CommonDataUtils.generateOptions(
+                                  DisasterPreventionData,
+                                )
+                              : ""
+                          }
+                        </select>
+                        <div class="error-message">請選擇災害種類</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="row">
+                    <div class="col-md-4">
                       <div class="form-group">
                         <label class="required">訊息來源</label>
                         <input type="text" class="form-control" name="SOURCE_TYPE" placeholder="請輸入事件來源" required ${
@@ -187,27 +228,7 @@ const EventReportForm = {
                         <div class="error-message">請選擇時間</div>
                       </div>
                     </div>
-                  </div>
-                  
-                  <div class="row">
-                    <div class="col-md-4">
-                      <div class="form-group">
-                        <label class="required">事件摘要</label>
-                        <textarea class="form-control" name="INCIDENT_SUMMARY" placeholder="請簡述事件概要，包含時間、地點、原因、影響範圍等關鍵資訊..." required ${
-                          mode === "view" ? "readonly" : ""
-                        } style="height: 50px;"></textarea>
-                        <div class="error-message">請輸入事件摘要</div>
-                      </div>
-                    </div>
-                    <div class="col-md-4">
-                      <div class="form-group">
-                        <label>處置作為概述</label>
-                        <textarea class="form-control" name="ACTION_SUMMARY" placeholder="請敘述 REMOC 目前處置進度。" ${
-                          mode === "view" ? "readonly" : ""
-                        } style="height: 50px;"></textarea>
-                      </div>
-                    </div>
-                       <div class="col-md-2">
+                    <div class="col-md-2">
                       <div class="form-group">
                         <label class="required">監看人員</label>
                         <input type="text" class="form-control" name="REPORTER" placeholder="請輸入姓名" required ${
@@ -225,6 +246,27 @@ const EventReportForm = {
                         <div class="error-message">請輸入連絡電話</div>
                       </div>
                     </div>
+                  </div>
+                  
+                  <div class="row">
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <label class="required">事件摘要</label>
+                        <textarea class="form-control" name="INCIDENT_SUMMARY" placeholder="請簡述事件概要，包含時間、地點、原因、影響範圍等關鍵資訊..." required ${
+                          mode === "view" ? "readonly" : ""
+                        } style="height: 50px;"></textarea>
+                        <div class="error-message">請輸入事件摘要</div>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <label>處置作為概述</label>
+                        <textarea class="form-control" name="ACTION_SUMMARY" placeholder="請敘述 REMOC 目前處置進度。" ${
+                          mode === "view" ? "readonly" : ""
+                        } style="height: 50px;"></textarea>
+                      </div>
+                    </div>
+                  
                   </div>
                 </div>
               </div>
@@ -568,6 +610,38 @@ const EventReportForm = {
         sourceTimeHidden.value = `${dateStr} ${timeStr}:00`;
         sourceDateInput.value = dateStr;
         sourceTimeInput.value = timeStr;
+      }
+    }
+    // 初始化事件分級 Switch
+    const isEmergencyCheckbox = document.getElementById("IS_EMERGENCY_EVENT");
+
+    if (isEmergencyCheckbox) {
+      // 更新 label 文本的函數
+      const updateEventLevelLabel = () => {
+        const labelElement = document.getElementById("eventLevelLabel");
+        if (labelElement) {
+          labelElement.textContent = isEmergencyCheckbox.checked
+            ? "應變事件"
+            : "非應變事件";
+        }
+      };
+
+      // 如果資料中有該欄位，設定checkbox狀態
+      if (data && data.IS_EMERGENCY_EVENT === "Y") {
+        isEmergencyCheckbox.checked = true;
+      } else {
+        isEmergencyCheckbox.checked = false;
+      }
+
+      // 初始化 label 顯示
+      updateEventLevelLabel();
+
+      // 綁定 checkbox 變更事件
+      isEmergencyCheckbox.addEventListener("change", updateEventLevelLabel);
+
+      // View模式下禁用交互
+      if (this.mode === "view") {
+        isEmergencyCheckbox.disabled = true;
       }
     }
 

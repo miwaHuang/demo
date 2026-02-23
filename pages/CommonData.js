@@ -24,6 +24,30 @@ const MessageSourceData = [
   { code: "EMS", name: "EMS" },
   { code: "OTHER", name: "其他" },
 ];
+
+// ==================== 災防會災害種類資料 ====================
+const DisasterPreventionData = [
+  { code: "01", name: "風災" },
+  { code: "02", name: "土石流" },
+  { code: "03", name: "水災" },
+  { code: "04", name: "震災" },
+  { code: "05", name: "生物病原" },
+  { code: "06", name: "火災" },
+  { code: "07", name: "森林火災" },
+  { code: "08", name: "毒性化學物質災害" },
+  { code: "09", name: "輻射" },
+  { code: "10", name: "空難" },
+  { code: "11", name: "海難" },
+  { code: "12", name: "陸上交通事故" },
+  { code: "13", name: "其他" },
+  { code: "14", name: "旱災" },
+  { code: "15", name: "寒害" },
+  { code: "16", name: "爆炸" },
+  { code: "17", name: "輸電線路災害" },
+  { code: "18", name: "公用氣體與油料管線" },
+  { code: "19", name: "礦災" },
+];
+
 // CommonData.js - 共用靜態資料清單
 // 此檔案包含系統中多個頁面共用的基礎資料，如開案單位、縣市、災害類別等
 
@@ -595,6 +619,7 @@ if (typeof window !== "undefined") {
   window.DeleteReasonData = DeleteReasonData;
   window.ActivityHandleTypeData = ActivityHandleTypeData;
   window.ActivityImplementTypeData = ActivityImplementTypeData;
+  window.DisasterPreventionData = DisasterPreventionData;
   window.getActivityHandleTypeName = getActivityHandleTypeName;
   window.getActivityImplementTypeName = getActivityImplementTypeName;
   window.CommonDataUtils = CommonDataUtils;

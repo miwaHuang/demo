@@ -207,7 +207,6 @@ const EventReportManagementPage = {
                         <div class="col-sm-7">
                           <select class="form-control" id="Q_EVENT_CATEGORY" name="Q_EVENT_CATEGORY">
                             <option value="">全部監看事件(含應變)</option>
-                            <option value="MONITORING_ONLY">僅監看事件</option>
                             <option value="RESPONSE">應變事件</option>
                           </select>
                         </div>
@@ -376,10 +375,14 @@ const EventReportManagementPage = {
     if (formData.Q_EVENT_CATEGORY) {
       if (formData.Q_EVENT_CATEGORY === "MONITORING_ONLY") {
         // 僅監看事件：IS_EMERGENCY_RESPONSE = false
-        sampleData = sampleData.filter(item => item.IS_EMERGENCY_RESPONSE === false);
+        sampleData = sampleData.filter(
+          (item) => item.IS_EMERGENCY_RESPONSE === false,
+        );
       } else if (formData.Q_EVENT_CATEGORY === "RESPONSE") {
         // 應變事件：IS_EMERGENCY_RESPONSE = true
-        sampleData = sampleData.filter(item => item.IS_EMERGENCY_RESPONSE === true);
+        sampleData = sampleData.filter(
+          (item) => item.IS_EMERGENCY_RESPONSE === true,
+        );
       }
       // 全部監看事件(含應變)：不篩選，顯示所有資料
     }
@@ -471,13 +474,6 @@ const EventReportManagementPage = {
               },
             },
             {
-              field: "DISASTER_TYPE",
-              title: "災害種類",
-              width: 80,
-              align: "center",
-              rowspan: 2,
-            },
-            {
               field: "DISASTER_NAME",
               title: "事件名稱",
               width: 210,
@@ -517,8 +513,25 @@ const EventReportManagementPage = {
               rowspan: 2,
             },
             {
+              field: "DISASTER_TYPE",
+              title: "災害種類",
+              width: 80,
+              align: "center",
+              rowspan: 2,
+            },
+            {
               title: "訊息",
               colspan: 2,
+            },
+            {
+              field: "IS_EMERGENCY_RESPONSE",
+              title: "事件<br/>分級",
+              width: 60,
+              align: "center",
+              rowspan: 2,
+              formatter: function (value, row, index) {
+                return value === true ? "應變" : "監看";
+              },
             },
             {
               field: "DEATH_COUNT",
@@ -579,20 +592,6 @@ const EventReportManagementPage = {
                   );
                 } else {
                   return "<span>否</span>";
-                }
-              },
-            },
-            {
-              field: "IS_EMERGENCY_RESPONSE",
-              title: "事件<br/>分級",
-              width: 60,
-              align: "center",
-              rowspan: 2,
-              formatter: function (value, row, index) {
-                if (value === true) {
-                  return '<span style="color: red; font-weight: bold;">應變</span>';
-                } else {
-                  return '<span style="color: green;">監看</span>';
                 }
               },
             },
