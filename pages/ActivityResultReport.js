@@ -1,4 +1,4 @@
-// REMOC活動成果表頁面
+// REMOCREMOC年度報表頁面
 
 const ActivityResultReportPage = {
   // 生成 HTML 內容
@@ -23,7 +23,7 @@ const ActivityResultReportPage = {
 			<ol class="breadcrumb">
 				<li class="breadcrumb-item">REMOC管理</li>
 				<li class="breadcrumb-item">統計分析報表</li>
-				<li class="breadcrumb-item active" aria-current="page">活動成果表</li>
+				<li class="breadcrumb-item active" aria-current="page">REMOC年度報表</li>
 			</ol>
 		</nav>
 		<div class="subpage-box">
@@ -133,7 +133,7 @@ const ActivityResultReportPage = {
 											<span id="SummaryQueryYear" style="color: #337ab7"></span>
 										</div>
 										<div>
-											查詢時間：
+											查詢時間： 
 											<span id="SummaryResultTime" style="color: #666"></span>
 										</div>
 									</div>
@@ -144,22 +144,34 @@ const ActivityResultReportPage = {
 								</div>
 							</div>
               <div role="tabpanel" class="tab-pane" id="tabTaipei">
-                <div class="col-sm-12"></div>
+                <div class="col-sm-12">
+                  <table id="TaipeiTestTable" class="EMSDataGrid"></table>
+                </div>
               </div>
               <div role="tabpanel" class="tab-pane" id="tabNorth">
-                <div class="col-sm-12"></div>
+                <div class="col-sm-12">
+                  <table id="NorthTestTable" class="EMSDataGrid"></table>
+                </div>
               </div>
               <div role="tabpanel" class="tab-pane" id="tabCentral">
-                <div class="col-sm-12"></div>
+                <div class="col-sm-12">
+                  <table id="CentralTestTable" class="EMSDataGrid"></table>
+                </div>
               </div>
               <div role="tabpanel" class="tab-pane" id="tabSouth">
-                <div class="col-sm-12"></div>
+                <div class="col-sm-12">
+                  <table id="SouthTestTable" class="EMSDataGrid"></table>
+                </div>
               </div>
               <div role="tabpanel" class="tab-pane" id="tabKaoping">
-                <div class="col-sm-12"></div>
+                <div class="col-sm-12">
+                  <table id="KaopingTestTable" class="EMSDataGrid"></table>
+                </div>
               </div>
               <div role="tabpanel" class="tab-pane" id="tabEast">
-                <div class="col-sm-12"></div>
+                <div class="col-sm-12">
+                  <table id="EastTestTable" class="EMSDataGrid"></table>
+                </div>
               </div>
 						</div>
 					</div>
@@ -179,6 +191,7 @@ const ActivityResultReportPage = {
     this.initTabEvents();
     this.initSearchEvents();
     this.loadSummaryData();
+    this.renderRegionTestTables();
   },
 
   // 初始化Tab事件
@@ -208,6 +221,23 @@ const ActivityResultReportPage = {
       $content.find(".tab-pane").removeClass("active");
       $content.find(targetId).addClass("active");
 
+      const tabTableMap = {
+        "#tabTaipei": "#TaipeiTestTable",
+        "#tabNorth": "#NorthTestTable",
+        "#tabCentral": "#CentralTestTable",
+        "#tabSouth": "#SouthTestTable",
+        "#tabKaoping": "#KaopingTestTable",
+        "#tabEast": "#EastTestTable",
+      };
+
+      const tableSelector = tabTableMap[targetId];
+      if (tableSelector) {
+        const $table = $(tableSelector);
+        if ($table.length > 0 && !$table.hasClass("datagrid-f")) {
+          self.renderRegionTestTable(tableSelector);
+        }
+      }
+
       self.resizeTabTable(targetId);
 
       $(".subpage-box").show();
@@ -219,6 +249,12 @@ const ActivityResultReportPage = {
   resizeTabTable: function (targetId) {
     const tableMap = {
       "#tabSummary": "#SummaryTable",
+      "#tabTaipei": "#TaipeiTestTable",
+      "#tabNorth": "#NorthTestTable",
+      "#tabCentral": "#CentralTestTable",
+      "#tabSouth": "#SouthTestTable",
+      "#tabKaoping": "#KaopingTestTable",
+      "#tabEast": "#EastTestTable",
     };
 
     const tableSelector = tableMap[targetId];
@@ -487,12 +523,104 @@ const ActivityResultReportPage = {
     link.setAttribute("href", url);
     link.setAttribute(
       "download",
-      `REMOC活動成果表_${new Date().toISOString().split("T")[0]}.csv`,
+      `REMOCREMOC年度報表_${new Date().toISOString().split("T")[0]}.csv`,
     );
     link.style.visibility = "hidden";
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+  },
+
+  // 渲染各區表格
+  renderRegionTestTables: function () {
+    this.renderRegionTestTable("#TaipeiTestTable");
+    this.renderRegionTestTable("#NorthTestTable");
+    this.renderRegionTestTable("#CentralTestTable");
+    this.renderRegionTestTable("#SouthTestTable");
+    this.renderRegionTestTable("#KaopingTestTable");
+    this.renderRegionTestTable("#EastTestTable");
+  },
+
+  // 渲染單一區表格
+  renderRegionTestTable: function (tableSelector) {
+    const tableData = Array.from({ length: 12 }, (_, index) => ({
+      month: `${index + 1}月`,
+      monitoringCount: Math.floor(Math.random() * 10),
+      emergencyCount: Math.floor(Math.random() * 10),
+      educationCount: Math.floor(Math.random() * 10),
+      seminarCount: Math.floor(Math.random() * 10),
+      drillTrainingCount: Math.floor(Math.random() * 10),
+      otherCount: Math.floor(Math.random() * 10),
+    }));
+
+    $(tableSelector).datagrid({
+      data: tableData,
+      width: "100%",
+      fit: false,
+      height: 420,
+      fitColumns: false,
+      nowrap: true,
+      singleSelect: true,
+      rownumbers: true,
+      pagination: false,
+      striped: true,
+      columns: [
+        [
+          { field: "month", title: "月份", width: 120, align: "center" },
+          {
+            field: "monitoringCount",
+            title: "監看次數",
+            width: 120,
+            align: "center",
+          },
+          {
+            field: "emergencyCount",
+            title: "應變次數",
+            width: 120,
+            align: "center",
+          },
+          {
+            field: "educationCount",
+            title: "教育訓練/課程",
+            width: 150,
+            align: "center",
+          },
+          {
+            field: "seminarCount",
+            title: "研討會/協調會",
+            width: 150,
+            align: "center",
+          },
+          {
+            field: "drillTrainingCount",
+            title: "演習/組訓",
+            width: 120,
+            align: "center",
+          },
+          { field: "otherCount", title: "其他", width: 100, align: "center" },
+        ],
+      ],
+      onLoadSuccess: function () {
+        setTimeout(() => {
+          const $panel = $(tableSelector).datagrid("getPanel");
+          $panel.css({ width: "100%", "max-width": "100%" });
+          $panel.parent().css({ width: "100%", "max-width": "100%" });
+          const $headerRownumber = $panel
+            .find(".datagrid-header .datagrid-header-rownumber")
+            .first();
+
+          if ($headerRownumber.length > 0) {
+            const $cell = $headerRownumber.find(".datagrid-cell").first();
+            const $target = $cell.length > 0 ? $cell : $headerRownumber;
+
+            $target.empty().text("項次").css({
+              "text-align": "center",
+              "font-weight": "normal",
+            });
+          }
+        }, 50);
+      },
+    });
   },
 };
 

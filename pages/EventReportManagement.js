@@ -51,7 +51,7 @@ const EventReportManagementPage = {
         <li class="breadcrumb-item">REMOC管理</li>
         <li class="breadcrumb-item">事件通報與管理</li>
         <li class="breadcrumb-item active" aria-current="page">
-          事件監看紀錄登錄
+          事件監看紀錄維護
         </li>
       </ol>
     </nav>
@@ -186,9 +186,9 @@ const EventReportManagementPage = {
                         </div>
                       </div>
 
-                      <!--消息來源 -->
+                      <!--訊息來源 -->
                       <div class="form-group">
-                        <label class="col-sm-5 control-label">消息來源</label>
+                        <label class="col-sm-5 control-label">訊息來源</label>
                         <div class="col-sm-7">
                           <select class="form-control" id="Q_SOURCE" name="Q_SOURCE">
                             <option value="">全部</option>

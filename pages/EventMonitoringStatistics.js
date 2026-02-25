@@ -72,6 +72,17 @@ const EventMonitoringStatisticsPage = {
                         </div>
                       </div>
 
+                      <!-- 事件分級 -->
+                      <div class="form-group">
+                        <label class="col-sm-5 control-label">事件分級</label>
+                        <div class="col-sm-7">
+                          <select class="form-control" id="searchEventLevel">
+                            <option value="">全部監看事件(含應變)</option>
+                            <option value="RESPONSE" selected>應變事件</option>
+                          </select>
+                        </div>
+                      </div>
+
                       <!-- 月份起 -->
                       <div class="form-group">
                         <label class="col-sm-5 control-label">月份(起)</label>
@@ -132,14 +143,21 @@ const EventMonitoringStatisticsPage = {
                   </a>
                 </li>
                 <li class="TAB_item next">
-                  <a aria-expanded="false" data-toggle="tab" title="災類與發生地比較" role="tab" id="TrendChartTab" href="#tab4">
+                  <a aria-expanded="false" data-toggle="tab" title="EMS災類與發生地比較" role="tab" id="TrendChartTab" href="#tab4">
                     <span class="font-16 text">
-                      災類與發生地比較
+                      EMS災類與發生地比較
+                    </span>
+                  </a>
+                </li>
+                <li class="TAB_item next">
+                  <a aria-expanded="false" data-toggle="tab" title="災防會災類與發生地比較" role="tab" id="TrendChartTab" href="#tab5">
+                    <span class="font-16 text">
+                      災防會災類與發生地比較
                     </span>
                   </a>
                 </li>
                  <li class="TAB_item next">
-                  <a aria-expanded="false" data-toggle="tab" title="監看記錄" role="tab" id="TrendChartTab" href="#tab5">
+                  <a aria-expanded="false" data-toggle="tab" title="監看記錄" role="tab" id="TrendChartTab" href="#tab6">
                     <span class="font-16 text">
                       監看記錄
                     </span>
@@ -210,7 +228,7 @@ const EventMonitoringStatisticsPage = {
                   </div>
                 </div>
 
-                <!-- Tab 4: 災類與發生地區比較 -->
+                <!-- Tab 4: EMS災類與發生地區比較 -->
                 <div role="tabpanel" class="tab-pane" id="tab4">
                   <div class="col-sm-12">
                     <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -228,7 +246,7 @@ const EventMonitoringStatisticsPage = {
                   </div>
                 </div>
 
-                <!-- Tab 5: 監看記錄 -->
+                <!-- Tab 5: 災防會災類與發生地區比較 -->
                 <div role="tabpanel" class="tab-pane" id="tab5">
                   <div class="col-sm-12">
                     <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -239,6 +257,23 @@ const EventMonitoringStatisticsPage = {
                       <div>
                         查詢時間：
                         <span id="ResultTimeTab5" style="color: #666"></span>
+                      </div>
+                    </div>
+                    <table id="DisasterPreventionLocationComparisonTable" class="EMSDataGrid"></table>
+                  </div>
+                </div>
+
+                <!-- Tab 6: 監看記錄 -->
+                <div role="tabpanel" class="tab-pane" id="tab6">
+                  <div class="col-sm-12">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                      <div>
+                        查詢條件：
+                        <span id="QueryConditionTab6" style="color: #337ab7"></span>
+                      </div>
+                      <div>
+                        查詢時間：
+                        <span id="ResultTimeTab6" style="color: #666"></span>
                       </div>
                     </div>
                     <!-- 監看記錄表格 -->
@@ -259,7 +294,9 @@ const EventMonitoringStatisticsPage = {
     this.BootTabsStructEvent();
     // 設置預設區域為全部
     $("#searchRegion").val("");
-    this.loadData();
+    // 設置預設事件分級為應變事件
+    $("#searchEventLevel").val("RESPONSE");
+    this.loadData("", "RESPONSE");
     this.initTabEvents();
     this.initSearchEvents();
   },
@@ -349,8 +386,22 @@ const EventMonitoringStatisticsPage = {
         }
       }
 
-      // 如果切換到 tab5，載入監看記錄
+      // 如果切換到 tab5，載入災防會災類與發生地區比較
       if (targetId === "#tab5") {
+        if (
+          typeof self.loadDisasterPreventionLocationComparison === "function"
+        ) {
+          self.loadDisasterPreventionLocationComparison();
+        } else {
+          console.error(
+            "loadDisasterPreventionLocationComparison not found on self",
+            self,
+          );
+        }
+      }
+
+      // 如果切換到 tab6，載入監看記錄
+      if (targetId === "#tab6") {
         if (typeof self.loadMonitoringRecords === "function") {
           self.loadMonitoringRecords();
         } else {
@@ -377,10 +428,11 @@ const EventMonitoringStatisticsPage = {
     $("#btnClear").on("click", function () {
       // 設置為全部區域
       $("#searchRegion").val("");
+      $("#searchEventLevel").val("RESPONSE");
       $("#searchYearMonthStart").val("2024-01");
       $("#searchYearMonthEnd").val("2024-01");
       self.loadData();
-      $("#QueryCondition").text("區域: 全部");
+      $("#QueryCondition").text("區域: 全部、事件分級: 應變事件");
     });
 
     // 匯出按鈕事件
@@ -397,6 +449,7 @@ const EventMonitoringStatisticsPage = {
   // 執行查詢
   performSearch: function () {
     let region = $("#searchRegion").val();
+    const eventLevel = $("#searchEventLevel").val();
     const yearMonthStart = $("#searchYearMonthStart").val();
     const yearMonthEnd = $("#searchYearMonthEnd").val();
 
@@ -423,8 +476,17 @@ const EventMonitoringStatisticsPage = {
     } else {
       conditionText += "區域: 全部";
     }
+
+    // 新增事件分級顯示
+    if (conditionText) conditionText += "、";
+    if (eventLevel === "RESPONSE") {
+      conditionText += "事件分級: 應變事件";
+    } else {
+      conditionText += "事件分級: 全部監看事件(含應變)";
+    }
+
     if (yearMonthStart || yearMonthEnd) {
-      if (conditionText) conditionText += ", ";
+      if (conditionText) conditionText += "、";
       if (yearMonthStart && yearMonthEnd) {
         conditionText += `月份: ${yearMonthStart} ~ ${yearMonthEnd}`;
       } else if (yearMonthStart) {
@@ -439,7 +501,7 @@ const EventMonitoringStatisticsPage = {
     $("#ResultTime").text(queryTime);
 
     // 重新載入資料
-    this.loadData(region, yearMonthStart, yearMonthEnd);
+    this.loadData(region, eventLevel, yearMonthStart, yearMonthEnd);
 
     // 如果當前在 tab2，重新載入災類統計
     if ($("#tab2").hasClass("active")) {
@@ -456,8 +518,13 @@ const EventMonitoringStatisticsPage = {
       this.loadDisasterLocationComparison();
     }
 
-    // 如果當前在 tab5，重新載入監看記錄
+    // 如果當前在 tab5，重新載入災防會災類與發生地區比較
     if ($("#tab5").hasClass("active")) {
+      this.loadDisasterPreventionLocationComparison();
+    }
+
+    // 如果當前在 tab6，重新載入監看記錄
+    if ($("#tab6").hasClass("active")) {
       this.loadMonitoringRecords();
     }
   },
@@ -526,6 +593,40 @@ const EventMonitoringStatisticsPage = {
     document.body.removeChild(input);
   },
 
+  // EMS災害種類與災防會災害種類對應關係
+  getDisasterPreventionMapping: function () {
+    return {
+      T: "01", // 風災 -> 風災
+      W: "03", // 水災 -> 水災
+      E: "04", // 震災（含土壤液化）-> 震災（含土壤液化）
+      N: "", // 其他自然災害 -> (無)
+      A: "10", // 空難 -> 空難
+      O: "11", // 海難 -> 海難
+      R: "15", // 寒害 -> 寒害
+      1: "", // 動植物疫災 -> (無)
+      B: "05", // 生物病原災害 -> 生物病原災害
+      F: "06", // 火災 -> 火災
+      D: "", // 毒性化學物質災害 -> (無)
+      C: "12", // 陸上交通事故 -> 陸上交通事故
+      M: "18", // 工業管線災害 -> 公用氣體與油料管線
+      L: "", // 停電 -> (無)
+      K: "", // 重大暴力或恐怖攻擊 -> (無)
+      G: "", // 群眾聚集 -> (無)
+      H: "13", // 社會矚目事件 -> 其他
+      P: "", // 其他人為技術災害 -> (無)
+      U: "16", // 爆炸 -> 爆炸
+      V: "17", // 公用氣體與油料管線、輸電線路災害 -> 公用氣體與油料管線、輸電線路災害
+      2: "09", // 輻射災害 -> 輻射
+      3: "", // 懸浮微粒物質災害 -> (無)
+      I: "", // 土石流災害 -> (無)
+      Q: "14", // 旱災 -> 旱災
+      S: "", // 火山災害 -> (無)
+      Y: "07", // 森林火災 -> 森林火災
+      J: "", // 停水 -> (無)
+      X: "19", // 礦災 -> 礦災
+    };
+  },
+
   // 載入災類統計
   loadDisasterTypeStats: function () {
     // 複製查詢條件和時間到 tab2
@@ -537,15 +638,17 @@ const EventMonitoringStatisticsPage = {
       this.currentData = [];
     }
 
-    // 統計災類
-    const stats = {};
+    // 統計災類（按EMS災害種類和災防會災害種類）
+    const emsCounts = {}; // EMS災害種類統計
+    const preventionCounts = {}; // 災防會災害種類統計
     let total = this.currentData.length;
+
     this.currentData.forEach((item) => {
-      const type = item.disasterType;
-      if (!stats[type]) {
-        stats[type] = 0;
+      const emsType = item.disasterType;
+      if (!emsCounts[emsType]) {
+        emsCounts[emsType] = 0;
       }
-      stats[type]++;
+      emsCounts[emsType]++;
     });
 
     // 獲取災害種類名稱映射
@@ -558,18 +661,67 @@ const EventMonitoringStatisticsPage = {
       });
     }
 
+    // 獲取災防會災害種類名稱映射
+    const disasterPreventionMap = {};
+    if (
+      window.DisasterPreventionData &&
+      Array.isArray(window.DisasterPreventionData)
+    ) {
+      window.DisasterPreventionData.forEach((item) => {
+        disasterPreventionMap[item.code] = item.name;
+      });
+    }
+
+    // 獲取對應關係並統計災防會災害種類件數
+    const mappingRelation = this.getDisasterPreventionMapping();
+    Object.keys(emsCounts).forEach((emsCode) => {
+      const preventionCode = mappingRelation[emsCode];
+      if (preventionCode) {
+        if (!preventionCounts[preventionCode]) {
+          preventionCounts[preventionCode] = 0;
+        }
+        preventionCounts[preventionCode] += emsCounts[emsCode];
+      }
+    });
+
+    // 計算災防會災害種類總數
+    let preventionTotal = 0;
+    Object.values(preventionCounts).forEach((count) => {
+      preventionTotal += count;
+    });
+
     // 轉換為表格資料 - 只顯示有資料的災害種類
-    const tableData = Object.keys(stats)
-      .filter((code) => stats[code] > 0)
+    const tableData = Object.keys(emsCounts)
+      .filter((code) => emsCounts[code] > 0)
       .map((code) => {
-        const count = stats[code];
-        const percentage = total > 0 ? Math.round((count / total) * 100) : 0;
+        const emsCount = emsCounts[code];
+        const emsPercentage =
+          total > 0 ? Math.round((emsCount / total) * 100) : 0;
+        const disasterPreventionCode = mappingRelation[code] || "";
+        const disasterPreventionName = disasterPreventionCode
+          ? disasterPreventionMap[disasterPreventionCode]
+          : "";
+        const preventionCount = disasterPreventionCode
+          ? preventionCounts[disasterPreventionCode]
+          : 0;
+        const preventionPercentage =
+          preventionTotal > 0 && preventionCount > 0
+            ? Math.round((preventionCount / preventionTotal) * 100)
+            : 0;
+
         return {
           disasterType: disasterTypeMap[code] || code,
-          count: count,
-          percentage: percentage + "%",
+          emsCount: emsCount,
+          emsPercentage: emsPercentage + "%",
+          disasterPreventionType: disasterPreventionName,
+          preventionCount: preventionCount,
+          preventionPercentage:
+            preventionPercentage > 0 ? preventionPercentage + "%" : "-",
+          count: emsCount,
+          percentage: emsPercentage + "%",
         };
-      });
+      })
+      .sort((a, b) => b.emsCount - a.emsCount); // 按EMS件數從大到小排序
 
     // 初始化表格
     $("#DisasterTypeStatsTable").datagrid({
@@ -582,19 +734,43 @@ const EventMonitoringStatisticsPage = {
         [
           {
             field: "disasterType",
-            title: "災害種類",
-            width: 200,
+            title: "EMS災害種類",
+            width: 160,
             align: "center",
           },
           {
-            field: "count",
-            title: "件數",
-            width: 100,
+            field: "emsCount",
+            title: "EMS件數",
+            width: 80,
             align: "center",
           },
           {
-            field: "percentage",
-            title: "百分比",
+            field: "emsPercentage",
+            title: "EMS百分比",
+            width: 90,
+            align: "center",
+          },
+          {
+            field: "disasterPreventionType",
+            title: "災防會災害種類",
+            width: 160,
+            align: "center",
+            formatter: function (value) {
+              return value || "-";
+            },
+          },
+          {
+            field: "preventionCount",
+            title: "災防會件數",
+            width: 90,
+            align: "center",
+            formatter: function (value) {
+              return value > 0 ? value : "-";
+            },
+          },
+          {
+            field: "preventionPercentage",
+            title: "災防會百分比",
             width: 100,
             align: "center",
           },
@@ -693,15 +869,22 @@ const EventMonitoringStatisticsPage = {
       locationKeys.sort();
     }
 
-    const tableData = locationKeys.map((location) => {
-      const count = stats[location];
-      const percentage = total > 0 ? Math.round((count / total) * 100) : 0;
-      return {
-        location: location,
-        count: count,
-        percentage: percentage + "%",
-      };
-    });
+    const tableData = locationKeys
+      .map((location) => {
+        const count = stats[location];
+        const percentage = total > 0 ? Math.round((count / total) * 100) : 0;
+        return {
+          location: location,
+          count: count,
+          percentage: percentage + "%",
+        };
+      })
+      .sort((a, b) => {
+        if (b.count !== a.count) {
+          return b.count - a.count;
+        }
+        return a.location.localeCompare(b.location, "zh-Hant");
+      });
 
     // 初始化表格
     $("#RegionStatsTable").datagrid({
@@ -798,8 +981,15 @@ const EventMonitoringStatisticsPage = {
         regionOrder[region.code] = index;
       });
 
-      // 自定義排序
+      // 自定義排序（台灣優先，其餘按區域順序）
       locationList.sort((a, b) => {
+        if (a === "台灣" && b !== "台灣") {
+          return -1;
+        }
+        if (a !== "台灣" && b === "台灣") {
+          return 1;
+        }
+
         const regionA = countyToRegion[a] || "99";
         const regionB = countyToRegion[b] || "99";
         const orderA =
@@ -818,8 +1008,16 @@ const EventMonitoringStatisticsPage = {
         return indexA - indexB;
       });
     } else {
-      // 如果沒有RegionalData，按字母順序排序
-      locationList.sort();
+      // 如果沒有RegionalData，台灣優先，其餘按字母順序
+      locationList.sort((a, b) => {
+        if (a === "台灣" && b !== "台灣") {
+          return -1;
+        }
+        if (a !== "台灣" && b === "台灣") {
+          return 1;
+        }
+        return a.localeCompare(b, "zh-Hant");
+      });
     }
 
     // 建立交叉統計資料
@@ -906,6 +1104,170 @@ const EventMonitoringStatisticsPage = {
     });
   },
 
+  // 載入災防會災類與發生地點比較
+  loadDisasterPreventionLocationComparison: function () {
+    // 複製查詢條件和時間到 tab5
+    $("#QueryConditionTab5").text($("#QueryCondition").text());
+    $("#ResultTimeTab5").text($("#ResultTime").text());
+
+    // 確保 currentData 存在
+    if (!this.currentData) {
+      this.currentData = [];
+    }
+
+    // 獲取所有災防會災類和地點
+    const preventionTypes = new Set();
+    const locations = new Set();
+
+    this.currentData.forEach((item) => {
+      if (item.disasterPreventionType) {
+        preventionTypes.add(item.disasterPreventionType);
+      }
+      locations.add(item.location);
+    });
+
+    // 轉換為陣列並排序
+    const preventionTypeList = Array.from(preventionTypes).sort();
+    let locationList = Array.from(locations);
+
+    // 按countyByRegion排序地點
+    if (
+      window.RegionalData &&
+      window.RegionalData.countyByRegion &&
+      window.RegionalData.regions
+    ) {
+      const countyToRegion = {};
+      Object.keys(window.RegionalData.countyByRegion).forEach((regionCode) => {
+        window.RegionalData.countyByRegion[regionCode].forEach((county) => {
+          countyToRegion[county.name] = regionCode;
+        });
+      });
+
+      const regionOrder = {};
+      window.RegionalData.regions.forEach((region, index) => {
+        regionOrder[region.code] = index;
+      });
+
+      locationList.sort((a, b) => {
+        if (a === "台灣" && b !== "台灣") {
+          return -1;
+        }
+        if (a !== "台灣" && b === "台灣") {
+          return 1;
+        }
+
+        const regionA = countyToRegion[a] || "99";
+        const regionB = countyToRegion[b] || "99";
+        const orderA =
+          regionOrder[regionA] !== undefined ? regionOrder[regionA] : 999;
+        const orderB =
+          regionOrder[regionB] !== undefined ? regionOrder[regionB] : 999;
+
+        if (orderA !== orderB) {
+          return orderA - orderB;
+        }
+
+        const counties = window.RegionalData.countyByRegion[regionA] || [];
+        const indexA = counties.findIndex((c) => c.name === a);
+        const indexB = counties.findIndex((c) => c.name === b);
+        return indexA - indexB;
+      });
+    } else {
+      locationList.sort((a, b) => {
+        if (a === "台灣" && b !== "台灣") {
+          return -1;
+        }
+        if (a !== "台灣" && b === "台灣") {
+          return 1;
+        }
+        return a.localeCompare(b, "zh-Hant");
+      });
+    }
+
+    // 建立交叉統計資料
+    const stats = {};
+    this.currentData.forEach((item) => {
+      if (!item.disasterPreventionType) {
+        return;
+      }
+      const key = `${item.location}_${item.disasterPreventionType}`;
+      if (!stats[key]) {
+        stats[key] = 0;
+      }
+      stats[key]++;
+    });
+
+    // 災防會災類名稱映射
+    const preventionTypeMap = {};
+    if (Array.isArray(window.DisasterPreventionData)) {
+      window.DisasterPreventionData.forEach((item) => {
+        preventionTypeMap[item.code] = item.name;
+      });
+    }
+
+    // 建立表格資料
+    const tableData = locationList.map((location) => {
+      const row = { location: location };
+      preventionTypeList.forEach((preventionType) => {
+        const key = `${location}_${preventionType}`;
+        row[preventionType] = stats[key] || 0;
+      });
+      return row;
+    });
+
+    // 建立表格欄位
+    const columns = [
+      {
+        field: "location",
+        title: "發生地",
+        width: 120,
+        align: "center",
+      },
+    ];
+
+    preventionTypeList.forEach((preventionType) => {
+      columns.push({
+        field: preventionType,
+        title: preventionTypeMap[preventionType] || preventionType,
+        width: 100,
+        align: "center",
+        formatter: function (value) {
+          return value > 0 ? value : "-";
+        },
+      });
+    });
+
+    // 初始化表格
+    $("#DisasterPreventionLocationComparisonTable").datagrid({
+      data: tableData,
+      fit: true,
+      fitColumns: true,
+      singleSelect: true,
+      rownumbers: true,
+      columns: [columns],
+      onLoadSuccess: function () {
+        setTimeout(() => {
+          const $panel = $(
+            "#DisasterPreventionLocationComparisonTable",
+          ).datagrid("getPanel");
+          const $headerRownumber = $panel
+            .find(".datagrid-header .datagrid-header-rownumber")
+            .first();
+
+          if ($headerRownumber.length > 0) {
+            const $cell = $headerRownumber.find(".datagrid-cell").first();
+            const $target = $cell.length > 0 ? $cell : $headerRownumber;
+
+            $target.empty().text("項次").css({
+              "text-align": "center",
+              "font-weight": "normal",
+            });
+          }
+        }, 50);
+      },
+    });
+  },
+
   // 載入監看記錄
   loadMonitoringRecords: function () {
     const self = this;
@@ -932,8 +1294,8 @@ const EventMonitoringStatisticsPage = {
       minute: "2-digit",
       second: "2-digit",
     });
-    $("#QueryConditionTab5").text(queryCondition);
-    $("#ResultTimeTab5").text(resultTime);
+    $("#QueryConditionTab6").text(queryCondition);
+    $("#ResultTimeTab6").text(resultTime);
 
     // 取得區域資料
     const regions = window.RegionalData ? window.RegionalData.regions : [];
@@ -1034,7 +1396,12 @@ const EventMonitoringStatisticsPage = {
     });
   },
 
-  loadData: function (regionFilter, yearMonthStartFilter, yearMonthEndFilter) {
+  loadData: function (
+    regionFilter,
+    eventLevelFilter,
+    yearMonthStartFilter,
+    yearMonthEndFilter,
+  ) {
     const $table = $(`#${this.tableId}`);
     const startTime = new Date().getTime();
 
@@ -1047,6 +1414,7 @@ const EventMonitoringStatisticsPage = {
         region: "01", // 台北區
         summary: "中山區某大樓發生火災，已控制火勢",
         disasterType: "F", // 火災
+        disasterPreventionType: "06", // 災防會-火災
         casualties: 0,
         isEmergencyEvent: true,
         smsSent: 8,
@@ -1059,6 +1427,7 @@ const EventMonitoringStatisticsPage = {
         region: "01", // 台北區
         summary: "板橋區發生嚴重交通事故，多車相撞",
         disasterType: "C", // 陸上交通事故
+        disasterPreventionType: "12", // 災防會-陸上交通事故
         casualties: 3,
         isEmergencyEvent: true,
         smsSent: 12,
@@ -1071,6 +1440,7 @@ const EventMonitoringStatisticsPage = {
         region: "03", // 中區
         summary: "台中西區發生醫療緊急事件，患者心臟驟停",
         disasterType: "H", // 社會矚目事件
+        disasterPreventionType: "13", // 災防會-其他
         casualties: 1,
         isEmergencyEvent: false,
         smsSent: 4,
@@ -1083,6 +1453,7 @@ const EventMonitoringStatisticsPage = {
         region: "02", // 北區
         summary: "桃園中壢工業區發生管線破裂，造成局部停水",
         disasterType: "M", // 工業管線災害
+        disasterPreventionType: "18", // 災防會-公用氣體與油料管線
         casualties: 0,
         isEmergencyEvent: true,
         smsSent: 10,
@@ -1095,6 +1466,7 @@ const EventMonitoringStatisticsPage = {
         region: "05", // 高屏區
         summary: "高雄三民區因豪雨造成積水災害",
         disasterType: "W", // 水災
+        disasterPreventionType: "03", // 災防會-水災
         casualties: 2,
         isEmergencyEvent: true,
         smsSent: 15,
@@ -1107,6 +1479,7 @@ const EventMonitoringStatisticsPage = {
         region: "01", // 台北區
         summary: "全國性緊急應變事件通報",
         disasterType: "H", // 社會矚目事件
+        disasterPreventionType: "13", // 災防會-其他
         casualties: 0,
         isEmergencyEvent: true,
         smsSent: 10,
@@ -1119,6 +1492,7 @@ const EventMonitoringStatisticsPage = {
         region: "02", // 台北區
         summary: "全國性緊急應變事件通報",
         disasterType: "H", // 社會矚目事件
+        disasterPreventionType: "13", // 災防會-其他
         casualties: 1,
         isEmergencyEvent: true,
         smsSent: 20,
@@ -1129,6 +1503,11 @@ const EventMonitoringStatisticsPage = {
     // 應用篩選條件
     if (regionFilter) {
       mockData = mockData.filter((item) => item.region === regionFilter);
+    }
+
+    // 應用事件分級篩選
+    if (eventLevelFilter === "RESPONSE") {
+      mockData = mockData.filter((item) => item.isEmergencyEvent === true);
     }
 
     if (yearMonthStartFilter || yearMonthEndFilter) {
@@ -1231,12 +1610,49 @@ const EventMonitoringStatisticsPage = {
         const endTime = new Date().getTime();
         const duration = endTime - startTime;
 
-        $("#ResultText").text(`共 ${data.total || data.rows.length} 筆資料`);
+        // 統計災類
+        const disasterStats = {};
+        const rows = data.rows || [];
+        rows.forEach((row) => {
+          const type = row.disasterType;
+          if (!disasterStats[type]) {
+            disasterStats[type] = 0;
+          }
+          disasterStats[type]++;
+        });
+
+        // 獲取災害種類名稱映射
+        const disasterTypeMap = {};
+        if (window.DisasterData && window.DisasterData.disasterType) {
+          Object.values(window.DisasterData.disasterType).forEach(
+            (category) => {
+              category.forEach((item) => {
+                disasterTypeMap[item.code] = item.name;
+              });
+            },
+          );
+        }
+
+        // 建立災類統計文字
+        let resultText = `共 ${data.total || data.rows.length} 筆資料`;
+        if (Object.keys(disasterStats).length > 0) {
+          const statsText = Object.keys(disasterStats)
+            .map((code) => {
+              const name = disasterTypeMap[code] || code;
+              const count = disasterStats[code];
+              return `${name}${count}筆`;
+            })
+            .join("、");
+          resultText += ` (${statsText})`;
+        }
+
+        $("#ResultText").text(resultText);
 
         // 初始化查詢條件顯示（只在第一次載入時）
         if (!$("#QueryCondition").text()) {
           let conditionText = "";
           const region = $("#searchRegion").val();
+          const eventLevel = $("#searchEventLevel").val();
           const yearMonthStart = $("#searchYearMonthStart").val();
           const yearMonthEnd = $("#searchYearMonthEnd").val();
           if (region && window.RegionalData) {
@@ -1247,8 +1663,17 @@ const EventMonitoringStatisticsPage = {
           } else {
             conditionText += "區域: 全部";
           }
+
+          // 新增事件分級顯示
+          if (conditionText) conditionText += "、";
+          if (eventLevel === "RESPONSE") {
+            conditionText += "事件分級: 應變事件";
+          } else {
+            conditionText += "事件分級: 全部監看事件(含應變)";
+          }
+
           if (yearMonthStart || yearMonthEnd) {
-            if (conditionText) conditionText += ", ";
+            if (conditionText) conditionText += "、";
             if (yearMonthStart && yearMonthEnd) {
               conditionText += `月份: ${yearMonthStart} ~ ${yearMonthEnd}`;
             } else if (yearMonthStart) {
@@ -1324,8 +1749,8 @@ const EventMonitoringStatisticsPage = {
       minute: "2-digit",
       second: "2-digit",
     });
-    $("#QueryConditionTab5").text(queryCondition);
-    $("#ResultTimeTab5").text(resultTime);
+    $("#QueryConditionTab6").text(queryCondition);
+    $("#ResultTimeTab6").text(resultTime);
 
     // 取得區域資料
     const regions = window.RegionalData ? window.RegionalData.regions : [];
