@@ -92,6 +92,11 @@ const ActivityResultReportPage = {
 								</a>
 							</li>
               <li class="TAB_item next">
+                <a aria-expanded="false" data-toggle="tab" title="總表(月份)" role="tab" href="#tabSummaryMonthly">
+                  <span class="font-16 text">總表(月份)</span>
+                </a>
+              </li>
+              <li class="TAB_item next">
                 <a aria-expanded="false" data-toggle="tab" title="台北區" role="tab" href="#tabTaipei">
                   <span class="font-16 text">台北區</span>
                 </a>
@@ -143,6 +148,21 @@ const ActivityResultReportPage = {
 									<table id="SummaryTable" class="EMSDataGrid"></table>
 								</div>
 							</div>
+              <div role="tabpanel" class="tab-pane" id="tabSummaryMonthly">
+                <div class="col-sm-12">
+                  <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                      查詢結果：
+                      <span id="SummaryMonthlyQueryYear" style="color: #337ab7"></span>
+                    </div>
+                    <div>
+                      查詢時間：
+                      <span id="SummaryMonthlyResultTime" style="color: #666"></span>
+                    </div>
+                  </div>
+                  <table id="SummaryMonthlyTable" class="EMSDataGrid"></table>
+                </div>
+              </div>
               <div role="tabpanel" class="tab-pane" id="tabTaipei">
                 <div class="col-sm-12">
                   <table id="TaipeiTestTable" class="EMSDataGrid"></table>
@@ -249,6 +269,7 @@ const ActivityResultReportPage = {
   resizeTabTable: function (targetId) {
     const tableMap = {
       "#tabSummary": "#SummaryTable",
+      "#tabSummaryMonthly": "#SummaryMonthlyTable",
       "#tabTaipei": "#TaipeiTestTable",
       "#tabNorth": "#NorthTestTable",
       "#tabCentral": "#CentralTestTable",
@@ -482,8 +503,131 @@ const ActivityResultReportPage = {
     this.renderRegionMonthlyTables(filteredEvents, filteredActivities);
   },
 
-  // 渲染各區月度統計表（已移除）
-  renderRegionMonthlyTables: function () {},
+  // 渲染總表(月份)資料
+  renderRegionMonthlyTables: function (filteredEvents, filteredActivities) {
+    const selectedYear = $("#searchYear").val();
+    const queryYearText = selectedYear ? `${selectedYear} 年度` : "";
+    const resultTime = new Date().toLocaleString("zh-TW", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+    });
+
+    $("#SummaryMonthlyQueryYear").text(queryYearText);
+    $("#SummaryMonthlyResultTime").text(resultTime);
+
+    const monthlyStats = Array.from({ length: 12 }, (_, index) => ({
+      month: `${index + 1}月`,
+      monthNumber: index + 1,
+      monitoringCount: 0,
+      emergencyCount: 0,
+      educationCount: 0,
+      seminarCount: 0,
+      drillTrainingCount: 0,
+      otherCount: 0,
+    }));
+
+    filteredEvents.forEach((event) => {
+      const monthIndex = Number(event.month) - 1;
+      if (monthIndex < 0 || monthIndex > 11) return;
+
+      if (event.isEmergencyEvent) {
+        monthlyStats[monthIndex].emergencyCount += 1;
+      } else {
+        monthlyStats[monthIndex].monitoringCount += 1;
+      }
+    });
+
+    filteredActivities.forEach((activity) => {
+      const monthIndex = Number(activity.month) - 1;
+      if (monthIndex < 0 || monthIndex > 11) return;
+
+      if (activity.implementType === "education") {
+        monthlyStats[monthIndex].educationCount += 1;
+      } else if (activity.implementType === "seminar") {
+        monthlyStats[monthIndex].seminarCount += 1;
+      } else if (
+        activity.implementType === "training" ||
+        activity.implementType === "drill"
+      ) {
+        monthlyStats[monthIndex].drillTrainingCount += 1;
+      } else {
+        monthlyStats[monthIndex].otherCount += 1;
+      }
+    });
+
+    $("#SummaryMonthlyTable").datagrid({
+      data: monthlyStats,
+      width: "100%",
+      fit: false,
+      height: 420,
+      fitColumns: false,
+      nowrap: true,
+      singleSelect: true,
+      rownumbers: true,
+      pagination: false,
+      striped: true,
+      columns: [
+        [
+          { field: "month", title: "月份", width: 120, align: "center" },
+          {
+            field: "monitoringCount",
+            title: "監看次數",
+            width: 120,
+            align: "center",
+          },
+          {
+            field: "emergencyCount",
+            title: "應變次數",
+            width: 120,
+            align: "center",
+          },
+          {
+            field: "educationCount",
+            title: "教育訓練/課程",
+            width: 150,
+            align: "center",
+          },
+          {
+            field: "seminarCount",
+            title: "研討會/協調會",
+            width: 150,
+            align: "center",
+          },
+          {
+            field: "drillTrainingCount",
+            title: "演習/組訓",
+            width: 120,
+            align: "center",
+          },
+          { field: "otherCount", title: "其他", width: 100, align: "center" },
+        ],
+      ],
+      onLoadSuccess: function () {
+        setTimeout(() => {
+          const $panel = $("#SummaryMonthlyTable").datagrid("getPanel");
+          $panel.css({ width: "100%", "max-width": "100%" });
+          $panel.parent().css({ width: "100%", "max-width": "100%" });
+          const $headerRownumber = $panel
+            .find(".datagrid-header .datagrid-header-rownumber")
+            .first();
+
+          if ($headerRownumber.length > 0) {
+            const $cell = $headerRownumber.find(".datagrid-cell").first();
+            const $target = $cell.length > 0 ? $cell : $headerRownumber;
+
+            $target.empty().text("項次").css({
+              "text-align": "center",
+              "font-weight": "normal",
+            });
+          }
+        }, 50);
+      },
+    });
+  },
 
   // 匯出總表資料
   exportSummaryData: function () {
