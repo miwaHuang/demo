@@ -730,7 +730,7 @@ const EventMonitoringStatisticsPage = {
       fitColumns: true,
       singleSelect: true,
       rownumbers: true,
-      columns: [
+      frozenColumns: [
         [
           {
             field: "disasterType",
@@ -750,6 +750,10 @@ const EventMonitoringStatisticsPage = {
             width: 90,
             align: "center",
           },
+        ],
+      ],
+      columns: [
+        [
           {
             field: "disasterPreventionType",
             title: "災防會災害種類",
@@ -780,6 +784,8 @@ const EventMonitoringStatisticsPage = {
         // 設置行號列標題為"項次"
         setTimeout(() => {
           const $panel = $("#DisasterTypeStatsTable").datagrid("getPanel");
+          $panel.addClass("with-frozen-divider");
+          $panel.find(".datagrid-view").addClass("with-frozen-divider");
           const $headerRownumber = $panel
             .find(".datagrid-header .datagrid-header-rownumber")
             .first();
@@ -1054,7 +1060,7 @@ const EventMonitoringStatisticsPage = {
     const columns = [
       {
         field: "location",
-        title: "發生地",
+        title: "發生地\\災類",
         width: 120,
         align: "center",
       },
@@ -1219,7 +1225,7 @@ const EventMonitoringStatisticsPage = {
     const columns = [
       {
         field: "location",
-        title: "發生地",
+        title: "發生地\\災類",
         width: 120,
         align: "center",
       },

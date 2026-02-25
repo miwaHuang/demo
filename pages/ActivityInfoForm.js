@@ -197,7 +197,7 @@ const ActivityInfoForm = {
                     <div class="col-md-4">
                       <div class="form-group">
                         <label>備註</label>
-                        <textarea class="form-control" name="REMARKS" placeholder="請輸入備註" ${readonlyAttr} style="height: 50px;"></textarea>
+                        <textarea class="form-control" name="REMARKS" placeholder="請輸入" ${readonlyAttr} style="height: 50px;"></textarea>
                       </div>
                     </div>
                   

@@ -30,19 +30,6 @@ const EventReportManagementPage = {
     this.tableId = tableId;
 
     return /*html*/ `
-   <style>
-     /* 凍結窗格分隔線加粗 */
-     .datagrid-frozen .datagrid-btable {
-       border-right: 3px solid #ccc !important;
-     }
-     .datagrid-frozen-panel {
-       border-right: 3px solid #ccc !important;
-     }
-     .datagrid-view2 .datagrid-header,
-     .datagrid-view2 .datagrid-body {
-       border-left: 3px solid #ccc !important;
-     }
-   </style>
    <div id="EventReportManagementContent" class="content">
   <div>
     <!-- 麵包屑導航 -->
@@ -843,6 +830,8 @@ const EventReportManagementPage = {
           // 設置行號列標題為"項次"
           setTimeout(() => {
             const $panel = $table.datagrid("getPanel");
+            $panel.addClass("with-frozen-divider");
+            $panel.find(".datagrid-view").addClass("with-frozen-divider");
             const $headerRownumber = $panel
               .find(".datagrid-header .datagrid-header-rownumber")
               .first();

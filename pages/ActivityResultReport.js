@@ -165,31 +165,91 @@ const ActivityResultReportPage = {
               </div>
               <div role="tabpanel" class="tab-pane" id="tabTaipei">
                 <div class="col-sm-12">
+                  <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                      查詢結果：
+                      <span id="TaipeiQueryYear" style="color: #337ab7"></span>
+                    </div>
+                    <div>
+                      查詢時間：
+                      <span id="TaipeiResultTime" style="color: #666"></span>
+                    </div>
+                  </div>
                   <table id="TaipeiTestTable" class="EMSDataGrid"></table>
                 </div>
               </div>
               <div role="tabpanel" class="tab-pane" id="tabNorth">
                 <div class="col-sm-12">
+                  <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                      查詢結果：
+                      <span id="NorthQueryYear" style="color: #337ab7"></span>
+                    </div>
+                    <div>
+                      查詢時間：
+                      <span id="NorthResultTime" style="color: #666"></span>
+                    </div>
+                  </div>
                   <table id="NorthTestTable" class="EMSDataGrid"></table>
                 </div>
               </div>
               <div role="tabpanel" class="tab-pane" id="tabCentral">
                 <div class="col-sm-12">
+                  <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                      查詢結果：
+                      <span id="CentralQueryYear" style="color: #337ab7"></span>
+                    </div>
+                    <div>
+                      查詢時間：
+                      <span id="CentralResultTime" style="color: #666"></span>
+                    </div>
+                  </div>
                   <table id="CentralTestTable" class="EMSDataGrid"></table>
                 </div>
               </div>
               <div role="tabpanel" class="tab-pane" id="tabSouth">
                 <div class="col-sm-12">
+                  <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                      查詢結果：
+                      <span id="SouthQueryYear" style="color: #337ab7"></span>
+                    </div>
+                    <div>
+                      查詢時間：
+                      <span id="SouthResultTime" style="color: #666"></span>
+                    </div>
+                  </div>
                   <table id="SouthTestTable" class="EMSDataGrid"></table>
                 </div>
               </div>
               <div role="tabpanel" class="tab-pane" id="tabKaoping">
                 <div class="col-sm-12">
+                  <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                      查詢結果：
+                      <span id="KaopingQueryYear" style="color: #337ab7"></span>
+                    </div>
+                    <div>
+                      查詢時間：
+                      <span id="KaopingResultTime" style="color: #666"></span>
+                    </div>
+                  </div>
                   <table id="KaopingTestTable" class="EMSDataGrid"></table>
                 </div>
               </div>
               <div role="tabpanel" class="tab-pane" id="tabEast">
                 <div class="col-sm-12">
+                  <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                      查詢結果：
+                      <span id="EastQueryYear" style="color: #337ab7"></span>
+                    </div>
+                    <div>
+                      查詢時間：
+                      <span id="EastResultTime" style="color: #666"></span>
+                    </div>
+                  </div>
                   <table id="EastTestTable" class="EMSDataGrid"></table>
                 </div>
               </div>
@@ -338,7 +398,13 @@ const ActivityResultReportPage = {
   // 載入總表資料
   loadSummaryData: function () {
     const selectedYear = $("#searchYear").val();
-    const queryYearText = selectedYear ? `${selectedYear} 年度` : "";
+    const now = new Date();
+    const currentYear = String(now.getFullYear());
+    const currentMonth = now.getMonth() + 1;
+    const endMonth = selectedYear === currentYear ? currentMonth : 12;
+    const queryYearText = selectedYear
+      ? `${selectedYear}年 1~${endMonth}月`
+      : "";
     const resultTime = new Date().toLocaleString("zh-TW", {
       year: "numeric",
       month: "2-digit",
@@ -348,7 +414,21 @@ const ActivityResultReportPage = {
       second: "2-digit",
     });
     $("#SummaryQueryYear").text(queryYearText);
+    $("#SummaryMonthlyQueryYear").text(queryYearText);
+    $("#TaipeiQueryYear").text(queryYearText);
+    $("#NorthQueryYear").text(queryYearText);
+    $("#CentralQueryYear").text(queryYearText);
+    $("#SouthQueryYear").text(queryYearText);
+    $("#KaopingQueryYear").text(queryYearText);
+    $("#EastQueryYear").text(queryYearText);
     $("#SummaryResultTime").text(resultTime);
+    $("#SummaryMonthlyResultTime").text(resultTime);
+    $("#TaipeiResultTime").text(resultTime);
+    $("#NorthResultTime").text(resultTime);
+    $("#CentralResultTime").text(resultTime);
+    $("#SouthResultTime").text(resultTime);
+    $("#KaopingResultTime").text(resultTime);
+    $("#EastResultTime").text(resultTime);
 
     const regions = window.RegionalData ? window.RegionalData.regions : [];
 
@@ -505,8 +585,6 @@ const ActivityResultReportPage = {
 
   // 渲染總表(月份)資料
   renderRegionMonthlyTables: function (filteredEvents, filteredActivities) {
-    const selectedYear = $("#searchYear").val();
-    const queryYearText = selectedYear ? `${selectedYear} 年度` : "";
     const resultTime = new Date().toLocaleString("zh-TW", {
       year: "numeric",
       month: "2-digit",
@@ -516,7 +594,6 @@ const ActivityResultReportPage = {
       second: "2-digit",
     });
 
-    $("#SummaryMonthlyQueryYear").text(queryYearText);
     $("#SummaryMonthlyResultTime").text(resultTime);
 
     const monthlyStats = Array.from({ length: 12 }, (_, index) => ({
