@@ -395,6 +395,22 @@ const ActivityResultReportPage = {
     });
   },
 
+  // 查詢時間格式化 YYYY-MM-DD HH:mm
+  formatQueryTime: function (dateValue) {
+    const date = dateValue || new Date();
+    return (
+      date.getFullYear() +
+      "-" +
+      String(date.getMonth() + 1).padStart(2, "0") +
+      "-" +
+      String(date.getDate()).padStart(2, "0") +
+      " " +
+      String(date.getHours()).padStart(2, "0") +
+      ":" +
+      String(date.getMinutes()).padStart(2, "0")
+    );
+  },
+
   // 載入總表資料
   loadSummaryData: function () {
     const selectedYear = $("#searchYear").val();
@@ -405,14 +421,7 @@ const ActivityResultReportPage = {
     const queryYearText = selectedYear
       ? `${selectedYear}年 1~${endMonth}月`
       : "";
-    const resultTime = new Date().toLocaleString("zh-TW", {
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-    });
+    const resultTime = this.formatQueryTime(new Date());
     $("#SummaryQueryYear").text(queryYearText);
     $("#SummaryMonthlyQueryYear").text(queryYearText);
     $("#TaipeiQueryYear").text(queryYearText);
@@ -585,14 +594,7 @@ const ActivityResultReportPage = {
 
   // 渲染總表(月份)資料
   renderRegionMonthlyTables: function (filteredEvents, filteredActivities) {
-    const resultTime = new Date().toLocaleString("zh-TW", {
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-    });
+    const resultTime = this.formatQueryTime(new Date());
 
     $("#SummaryMonthlyResultTime").text(resultTime);
 

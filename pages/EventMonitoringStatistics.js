@@ -1642,10 +1642,17 @@ const EventMonitoringStatisticsPage = {
         // 建立災類統計文字
         let resultText = `共 ${data.total || data.rows.length} 筆資料`;
         if (Object.keys(disasterStats).length > 0) {
-          const statsText = Object.keys(disasterStats)
-            .map((code) => {
+          const statsText = Object.entries(disasterStats)
+            .sort((a, b) => {
+              if (b[1] !== a[1]) {
+                return b[1] - a[1];
+              }
+              const nameA = disasterTypeMap[a[0]] || a[0];
+              const nameB = disasterTypeMap[b[0]] || b[0];
+              return nameA.localeCompare(nameB, "zh-Hant");
+            })
+            .map(([code, count]) => {
               const name = disasterTypeMap[code] || code;
-              const count = disasterStats[code];
               return `${name}${count}筆`;
             })
             .join("、");
