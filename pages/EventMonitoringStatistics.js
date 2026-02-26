@@ -735,19 +735,19 @@ const EventMonitoringStatisticsPage = {
           {
             field: "disasterType",
             title: "EMS災害種類",
-            width: 160,
+            width: 220,
             align: "center",
           },
           {
             field: "emsCount",
             title: "EMS件數",
-            width: 80,
+            width: 200,
             align: "center",
           },
           {
             field: "emsPercentage",
             title: "EMS百分比",
-            width: 90,
+            width: 150,
             align: "center",
           },
         ],
