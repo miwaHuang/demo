@@ -205,8 +205,16 @@ const EventMonitoringStatisticsPage = {
                         <span id="ResultTimeTab2" style="color: #666"></span>
                       </div>
                     </div>
-                    <!-- 災類統計表格 -->
-                    <table id="DisasterTypeStatsTable" class="EMSDataGrid"></table>
+                    <div class="row" style="margin-top: 10px;">
+                      <div class="col-md-6">
+                        <div style="margin-bottom: 6px; font-weight: bold;">EMS災類統計表格</div>
+                        <table id="DisasterTypeStatsTable" class="EMSDataGrid"></table>
+                      </div>
+                      <div class="col-md-6">
+                        <div style="margin-bottom: 6px; font-weight: bold;">災防會災類統計表格</div>
+                        <table id="DisasterPreventionTypeStatsTable" class="EMSDataGrid"></table>
+                      </div>
+                    </div>
                   </div>
                 </div>
 
@@ -593,40 +601,6 @@ const EventMonitoringStatisticsPage = {
     document.body.removeChild(input);
   },
 
-  // EMS災害種類與災防會災害種類對應關係
-  getDisasterPreventionMapping: function () {
-    return {
-      T: "01", // 風災 -> 風災
-      W: "03", // 水災 -> 水災
-      E: "04", // 震災（含土壤液化）-> 震災（含土壤液化）
-      N: "", // 其他自然災害 -> (無)
-      A: "10", // 空難 -> 空難
-      O: "11", // 海難 -> 海難
-      R: "15", // 寒害 -> 寒害
-      1: "", // 動植物疫災 -> (無)
-      B: "05", // 生物病原災害 -> 生物病原災害
-      F: "06", // 火災 -> 火災
-      D: "", // 毒性化學物質災害 -> (無)
-      C: "12", // 陸上交通事故 -> 陸上交通事故
-      M: "18", // 工業管線災害 -> 公用氣體與油料管線
-      L: "", // 停電 -> (無)
-      K: "", // 重大暴力或恐怖攻擊 -> (無)
-      G: "", // 群眾聚集 -> (無)
-      H: "13", // 社會矚目事件 -> 其他
-      P: "", // 其他人為技術災害 -> (無)
-      U: "16", // 爆炸 -> 爆炸
-      V: "17", // 公用氣體與油料管線、輸電線路災害 -> 公用氣體與油料管線、輸電線路災害
-      2: "09", // 輻射災害 -> 輻射
-      3: "", // 懸浮微粒物質災害 -> (無)
-      I: "", // 土石流災害 -> (無)
-      Q: "14", // 旱災 -> 旱災
-      S: "", // 火山災害 -> (無)
-      Y: "07", // 森林火災 -> 森林火災
-      J: "", // 停水 -> (無)
-      X: "19", // 礦災 -> 礦災
-    };
-  },
-
   // 載入災類統計
   loadDisasterTypeStats: function () {
     // 複製查詢條件和時間到 tab2
@@ -638,20 +612,27 @@ const EventMonitoringStatisticsPage = {
       this.currentData = [];
     }
 
-    // 統計災類（按EMS災害種類和災防會災害種類）
-    const emsCounts = {}; // EMS災害種類統計
-    const preventionCounts = {}; // 災防會災害種類統計
-    let total = this.currentData.length;
+    const emsCounts = {};
+    const preventionCounts = {};
 
     this.currentData.forEach((item) => {
       const emsType = item.disasterType;
-      if (!emsCounts[emsType]) {
-        emsCounts[emsType] = 0;
+      if (emsType) {
+        if (!emsCounts[emsType]) {
+          emsCounts[emsType] = 0;
+        }
+        emsCounts[emsType]++;
       }
-      emsCounts[emsType]++;
+
+      const preventionType = item.disasterPreventionType;
+      if (preventionType) {
+        if (!preventionCounts[preventionType]) {
+          preventionCounts[preventionType] = 0;
+        }
+        preventionCounts[preventionType]++;
+      }
     });
 
-    // 獲取災害種類名稱映射
     const disasterTypeMap = {};
     if (window.DisasterData && window.DisasterData.disasterType) {
       Object.values(window.DisasterData.disasterType).forEach((category) => {
@@ -661,76 +642,80 @@ const EventMonitoringStatisticsPage = {
       });
     }
 
-    // 獲取災防會災害種類名稱映射
-    const disasterPreventionMap = {};
-    if (
-      window.DisasterPreventionData &&
-      Array.isArray(window.DisasterPreventionData)
-    ) {
+    const preventionTypeMap = {};
+    if (Array.isArray(window.DisasterPreventionData)) {
       window.DisasterPreventionData.forEach((item) => {
-        disasterPreventionMap[item.code] = item.name;
+        preventionTypeMap[item.code] = item.name;
       });
     }
 
-    // 獲取對應關係並統計災防會災害種類件數
-    const mappingRelation = this.getDisasterPreventionMapping();
-    Object.keys(emsCounts).forEach((emsCode) => {
-      const preventionCode = mappingRelation[emsCode];
-      if (preventionCode) {
-        if (!preventionCounts[preventionCode]) {
-          preventionCounts[preventionCode] = 0;
-        }
-        preventionCounts[preventionCode] += emsCounts[emsCode];
-      }
-    });
+    const emsTotal = Object.values(emsCounts).reduce((sum, count) => {
+      return sum + count;
+    }, 0);
 
-    // 計算災防會災害種類總數
-    let preventionTotal = 0;
-    Object.values(preventionCounts).forEach((count) => {
-      preventionTotal += count;
-    });
+    const preventionTotal = Object.values(preventionCounts).reduce(
+      (sum, count) => {
+        return sum + count;
+      },
+      0,
+    );
 
-    // 轉換為表格資料 - 只顯示有資料的災害種類
-    const tableData = Object.keys(emsCounts)
+    const emsTableData = Object.keys(emsCounts)
       .filter((code) => emsCounts[code] > 0)
       .map((code) => {
         const emsCount = emsCounts[code];
         const emsPercentage =
-          total > 0 ? Math.round((emsCount / total) * 100) : 0;
-        const disasterPreventionCode = mappingRelation[code] || "";
-        const disasterPreventionName = disasterPreventionCode
-          ? disasterPreventionMap[disasterPreventionCode]
-          : "";
-        const preventionCount = disasterPreventionCode
-          ? preventionCounts[disasterPreventionCode]
-          : 0;
-        const preventionPercentage =
-          preventionTotal > 0 && preventionCount > 0
-            ? Math.round((preventionCount / preventionTotal) * 100)
-            : 0;
+          emsTotal > 0 ? Math.round((emsCount / emsTotal) * 100) : 0;
 
         return {
           disasterType: disasterTypeMap[code] || code,
           emsCount: emsCount,
           emsPercentage: emsPercentage + "%",
-          disasterPreventionType: disasterPreventionName,
-          preventionCount: preventionCount,
-          preventionPercentage:
-            preventionPercentage > 0 ? preventionPercentage + "%" : "-",
-          count: emsCount,
-          percentage: emsPercentage + "%",
         };
       })
-      .sort((a, b) => b.emsCount - a.emsCount); // 按EMS件數從大到小排序
+      .sort((a, b) => b.emsCount - a.emsCount);
 
-    // 初始化表格
+    const preventionTableData = Object.keys(preventionCounts)
+      .filter((code) => preventionCounts[code] > 0)
+      .map((code) => {
+        const preventionCount = preventionCounts[code];
+        const preventionPercentage =
+          preventionTotal > 0
+            ? Math.round((preventionCount / preventionTotal) * 100)
+            : 0;
+
+        return {
+          disasterPreventionType: preventionTypeMap[code] || code,
+          preventionCount: preventionCount,
+          preventionPercentage: preventionPercentage + "%",
+        };
+      })
+      .sort((a, b) => b.preventionCount - a.preventionCount);
+
+    const setRownumberTitle = function (tableSelector) {
+      const $panel = $(tableSelector).datagrid("getPanel");
+      const $headerRownumber = $panel
+        .find(".datagrid-header .datagrid-header-rownumber")
+        .first();
+
+      if ($headerRownumber.length > 0) {
+        const $cell = $headerRownumber.find(".datagrid-cell").first();
+        const $target = $cell.length > 0 ? $cell : $headerRownumber;
+
+        $target.empty().text("項次").css({
+          "text-align": "center",
+          "font-weight": "normal",
+        });
+      }
+    };
+
     $("#DisasterTypeStatsTable").datagrid({
-      data: tableData,
+      data: emsTableData,
       fit: true,
       fitColumns: true,
       singleSelect: true,
       rownumbers: true,
-      frozenColumns: [
+      columns: [
         [
           {
             field: "disasterType",
@@ -752,53 +737,44 @@ const EventMonitoringStatisticsPage = {
           },
         ],
       ],
+      onLoadSuccess: function () {
+        setTimeout(() => {
+          setRownumberTitle("#DisasterTypeStatsTable");
+        }, 50);
+      },
+    });
+
+    $("#DisasterPreventionTypeStatsTable").datagrid({
+      data: preventionTableData,
+      fit: true,
+      fitColumns: true,
+      singleSelect: true,
+      rownumbers: true,
       columns: [
         [
           {
             field: "disasterPreventionType",
             title: "災防會災害種類",
-            width: 160,
+            width: 220,
             align: "center",
-            formatter: function (value) {
-              return value || "-";
-            },
           },
           {
             field: "preventionCount",
             title: "災防會件數",
-            width: 90,
+            width: 200,
             align: "center",
-            formatter: function (value) {
-              return value > 0 ? value : "-";
-            },
           },
           {
             field: "preventionPercentage",
             title: "災防會百分比",
-            width: 100,
+            width: 150,
             align: "center",
           },
         ],
       ],
       onLoadSuccess: function () {
-        // 設置行號列標題為"項次"
         setTimeout(() => {
-          const $panel = $("#DisasterTypeStatsTable").datagrid("getPanel");
-          $panel.addClass("with-frozen-divider");
-          $panel.find(".datagrid-view").addClass("with-frozen-divider");
-          const $headerRownumber = $panel
-            .find(".datagrid-header .datagrid-header-rownumber")
-            .first();
-
-          if ($headerRownumber.length > 0) {
-            const $cell = $headerRownumber.find(".datagrid-cell").first();
-            const $target = $cell.length > 0 ? $cell : $headerRownumber;
-
-            $target.empty().text("項次").css({
-              "text-align": "center",
-              "font-weight": "normal",
-            });
-          }
+          setRownumberTitle("#DisasterPreventionTypeStatsTable");
         }, 50);
       },
     });
