@@ -207,11 +207,11 @@ const EventMonitoringStatisticsPage = {
                     </div>
                     <div class="row" style="margin-top: 10px;">
                       <div class="col-md-6">
-                        <div style="margin-bottom: 6px; font-weight: bold;">EMS災類統計表格</div>
+                        <div style="margin-bottom: 6px; font-weight: bold;">EMS災類統計</div>
                         <table id="DisasterTypeStatsTable" class="EMSDataGrid"></table>
                       </div>
                       <div class="col-md-6">
-                        <div style="margin-bottom: 6px; font-weight: bold;">災防會災類統計表格</div>
+                        <div style="margin-bottom: 6px; font-weight: bold;">災防會災類統計</div>
                         <table id="DisasterPreventionTypeStatsTable" class="EMSDataGrid"></table>
                       </div>
                     </div>

@@ -326,7 +326,7 @@ const EventReportForm = {
                           <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;">
                             <div class="form-group">
                               <label class="required">衛福部</label>
-                              <input type="number" class="form-control" name="MOH_SMS" value="0" min="0" ${
+                              <input type="number" class="form-control" name="MOH_SMS" required value="0" min="0" oninput="if(this.value==='') this.value='0'; if(+this.value<0) this.value='0';" onblur="if(this.value==='') this.value='0';" ${
                                 mode === "view" ? "readonly" : ""
                               } />
                             </div>
