@@ -19,69 +19,6 @@
 /* EventReportForm.css - 事件通報表單專用樣式 */
 /* 使用Bootstrap標準顏色 */
 
-/* 自定義modal header樣式 */
-#reportModal .modal-content {
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow:
-    0 10px 40px rgba(0, 0, 0, 0.15),
-    0 4px 20px rgba(0, 0, 0, 0.1);
-  border: none;
-}
-
-#reportModal .modal-header {
-  background: linear-gradient(135deg, #337ab7 0%, #286090 100%);
-  color: white;
-  border-bottom: none;
-  min-height: auto;
-  position: relative;
-  border-top-left-radius: 8px;
-  border-top-right-radius: 8px;
-  display: flex;
-  align-items: center;
-  padding: 10px;
-}
-
-#reportModal .modal-title {
-  color: #ffffff;
-  font-size: 1.5rem;
-  margin: 0;
-  line-height: 1;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
-  font-weight: 600;
-}
-
-#reportModal .close {
-  color: white;
-  opacity: 0.8;
-  position: absolute;
-  top: 50%;
-  right: 15px;
-  transform: translateY(-50%);
-  z-indrtmodalex: 10;
-  font-size: 1.5rem;
-}
-
-#reportModal .close:hover {
-  color: white;
-  opacity: 1;
-}
-
-#reportModal .auto-info {
-  position: absolute;
-  right: 60px;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 12px;
-  line-height: 1.4;
-  text-align: right;
-  color: #ffffff;
-  font-weight: 500;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
-  max-width: 200px;
-  white-space: nowrap;
-}
-
 /* 設定modal大小 */
 #reportModal .modal-body {
   max-height: 88vh;
@@ -298,14 +235,14 @@
 }
 
 /* Fieldset 樣式 */
-#reportModal fieldset {
+#reportModal .fieldset {
   border: 1px dashed #bbb;
   border-radius: 6px;
   padding: 6px 20px 6px 20px;
   background: #ffffff;
 }
 
-#reportModal fieldset legend {
+#reportModal .fieldset legend {
   font-weight: 600;
   color: white;
   padding: 5px 15px;
@@ -362,7 +299,7 @@
 }
 
 #reportModal input:checked + .slider {
-  background-color: #5cb85c;
+  background-color: #337ab7;
 }
 
 #reportModal input:checked + .slider:before {
